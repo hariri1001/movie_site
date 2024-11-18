@@ -5,46 +5,85 @@ from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from .serializers import MovieSerializer, GenreSerializer
+from django.views.decorators.http import require_POST
+# from django.views.decorators.http import require_POST
+from django.http.response import HttpResponse, JsonResponse
 
 # Create your views here.
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def movie_like(request, movie_pk):
-    movie = get_object_or_404(Movie, pk=movie_pk)
-    user = request.user
-
-    if movie.like_users.filter(pk=user.pk).exists():
-        # 이미 좋아요 한 경우 -> 좋아요 취소
-        movie.like_users.remove(user)
-        liked = False
-    else:
-        # 좋아요 하지 않은 경우 -> 좋아요 추가
-        movie.like_users.add(user)
-        liked = True
-
-    return Response({
-        'liked': liked,
-        'like_count': movie.like_users.count()
-    })
+def save_movie(request):
+    data = request.data
+    movie = Movie.objects.create(
+        id=data['id'],  # TMDB ID 사용
+        title=data['title'],
+        overview=data['overview'],
+        release_date=data['release_date'],
+        vote_count=data['vote_count'],
+        vote_average=data['vote_average'],
+        poster_path=data['poster_path']
+    )
+    return Response({'message': 'Movie saved'})
 
 
-# 사용자가 좋아요한 영화 목록 조회
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def liked_movies(request):
-    movies = request.user.like_movies.all()
-    serializer = MovieSerializer(movies, many=True)
-    return Response(serializer.data)
+
+@api_view(['POST', 'GET'])
+def likes(request, pk):
+    if request.user.is_authenticated:
+        movie = get_object_or_404(Movie, pk=pk)
+        
+        if request.method == 'GET':
+            return Response({
+                'is_liked': movie.like_users.filter(pk=request.user.pk).exists(),
+                'count': movie.like_users.count()
+            })
+            
+        # POST 처리
+        if movie.like_users.filter(pk=request.user.pk).exists():
+            movie.like_users.remove(request.user)
+            liked = False
+        else:
+            movie.like_users.add(request.user)
+            liked = True
+        return Response({
+            'liked': liked,
+            'count': movie.like_users.count()
+        })
+    return Response(status=401)
+
+
+
+
 
 # 영화 검색 (제목 기준)
+# @api_view(['GET'])
+# def search_movies(request):
+#     query = request.query_params.get('query', '')
+#     if query:
+#         movies = Movie.objects.filter(title__icontains=query)
+#         serializer = MovieSerializer(movies, many=True)
+#         return Response(serializer.data)
+#     return Response([])
+
+# 검색기능
 @api_view(['GET'])
-def search_movies(request):
-    query = request.query_params.get('query', '')
+def movie_search(request):
+    query = request.GET.get('q', '')  # 검색어를 가져옵니다. 기본값은 빈 문자열입니다.
+    
     if query:
-        movies = Movie.objects.filter(title__icontains=query)
-        serializer = MovieSerializer(movies, many=True)
-        return Response(serializer.data)
-    return Response([])
+        # 검색어가 있을 경우 영화 제목과 줄거리를 대상으로 필터링합니다.
+        movies = Movie.objects.filter(title__icontains=query) | Movie.objects.filter(overview__icontains=query)
+        
+        if movies.exists():
+            serializer = MovieSerializer(movies, many=True)  # 직렬화합니다.
+            return Response(serializer.data)
+        else:
+            return Response({"message": "검색 영화가 없습니다."}, status=404)  # 결과가 없을 경우 404 상태 코드 반환
+    else:
+        return Response({"message": "검색어를 입력해 주세요."}, status=400)
+
+
+
+
 
 # 장르 목록
 @api_view(['GET'])

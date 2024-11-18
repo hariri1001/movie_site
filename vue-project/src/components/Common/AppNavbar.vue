@@ -9,7 +9,17 @@
                 aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
+        
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+          <!-- 영화 검색 기능 -->
+          <!-- <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form> -->
+          <form @submit.prevent="searchMovies" class="d-flex">
+            <input v-model="searchQuery" class="form-control me-2" type="search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
           <ul class="navbar-nav mb-2 mb-lg-0">
             <li class="nav-item">
               <RouterLink class="nav-link" :to="{ name: 'MainView' }">Home</RouterLink>
@@ -37,6 +47,7 @@
             </template>
           </ul>
         </div>
+        
       </div>
     </nav>
 </template>
@@ -48,6 +59,23 @@ const store = useCounterStore()
 const logOut = function () {
   store.logOut()
 }
+
+import { ref } from 'vue'
+import axios from 'axios'
+
+const searchQuery = ref('')
+const movies = ref([])
+axios.defaults.baseURL = 'http://127.0.0.1:8000'
+const searchMovies = async () => {
+  try {
+    console.log(`검색 쿼리: ${searchQuery.value}`) // 디버깅용
+    const response = await axios.get(`/api/v1/movies/search/?q=${searchQuery.value}`)
+    movies.value = response.data
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 </script>
 
 <style scoped>

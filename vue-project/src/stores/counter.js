@@ -90,7 +90,7 @@ export const useCounterStore = defineStore('counter', () => {
       method: 'post',
       url: `${API_URL}/accounts/logout/`,
       headers: {
-        Authorization: `Token ${token.value}`  // 토큰을 헤더에 추가
+        'Authorization': `Bearer ${token}`  // 토큰을 헤더에 추가
       }
     })
       .then((res) => {

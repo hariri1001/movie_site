@@ -1,33 +1,99 @@
 <template>
   <div class="container">
+    <!-- 현재 인기 상영작 -->
+    
+    <h2 class="carousel-title">인기 상영작</h2>
     <div class="carousel-container">
-      <div class="carousel" ref="carousel">
-        <div class="movie-cards" :style="{ transform: `translateX(-${currentPosition}px)` }">
-          <div class="movie-card" v-for="movie in movies" :key="movie.id">
+      <div class="carousel">
+        <div class="movie-cards" :style="{ transform: `translateX(-${popularPosition}px)` }">
+            <div class="movie-card" v-for="(movie, index) in topRatedMovies" :key="movie.id">
+                <span class="top-badge">TOP 10</span>
+                <span class="rank-number">{{index + 1}}</span>
+                <RouterLink :to="{ name: 'MovieDetail', params: { movieId: movie.id }}" class="text-decoration-none">
+                  <div class="card">
+                    <div class="poster-wrapper">
+                      <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
+                          class="card-img-top" 
+                          alt="movie poster">
+                    </div>
+                  </div>
+                </RouterLink>
+            </div>
+        </div>
+      </div>
+      <button class="carousel-btn prev" @click="movePopular('prev')" :disabled="popularPosition === 0">
+        <div class>
+          <i class="fas fa-chevron-left"></i>
+        </div>
+      </button>
+      <button class="carousel-btn next" @click="movePopular('next')" :disabled="isEndOfPopular">
+        <div class>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+      </button>
+    </div>
+
+
+
+    <h2 class="carousel-title">인기 상영작</h2>
+    <div class="carousel-container">
+      <div class="carousel">
+        <div class="movie-cards" :style="{ transform: `translateX(-${popularPosition}px)` }">
+          <div class="movie-card" v-for="movie in popularMovies" :key="movie.id">
             <RouterLink :to="{ name: 'MovieDetail', params: { movieId: movie.id }}" class="text-decoration-none">
               <div class="card">
                 <div class="poster-wrapper">
                   <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
-                       class="card-img-top" 
-                       alt="movie poster">
+                      class="card-img-top" 
+                      alt="movie poster">
                 </div>
               </div>
             </RouterLink>
           </div>
         </div>
       </div>
-      <!-- 넷플릭스 스타일의 버튼 -->
-      <button class="carousel-btn prev" @click="moveCarousel('prev')" :disabled="currentPosition === 0">
-        <div class="button-circle">
+      <button class="carousel-btn prev" @click="movePopular('prev')" :disabled="popularPosition === 0">
+        <div class>
           <i class="fas fa-chevron-left"></i>
         </div>
       </button>
-      <button class="carousel-btn next" @click="moveCarousel('next')" :disabled="isEndOfCarousel">
-        <div class="button-circle">
+      <button class="carousel-btn next" @click="movePopular('next')" :disabled="isEndOfPopular">
+        <div class>
           <i class="fas fa-chevron-right"></i>
         </div>
       </button>
     </div>
+
+    <!-- 평점 많이 받은 영화 -->
+    <h2 class="carousel-title">최고 평점 영화</h2>
+    <div class="carousel-container">
+      <div class="carousel" ref="carousel">
+        <div class="movie-cards" :style="{ transform: `translateX(-${topRatedPosition}px)` }">
+          <div class="movie-card" v-for="movie in topRatedMovies" :key="movie.id">
+            <RouterLink :to="{ name: 'MovieDetail', params: { movieId: movie.id }}" class="text-decoration-none">
+              <div class="card">
+                <div class="poster-wrapper">
+                  <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
+                      class="card-img-top" 
+                      alt="movie poster">
+                </div>
+              </div>
+            </RouterLink>
+          </div>
+        </div>
+      </div>
+      <button class="carousel-btn prev" @click="moveTopRated('prev')" :disabled="topRatedPosition === 0">
+        <div class>
+          <i class="fas fa-chevron-left"></i>
+        </div>
+      </button>
+      <button class="carousel-btn next" @click="moveTopRated('next')" :disabled="isEndOfTopRated">
+        <div class>
+          <i class="fas fa-chevron-right"></i>
+        </div>
+      </button>
+    </div>
+
   </div>
 </template>
 
@@ -35,31 +101,45 @@
 import { onMounted, ref, computed } from 'vue';
 import axios from 'axios';
 
-const movies = ref([]);
+const topRatedMovies = ref([]);
+const popularMovies = ref([]);
 const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
-const currentPosition = ref(0);
-const carousel = ref(null);
-const cardWidth = 250; // 카드 하나의 너비 (margin 포함)
-const visibleCards = 5; // 한 번에 보여질 카드 수
+const topRatedPosition = ref(0);
+const popularPosition = ref(0);
+const cardWidth = 250;
+const visibleCards = 5;
 
-const isEndOfCarousel = computed(() => {
-  if (!movies.value.length) return true;
-  return currentPosition.value >= (movies.value.length - visibleCards) * cardWidth;
+const isEndOfTopRated = computed(() => {
+  if (!topRatedMovies.value.length) return true;
+  return topRatedPosition.value >= (topRatedMovies.value.length - visibleCards) * cardWidth;
 });
 
-const moveCarousel = (direction) => {
-  if (direction === 'next' && !isEndOfCarousel.value) {
-    currentPosition.value += cardWidth;
-  } else if (direction === 'prev' && currentPosition.value > 0) {
-    currentPosition.value -= cardWidth;
+const isEndOfPopular = computed(() => {
+  if (!popularMovies.value.length) return true;
+  return popularPosition.value >= (popularMovies.value.length - visibleCards) * cardWidth;
+});
+
+const moveTopRated = (direction) => {
+  if (direction === 'next' && !isEndOfTopRated.value) {
+    topRatedPosition.value += cardWidth;
+  } else if (direction === 'prev' && topRatedPosition.value > 0) {
+    topRatedPosition.value -= cardWidth;
+  }
+};
+
+const movePopular = (direction) => {
+  if (direction === 'next' && !isEndOfPopular.value) {
+    popularPosition.value += cardWidth;
+  } else if (direction === 'prev' && popularPosition.value > 0) {
+    popularPosition.value -= cardWidth;
   }
 };
 
 onMounted(() => {
-  // API 요청 방식 수정
+  // Top Rated Movies API 요청
   axios.get('https://api.themoviedb.org/3/movie/top_rated', {
     headers: {
-      Authorization: `Bearer ${TMDB_KEY}`  // Bearer 토큰 방식으로 변경
+      Authorization: `Bearer ${TMDB_KEY}`
     },
     params: {
       language: 'ko-KR',
@@ -67,11 +147,27 @@ onMounted(() => {
     }
   })
   .then((response) => {
-    movies.value = response.data.results;
-    console.log('영화 데이터:', response.data);
+    topRatedMovies.value = response.data.results;
   })
   .catch((error) => {
-    console.error('API 요청 오류:', error);
+    console.error('Top Rated API 요청 오류:', error);
+  });
+
+  // Popular Movies API 요청
+  axios.get('https://api.themoviedb.org/3/movie/popular', {
+    headers: {
+      Authorization: `Bearer ${TMDB_KEY}`
+    },
+    params: {
+      language: 'ko-KR',
+      page: '1'
+    }
+  })
+  .then((response) => {
+    popularMovies.value = response.data.results;
+  })
+  .catch((error) => {
+    console.error('Popular API 요청 오류:', error);
   });
 });
 </script>
@@ -128,18 +224,47 @@ onMounted(() => {
   transform: scale(1.05);
 }
 
-/* 넷플릭스 스타일 버튼 */
-.carousel-btn {
+/* TOP 10 배지 */
+.top-badge {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 60px; /* 버튼 영역 넓히기 */
-  border: none;
-  background: rgba(0, 0, 0, 0.5); /* 반투명 검정 배경 */
-  cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 2;
-  padding: 0;
+  top: 10px;
+  left: 10px;
+  background: #e50914;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+  z-index: 1;
+}
+
+
+/* 순위 숫자 */
+/* .rank-number {
+  position: absolute;
+  left: -20px;
+  bottom: -20px;
+  font-size: 120px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  z-index: 0;
+  opacity: 0.8;
+} */
+
+/* 스타일 버튼 */
+.carousel-btn {
+ position: absolute;
+ top: 0;
+ bottom: 0;
+ width: 60px;
+ border: none;
+ background: transparent;
+ cursor: pointer;
+ z-index: 2;
+ padding: 0;
+ display: flex;
+ align-items: center;
+ justify-content: center;
 }
 
 .carousel-btn:hover {

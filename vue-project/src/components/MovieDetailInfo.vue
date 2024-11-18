@@ -6,15 +6,20 @@
             alt="영화 포스터"
             style="max-width: 300px;"/>
       <div class="container">
-          <h3>{{ movieDetail.title }}</h3>
-          <p>개봉일: {{ movieDetail.release_date }}</p>
-          <p>러닝타임: {{ movieDetail.runtime }}</p>
-          <p>TMDB 평점{{ movieDetail.vote_average }}</p>
+        <h3>{{ movieDetail.title }}</h3>
+        <p>개봉일: {{ movieDetail.release_date }}</p>
+        <p>러닝타임: {{ movieDetail.runtime }}</p>
+        <p>TMDB 평점{{ movieDetail.vote_average }}</p>
 
-          <button @click="toggleLike" class="btn btn-outline-danger">
-            <i class="fas fa-heart"></i>
-            좋아요 {{ likeCount }}
+        <div> 
+          <p v-if="movieDetail.like_count !== undefined">좋아요 수: {{ movieDetail.like_count }}</p>
+          <button @click="toggleLike" :class="{ 'liked': isLiked }">
+            <span v-if="isLiked">❤️</span>
+            <span v-else>🤍</span>
+            좋아요
           </button>
+        </div>
+
       </div>
       <hr>
       <div>
@@ -38,95 +43,70 @@
 </template>
 
 <script setup>
-import axios from "axios";
 import { onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
+import axios from 'axios';
+import api from '@/api';
+
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const route = useRoute();
 const ID = ref(route.params.movieId);
-// const movieDetail = ref([]);
-const movieDetail = ref({}); // 빈 배열([])이 아닌 빈 객체({})로 초기화
+
+const movieDetail = ref({like_count: 0});
+
 const likeCount = ref(0);    // 좋아요 수 상태 추가
 const isLiked = ref(false);  // 좋아요 상태 추가
 
-// onMounted(() => {
-//   axios
-//     .get(`https://api.themoviedb.org/3/movie/${route.params.movieId}?language=ko-KR`, {
-//       headers: {
-//         Authorization: `Bearer ${TMDB_KEY}`,
-//       },
-//     })
-//     .then((res) => {
-//       movieDetail.value = res.data;
-//       console.log(res.data);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
 
-// 로컬 스토리지에서 좋아요 상태 불러오기
-const loadLikeState = () => {
-  const storedLikes = localStorage.getItem('movieLikes');
-  if (storedLikes) {
-    const likes = JSON.parse(storedLikes);
-    if (likes[ID.value]) {
-      isLiked.value = true;
-      likeCount.value = likes[ID.value];
-    }
+
+const loadLikeState = async () => {
+  try {
+    const response = await api.get(`/movies/${route.params.movieId}/likes/`);
+    isLiked.value = response.data.is_liked;
+    movieDetail.value.like_count = response.data.count;
+  } catch (error) {
+    console.error('좋아요 상태 로드 실패:', error);
   }
 };
 
-// 좋아요 상태 저장하기
-const saveLikeState = () => {
-  const storedLikes = localStorage.getItem('movieLikes');
-  const likes = storedLikes ? JSON.parse(storedLikes) : {};
-  
-  if (isLiked.value) {
-    likes[ID.value] = likeCount.value;
-  } else {
-    delete likes[ID.value];
+const toggleLike = async () => {
+  try {
+    const response = await api.post(`/movies/${route.params.movieId}/likes/`);
+    isLiked.value = response.data.liked;
+    movieDetail.value.like_count = response.data.count;
+  } catch (error) {
+    console.error('좋아요 처리 실패:', error);
   }
-  
-  localStorage.setItem('movieLikes', JSON.stringify(likes));
-};
-
-// 좋아요 토글 함수
-const toggleLike = () => {
-  isLiked.value = !isLiked.value;
-  if (isLiked.value) {
-    likeCount.value += 1;
-  } else {
-    likeCount.value = Math.max(0, likeCount.value - 1);
-  }
-  saveLikeState();
 };
 
 onMounted(() => {
-  // 영화 정보 가져오기
-  axios
-    .get(`https://api.themoviedb.org/3/movie/${route.params.movieId}?language=ko-KR`, {
-      headers: {
-        Authorization: `Bearer ${TMDB_KEY}`,
-      },
-    })
-    .then((res) => {
-      movieDetail.value = res.data;
-      console.log(res.data);
-      // 영화 정보를 가져온 후 좋아요 상태 불러오기
-      loadLikeState();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+ axios
+   .get(`https://api.themoviedb.org/3/movie/${route.params.movieId}?language=ko-KR`, {
+     headers: {
+       Authorization: `Bearer ${TMDB_KEY}`,
+     },
+   })
+   .then((res) => {
+    const movieData = {
+      id: res.data.id,
+      title: res.data.title,
+      overview: res.data.overview,
+      release_date: res.data.release_date,
+      vote_count: res.data.vote_count,
+      vote_average: res.data.vote_average,
+      poster_path: res.data.poster_path
+    };
 
-// ID가 변경될 때마다 좋아요 상태 다시 불러오기
-watch(ID, () => {
-  loadLikeState();
-});
 
+    api.post('/movies/save/', movieData)  // 먼저 영화 저장
+     movieDetail.value = { ...res.data, like_count: 0 }; // 기존 데이터 유지하면서 like_count 추가
+     loadLikeState();
+    })
+   .catch((err) => {
+     console.log(err);
+   });
+});
 
 </script>
 
@@ -144,5 +124,10 @@ watch(ID, () => {
 .fa-youtube {
   color: #FF0000;  /* YouTube 빨간색 */
   font-size: 2rem;  /* 아이콘 크기 조절 */
+}
+
+
+.liked {
+ color: red;
 }
 </style>

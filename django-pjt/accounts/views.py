@@ -10,7 +10,7 @@ from rest_framework import status
 @permission_classes([AllowAny])
 def signup(request):
     password1 = request.data.get('password1')
-    password2 = request.data.get('passwordConfirmation')
+    password2 = request.data.get('password2')
 
     if password1 != password2:
         return Response({'error': '비밀번호가 불일치 합니다. 다시 입력해주세요.'}, status=status.HTTP_400_BAD_REQUEST)
