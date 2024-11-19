@@ -50,6 +50,7 @@ const router = createRouter({
       path: '/profile',
       name: 'ProfileView',
       component: ProfileView
+      // meta: { requiresAuth: true }  // 인증이 필요한 페이지
     },
     {
       path: '/movies',

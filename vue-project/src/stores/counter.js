@@ -34,73 +34,132 @@ export const useCounterStore = defineStore('counter', () => {
       })
   }
 
-  // 회원가입 요청 액션
-  const signUp = function (payload) {
-    const { firstName, username, password1, password2, email } = payload
 
-    axios({
-      method: 'post',
-      url: `${API_URL}/accounts/signup/`,
-      data: {
-        firstName, username, password1, password2, email
+  const signUp = async function (payload) {
+    try {
+      // 회원가입 요청
+      const signupResponse = await axios({
+        method: 'post',
+        url: `${API_URL}/api/v1/accounts/signup/`,
+        data: {
+          username: payload.username,
+          first_name: payload.firstName,
+          password1: payload.password1,
+          password2: payload.password2,
+          email: payload.Email
+        }
+      })
+      console.log('회원가입 성공:', signupResponse.data)
+      
+      // 성공하면 바로 로그인 시도
+      await logIn({
+        username: payload.username,
+        password: payload.password1
+      })
+    } catch (error) {
+      // 이미 회원가입이 성공한 경우에도 로그인 페이지로 이동
+      if (error.response?.status === 500) {
+        router.push({ name: 'LogInView' })
+      } else {
+        console.error('회원가입 실패:', error.response?.data)
+        alert('회원가입에 실패했습니다.')
       }
-    })
-      .then((res) => {
-        // console.log(res)
-        // console.log('회원가입 성공')
-        const password = password1
-        logIn({ username, password })
-      })
-      .catch((err) => {
-        console.log(err.response.data)
-        alert(err.response.data.error || '다시 확인해주세요!')
-        console.log('에러 응답:', err.response)
-        console.log('에러 데이터:', err.response.data)
-        console.log('에러 상태:', err.response.status)
-      })
-  }
-
-  // 로그인 요청 액션
-  const logIn = function (payload) {
-    // const username = payload.username
-    // const password1 = payload.password
-    const { username, password } = payload
-
-    axios({
-      method: 'post',
-      url: `${API_URL}/accounts/login/`,
-      data: {
-        username, password
-      }
-    })
-      .then((res) => {
-        token.value = res.data.key
-        router.push({ name: 'MainView' })
-        // console.log(res.data)
-        // console.log('로그인 성공')
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+    }
   }
   
-  // [추가기능] 로그아웃
+  const logIn = async function (payload) {
+    try {
+      const response = await axios({
+        method: 'post',
+        url: `${API_URL}/api/v1/auth/login/`,
+        data: {
+          username: payload.username,
+          password: payload.password
+        }
+      })
+      
+      // 로그인 성공 처리
+      token.value = response.data.key
+      console.log('로그인 성공, 토큰:', token.value)
+      
+      // 로그인 성공 후 페이지 이동
+      router.push({ name: 'MainView' }).catch((err) => {
+        console.error('페이지 이동 실패:', err)
+        // 페이지 이동이 실패하면 강제로 새로고침
+        window.location.href = '/'
+      })
+    } catch (error) {
+      console.error('로그인 실패:', error)
+      alert('로그인에 실패했습니다. 다시 시도해주세요.')
+      router.push({ name: 'LogInView' })
+    }
+  }
+
+
+  // 로그아웃 요청 액션
   const logOut = function () {
     axios({
       method: 'post',
-      url: `${API_URL}/accounts/logout/`,
+      url: `${API_URL}/api/v1/auth/logout/`,  // dj_rest_auth의 logout 경로
       headers: {
-        'Authorization': `Bearer ${token}`  // 토큰을 헤더에 추가
+        'Authorization': `Token ${token.value}`
       }
     })
       .then((res) => {
-        console.log(res.data)
         token.value = null
         router.push({ name: 'ArticleView' })
       })
       .catch((err) => {
-        console.log(err)
+        console.log('로그아웃 에러:', err.response?.data)
       })
   }
-  return { articles, API_URL, getArticles, signUp, logIn, token, isLogin, logOut }
+
+
+
+
+  // 프로필 정보 저장
+  const userProfile = ref(null)
+
+  // 프로필 정보 가져오기
+  const getProfile = async () => {
+    try {
+      const response = await axios({
+        method: 'get',
+        url: `${API_URL}/api/v1/accounts/profile/`,
+        headers: {
+          Authorization: `Token ${token.value}`
+        }
+      })
+      userProfile.value = response.data
+      console.log(response.data)
+    } catch (error) {
+      console.error('프로필 조회 실패:', error)
+    }
+  }
+
+  // 프로필 정보 업데이트
+  const updateProfile = async (profileData) => {
+    try {
+      const response = await axios({
+        method: 'put',
+        url: `${API_URL}/api/v1/accounts/profile/update/`,
+        headers: {
+          Authorization: `Token ${token.value}`
+        },
+        data: {
+          first_name: profileData.first_name,
+          email: profileData.email
+        }
+      })
+      userProfile.value = response.data
+      return true
+    } catch (error) {
+      console.error('프로필 업데이트 실패:', error)
+      return false
+    }
+  }
+
+
+  return { articles, API_URL, getArticles, signUp, logIn,
+     token, isLogin, logOut, userProfile, updateProfile, getProfile }
 }, { persist: true })

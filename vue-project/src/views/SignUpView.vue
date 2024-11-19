@@ -56,26 +56,27 @@ const store = useCounterStore()
 
 const signUp = function () {
   // 필수 입력값 확인
-  if ( !firstName.value || !firstName.value || !password1.value || !password2.value) {
-    alert('모든 필드를 입력해주세요.')
-    return
+  if (!firstName.value || !username.value || !password1.value || !password2.value) {
+    alert('모든 필드를 입력해주세요.');
+    return;
   }
 
   // 비밀번호 일치 여부 확인
   if (password1.value !== password2.value) {
-    alert('비밀번호가 일치하지 않습니다.')
-    return
+    alert('비밀번호가 일치하지 않습니다.');
+    return;
   }
 
   const payload = {
     firstName: firstName.value,
     username: username.value,
     password1: password1.value,
-    password2 : password2 .value,
+    password2: password2.value,
     Email: Email.value,
-  }
-  store.signUp(payload)
-}
+  };
+  console.log('전송할 데이터:', payload);
+  store.signUp(payload);
+};
 
 // 전체 이메일 주소 계산
 const Email = computed(() => {
