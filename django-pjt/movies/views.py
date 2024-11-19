@@ -13,7 +13,7 @@ from rest_framework.decorators import api_view
 def save_movie(request):
     data = request.data
     movie = Movie.objects.create(
-        id=data['id'],  # TMDB ID 사용
+        # id=data['id'],  # TMDB ID 사용
         title=data['title'],
         overview=data['overview'],
         release_date=data['release_date'],
@@ -27,8 +27,8 @@ def save_movie(request):
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
-def likes(request, pk):
-    movie = get_object_or_404(Movie, pk=pk)
+def likes(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
     
     if request.method == 'GET':
         is_liked = request.user in movie.like_users.all()

@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue'
+import { ref, computed} from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
@@ -13,8 +13,12 @@ export const useCounterStore = defineStore('counter', () => {
     } else {
       return true
     }
+
+    
+    
   })
   const router = useRouter()
+
 
   // DRF로 전체 게시글 요청을 보내고 응답을 받아 articles에 저장하는 함수
   const getArticles = function () {
@@ -90,30 +94,56 @@ export const useCounterStore = defineStore('counter', () => {
       })
     } catch (error) {
       console.error('로그인 실패:', error)
-      alert('로그인에 실패했습니다. 다시 시도해주세요.')
+      if (error.response?.status === 400) {
+        alert('가입된 정보가 없습니다. 회원가입을 해주세요.')
+      } else {
+        alert('로그인에 실패했습니다.')
+      }
       router.push({ name: 'LogInView' })
     }
   }
 
-
-  // 로그아웃 요청 액션
+  // 로그아웃
   const logOut = function () {
+    // 토큰이 없으면 바로 로그아웃 처리
+    if (!token.value) {
+      clearAllData()
+      router.push({ name: 'ArticleView' })
+      return
+    }
+  
     axios({
       method: 'post',
-      url: `${API_URL}/api/v1/auth/logout/`,  // dj_rest_auth의 logout 경로
+      url: `${API_URL}/api/v1/auth/logout/`,
       headers: {
         'Authorization': `Token ${token.value}`
       }
     })
       .then((res) => {
-        token.value = null
+        clearAllData()
         router.push({ name: 'ArticleView' })
       })
       .catch((err) => {
         console.log('로그아웃 에러:', err.response?.data)
+        // 에러가 나도 로그아웃 처리
+        clearAllData()
+        router.push({ name: 'ArticleView' })
       })
   }
 
+
+  
+  // onBeforeMount(() => {
+  //   clearAllData() // 페이지 로드 시 초기화
+  // })
+
+  const clearAllData = () => {
+    token.value = null
+    localStorage.clear()
+    document.cookie.split(";").forEach(c => {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/")
+    })
+  }
 
 
 
@@ -159,7 +189,30 @@ export const useCounterStore = defineStore('counter', () => {
     }
   }
 
+  // 회원탈퇴
+  const deleteAccount = async () => {
+    try {
+      await axios({
+        method: 'delete',
+        url: `${API_URL}/api/v1/accounts/delete/`,
+        headers: {
+          Authorization: `Token ${token.value}`
+        }
+      })
+      clearAllData() // 로그아웃 처리
+      router.push({ name: 'LogInView' }) // 로그인 페이지로 이동
+      return true
+    } catch (error) {
+      console.error('회원탈퇴 실패:', error)
+      return false
+    }
+  }
+
 
   return { articles, API_URL, getArticles, signUp, logIn,
-     token, isLogin, logOut, userProfile, updateProfile, getProfile }
-}, { persist: true })
+     token, isLogin, logOut, userProfile, updateProfile, getProfile, clearAllData, deleteAccount }
+}, {
+ persist: {
+   storage: sessionStorage, 
+   paths: ['token', 'userProfile']}
+ })

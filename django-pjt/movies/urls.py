@@ -12,7 +12,7 @@ urlpatterns = [
     # path('genres/<int:genre_pk>/', views.genre_movies, name='genre_movies'),
     
     # 사용자 관련 URL
-    path('<int:pk>/likes/', views.likes, name='likes'),
+    path('<int:movie_id>/likes/', views.likes, name='likes'),
 
     # 검색 및 추천
     path('search/', views.search_movies, name='search_movies'),

@@ -1,6 +1,12 @@
 <template>
   <div class="container">
-    <div class="row justify-content-center text-center mt-4">
+    
+   <div class="row justify-content-center text-center">
+      <div class="d-flex w-100 ">
+        <button @click="goToMain" class="back-button">
+          <span>← 메인으로</span>
+        </button>
+      </div>
       <img :src="`https://image.tmdb.org/t/p/w200${movieDetail.poster_path}`" 
             class="img-fluid rounded shadow mb-4" 
             alt="영화 포스터"
@@ -123,6 +129,17 @@ const loadMovieDetail = async () => {
 onMounted(() => {
   loadMovieDetail();
 });
+
+//뒤로가기
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const goToMain = () => {
+ router.push({ name: 'MainView' })
+}
+
+
 </script>
 
 <style scoped>
@@ -176,4 +193,22 @@ onMounted(() => {
 .like-button:hover {
   transform: scale(1.05);
 }
+
+/* 뒤로가기 버튼 */
+.back-button {
+ margin-top: 20px; /* 네브바 아래로 조정 */
+ padding: 10px 10px;
+ background-color: #4CAF50;
+ color: white;
+ border: none;
+ border-radius: 4px;
+ cursor: pointer;
+ font-size: 1rem;
+ align-self: flex-start; /* 왼쪽 정렬 */
+}
+
+.back-button:hover {
+ background-color: #45a049;
+}
+
 </style>

@@ -17,18 +17,18 @@
         <button v-if="!isEditing" @click="startEditing" class="edit-button">
           프로필 수정
         </button>
+        <button @click="deleteAccount" class="delete-button">회원탈퇴</button>
       </div>
 
       <!-- 오른쪽: 좋아요한 영화 그리드 -->
       <div class="liked-content">
         <h2>내가 좋아하는 영화</h2>
-        <div class="content-grid">
-          <div v-for="movie in likedMovies" :key="movie.id" class="movie-card">
-            <img 
-              :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" 
-              :alt="movie.title"
-              class="movie-poster"
-            >
+        <div v-if="likedMovies.length === 0" class="no-movies">
+            좋아요한 영화가 없습니다.
+        </div>
+        <div v-else class="content-grid">
+          <div v-for="movie in likedMovies" :key="movie.id" class="movie-card" @click="goToMovieDetail(movie.id)">
+            <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" :alt="movie.title" class="movie-poster">
           </div>
         </div>
       </div>
@@ -149,6 +149,16 @@ const fetchLikedMovies = async () => {
 }
 
 
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+const goToMovieDetail = (movieId) => {
+ router.push({ name: 'MovieDetail', params: { movieId }})
+}
+
+
+
+
 onMounted(async () => {
   try {
     await store.getProfile()
@@ -197,6 +207,19 @@ const submitUpdate = async () => {
     alert('프로필 업데이트에 실패했습니다.')
   }
 }
+
+const deleteAccount = async () => {
+  if (!confirm('정말 탈퇴하시겠습니까?')) return
+  
+  const success = await store.deleteAccount()
+  if (success) {
+    router.push({ name: 'LogInView' })
+    alert('회원탈퇴가 완료되었습니다.')
+  } else {
+    alert('회원탈퇴에 실패했습니다.')
+  }
+}
+
 </script>
 
 <style scoped>
@@ -241,6 +264,17 @@ const submitUpdate = async () => {
   font-size: 0.9em;
   color: #ccc;
 }
+
+.delete-button {
+ background-color: #dc3545;
+ color: white;
+ padding: 8px 16px;
+ border: none;
+ border-radius: 4px;
+ cursor: pointer;
+ margin-top: 10px;
+}
+
 
 .liked-content {
   flex: 1;

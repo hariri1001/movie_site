@@ -12,20 +12,21 @@
         
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
           
-          <!-- 검색창 추가 -->
-          <form class="d-flex me-auto" @submit.prevent="searchMovies">
-            <input 
-              class="form-control me-2" 
-              type="search" 
-              placeholder="영화 검색" 
-              aria-label="Search"
-              v-model="searchQuery"
-            >
-            <button class="btn btn-outline-light" type="submit">Search</button>
-          </form>
+          
 
 
           <ul class="navbar-nav mb-2 mb-lg-0">
+            <!-- 검색창 추가 -->
+            <form class="d-flex me-auto" @submit.prevent="searchMovies">
+              <input 
+                class="form-control me-2" 
+                type="search" 
+                placeholder="영화 검색" 
+                aria-label="Search"
+                v-model="searchQuery"
+              >
+              <button class="btn btn-outline-light" type="submit">Search</button>
+            </form>
             <li class="nav-item">
               <RouterLink class="nav-link" :to="{ name: 'MainView' }">Home</RouterLink>
             </li>
