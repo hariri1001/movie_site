@@ -6,7 +6,7 @@
     <div class="carousel-container">
       <div class="carousel">
         <div class="movie-cards" :style="{ transform: `translateX(-${popularPosition}px)` }">
-            <div class="movie-card" v-for="(movie, index) in topRatedMovies" :key="movie.id">
+            <div class="movie-card" v-for="(movie, index) in popularMovies" :key="movie.id">
                 <span class="top-badge">TOP 10</span>
                 <span class="rank-number">{{index + 1}}</span>
                 <RouterLink :to="{ name: 'MovieDetail', params: { movieId: movie.id }}" class="text-decoration-none">
@@ -34,35 +34,6 @@
     </div>
 
 
-
-    <h2 class="carousel-title">인기 상영작</h2>
-    <div class="carousel-container">
-      <div class="carousel">
-        <div class="movie-cards" :style="{ transform: `translateX(-${popularPosition}px)` }">
-          <div class="movie-card" v-for="movie in popularMovies" :key="movie.id">
-            <RouterLink :to="{ name: 'MovieDetail', params: { movieId: movie.id }}" class="text-decoration-none">
-              <div class="card">
-                <div class="poster-wrapper">
-                  <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
-                      class="card-img-top" 
-                      alt="movie poster">
-                </div>
-              </div>
-            </RouterLink>
-          </div>
-        </div>
-      </div>
-      <button class="carousel-btn prev" @click="movePopular('prev')" :disabled="popularPosition === 0">
-        <div class>
-          <i class="fas fa-chevron-left"></i>
-        </div>
-      </button>
-      <button class="carousel-btn next" @click="movePopular('next')" :disabled="isEndOfPopular">
-        <div class>
-          <i class="fas fa-chevron-right"></i>
-        </div>
-      </button>
-    </div>
 
     <!-- 평점 많이 받은 영화 -->
     <h2 class="carousel-title">최고 평점 영화</h2>
@@ -94,6 +65,14 @@
       </button>
     </div>
 
+
+
+
+
+
+
+
+    
   </div>
 </template>
 
@@ -239,24 +218,29 @@ onMounted(() => {
 
 
 /* 순위 숫자 */
-/* .rank-number {
+
+.poster {
+  position: relative;
+}
+
+
+.rank-number {
   position: absolute;
-  left: -20px;
-  bottom: -20px;
+  top: 200px;
   font-size: 120px;
   font-weight: bold;
-  color: white;
+  color: rgb(255, 255, 255);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  z-index: 0;
+  z-index: 1;
   opacity: 0.8;
-} */
+}
 
 /* 스타일 버튼 */
 .carousel-btn {
  position: absolute;
  top: 0;
  bottom: 0;
- width: 60px;
+ width: 100px;
  border: none;
  background: transparent;
  cursor: pointer;

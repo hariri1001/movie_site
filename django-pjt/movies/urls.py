@@ -8,14 +8,18 @@ urlpatterns = [
     path('save/', views.save_movie, name='save_movie'),
 
     # 장르 관련 URL
-    path('genres/', views.genre_list, name='genre_list'),
-    path('genres/<int:genre_pk>/', views.genre_movies, name='genre_movies'),
+    # path('genres/', views.genre_list, name='genre_list'),
+    # path('genres/<int:genre_pk>/', views.genre_movies, name='genre_movies'),
     
     # 사용자 관련 URL
     path('<int:pk>/likes/', views.likes, name='likes'),
 
     # 검색 및 추천
-    path('search/', views.movie_search, name='movie_search'),
-    # path('recommended/', views.recommended_movies, name='recommended_movies'),
+    path('search/', views.search_movies, name='search_movies'),
+    
+    # 영화 좋아요
+    path('liked-movies/', views.user_liked_movies, name='user_liked_movies'),
+
+
 ]
 

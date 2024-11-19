@@ -11,15 +11,20 @@
         </button>
         
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-          <!-- 영화 검색 기능 -->
-          <!-- <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
-          </form> -->
-          <form @submit.prevent="searchMovies" class="d-flex">
-            <input v-model="searchQuery" class="form-control me-2" type="search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+          
+          <!-- 검색창 추가 -->
+          <form class="d-flex me-auto" @submit.prevent="searchMovies">
+            <input 
+              class="form-control me-2" 
+              type="search" 
+              placeholder="영화 검색" 
+              aria-label="Search"
+              v-model="searchQuery"
+            >
+            <button class="btn btn-outline-light" type="submit">Search</button>
           </form>
+
+
           <ul class="navbar-nav mb-2 mb-lg-0">
             <li class="nav-item">
               <RouterLink class="nav-link" :to="{ name: 'MainView' }">Home</RouterLink>
@@ -53,28 +58,37 @@
 </template>
 
 <script setup>
+
+import axios from 'axios'
 import { useCounterStore } from '@/stores/counter'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const searchQuery = ref('')
+
 
 const store = useCounterStore()
 const logOut = function () {
   store.logOut()
 }
 
-import { ref } from 'vue'
-import axios from 'axios'
 
-const searchQuery = ref('')
-const movies = ref([])
-axios.defaults.baseURL = 'http://127.0.0.1:8000'
 const searchMovies = async () => {
-  try {
-    console.log(`검색 쿼리: ${searchQuery.value}`) // 디버깅용
-    const response = await axios.get(`/api/v1/movies/search/?q=${searchQuery.value}`)
-    movies.value = response.data
-  } catch (error) {
-    console.error(error)
+  if (searchQuery.value.trim()) {
+    try {
+      router.push({
+        name: 'SearchView',
+        query: { title: searchQuery.value }
+      })
+      searchQuery.value = '' // 검색 후 입력창 초기화
+    } catch (error) {
+      console.error('검색 중 오류 발생:', error)
+    }
   }
 }
+
+
+axios.defaults.baseURL = 'http://127.0.0.1:8000'
 
 </script>
 

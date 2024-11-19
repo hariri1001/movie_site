@@ -9,4 +9,5 @@ urlpatterns = [
     path('profile/update/', views.profile_update),  # 프로필 수정
     # path('profile/password/', views.change_password, name='change_password'),
     # path('profile/<int:user_id>/follow/', views.toggle_follow, name='toggle_follow'),
+
 ]

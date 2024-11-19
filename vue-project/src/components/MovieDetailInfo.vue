@@ -9,14 +9,16 @@
         <h3>{{ movieDetail.title }}</h3>
         <p>개봉일: {{ movieDetail.release_date }}</p>
         <p>러닝타임: {{ movieDetail.runtime }}</p>
-        <p>TMDB 평점{{ movieDetail.vote_average }}</p>
+        <p>TMDB 평점: {{ movieDetail.vote_average }}</p>
 
-        <div> 
-          <p v-if="movieDetail.like_count !== undefined">좋아요 수: {{ movieDetail.like_count }}</p>
-          <button @click="toggleLike" :class="{ 'liked': isLiked }">
-            <span v-if="isLiked">❤️</span>
-            <span v-else>🤍</span>
-            좋아요
+        <div class="like-section">
+          <button 
+            @click="toggleLike" 
+            class="like-button"
+            :class="{ 'liked': isLiked }"
+          >
+            <span class="like-icon">{{ isLiked ? '❤️' : '🤍' }}</span>
+            <span class="like-count">{{ likeCount }}</span>
           </button>
         </div>
 
@@ -43,51 +45,63 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import axios from 'axios';
 import api from '@/api';
 
-
 const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const route = useRoute();
-const ID = ref(route.params.movieId);
+const movieDetail = ref({});
+const likeCount = ref(0);
+const isLiked = ref(false);
 
-const movieDetail = ref({like_count: 0});
+// 영화 저장 함수
+const saveMovie = async (movieData) => {
+  try {
+    await api.post('/movies/save/', movieData);
+  } catch (error) {
+    console.error('영화 저장 실패:', error);
+  }
+};
 
-const likeCount = ref(0);    // 좋아요 수 상태 추가
-const isLiked = ref(false);  // 좋아요 상태 추가
-
-
-
+// 좋아요 상태 로드
 const loadLikeState = async () => {
   try {
     const response = await api.get(`/movies/${route.params.movieId}/likes/`);
     isLiked.value = response.data.is_liked;
-    movieDetail.value.like_count = response.data.count;
+    likeCount.value = response.data.like_count;
   } catch (error) {
     console.error('좋아요 상태 로드 실패:', error);
   }
 };
 
+// 좋아요 토글
 const toggleLike = async () => {
   try {
     const response = await api.post(`/movies/${route.params.movieId}/likes/`);
     isLiked.value = response.data.liked;
-    movieDetail.value.like_count = response.data.count;
+    likeCount.value = response.data.like_count;
   } catch (error) {
     console.error('좋아요 처리 실패:', error);
   }
 };
 
-onMounted(() => {
- axios
-   .get(`https://api.themoviedb.org/3/movie/${route.params.movieId}?language=ko-KR`, {
-     headers: {
-       Authorization: `Bearer ${TMDB_KEY}`,
-     },
-   })
-   .then((res) => {
+// 영화 상세 정보 로드
+const loadMovieDetail = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.themoviedb.org/3/movie/${route.params.movieId}?language=ko-KR`,
+      {
+        headers: {
+          Authorization: `Bearer ${TMDB_KEY}`,
+        },
+      }
+    );
+    
+    movieDetail.value = res.data;
+    
+    // 영화 데이터 저장
     const movieData = {
       id: res.data.id,
       title: res.data.title,
@@ -97,23 +111,25 @@ onMounted(() => {
       vote_average: res.data.vote_average,
       poster_path: res.data.poster_path
     };
+    
+    await saveMovie(movieData);
+    await loadLikeState();
+    
+  } catch (err) {
+    console.error('영화 상세 정보 로드 실패:', err);
+  }
+};
 
-
-    api.post('/movies/save/', movieData)  // 먼저 영화 저장
-     movieDetail.value = { ...res.data, like_count: 0 }; // 기존 데이터 유지하면서 like_count 추가
-     loadLikeState();
-    })
-   .catch((err) => {
-     console.log(err);
-   });
+onMounted(() => {
+  loadMovieDetail();
 });
-
 </script>
 
 <style scoped>
 .genre-badge {
   transition: background-color 0.3s ease;
 }
+
 .youtube-btn {
   background: none;
   border: none;
@@ -121,13 +137,43 @@ onMounted(() => {
   cursor: pointer;
   transition: transform 0.2s ease;
 }
+
 .fa-youtube {
-  color: #FF0000;  /* YouTube 빨간색 */
-  font-size: 2rem;  /* 아이콘 크기 조절 */
+  color: #FF0000;
+  font-size: 2rem;
 }
 
+.like-section {
+  margin: 1rem 0;
+}
 
-.liked {
- color: red;
+.like-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background: #f8f9fa;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 0 auto;
+}
+
+.like-button.liked {
+  background: #ffe0e0;
+}
+
+.like-icon {
+  font-size: 1.2em;
+}
+
+.like-count {
+  font-size: 0.9em;
+  margin-left: 4px;
+}
+
+.like-button:hover {
+  transform: scale(1.05);
 }
 </style>
