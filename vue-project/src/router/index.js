@@ -25,7 +25,7 @@ const router = createRouter({
       component: MainView,
     },
     {
-      path: "/",
+      path: "/articles",
       name: "ArticleView",
       component: ArticleView,
     },
@@ -35,7 +35,7 @@ const router = createRouter({
       component: DetailView,
     },
     {
-      path: "/create",
+      path: "/articles/create",
       name: "CreateView",
       component: CreateView,
     },
@@ -65,6 +65,7 @@ const router = createRouter({
       path: "/:movieId",
       name: "MovieDetail",
       component: MovieDetailView,
+      // 걱정
     },
     {
       path: "/search", // 검색 라우트 추가
@@ -72,17 +73,6 @@ const router = createRouter({
       component: SearchView,
     },
 
-
-    // 게시글(커멘트)
-    { path: "/articles", 
-      name: "ArticleView", 
-      component: ArticleView },
-    { path: "/articles/create", 
-      name: "CreateView", 
-      component: CreateView },
-    { path: "/articles/:id", 
-      name: "DetailView", 
-      component: DetailView },
   ],
 });
 
