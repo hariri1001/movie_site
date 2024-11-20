@@ -9,6 +9,7 @@ class Genre(models.Model):
         return self.name
 
 class Movie(models.Model):
+    tmdb_id = models.IntegerField(null=True)
     title = models.CharField(max_length=100) # 영화제목
     overview = models.TextField() # 영화줄거리
     release_date = models.DateField() # 개봉일
