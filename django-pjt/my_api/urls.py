@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/v1/accounts/', include('accounts.urls')), 
     path('accounts/', include('dj_rest_auth.urls')),
     path('accounts/signup/', include('dj_rest_auth.registration.urls')),
+    path('api/v1/', include('articles.urls')),  # Articles 앱의 URL 연결
 ]
