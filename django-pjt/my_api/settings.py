@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.kakao',
+    'allauth.socialaccount.providers.naver',
     'dj_rest_auth.registration',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -58,6 +61,36 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
+
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http'
+SOCIALACCOUNT_LOGIN_ON_GET = True
+LOGIN_REDIRECT_URL = 'http://localhost:5173'
+SOCIALACCOUNT_PROVIDERS = {
+    # 'google': {
+    #     'APP': {
+    #         'client_id': '구글_클라이언트_ID',
+    #         'secret': '구글_시크릿_키',
+    #     }
+    # },
+    'kakao': {
+        'APP': {
+            'client_id': '1163399',
+            'secret': '5ae2e5d4cfe58400f5be27ce7556fd20',
+        }
+    },
+    # 'naver': {
+    #     'APP': {
+    #         'client_id': '네이버_클라이언트_ID',
+    #         'secret': '네이버_시크릿_키',
+    #     }
+    # }
+}
+
 
 REST_FRAMEWORK = {
     # Authentication

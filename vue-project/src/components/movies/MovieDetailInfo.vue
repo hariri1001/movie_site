@@ -1,50 +1,73 @@
 <template>
-  <div class="container">
-    
-   <div class="row justify-content-center text-center">
-      <div class="d-flex w-100 ">
-        <button @click="goToMain" class="back-button">
-          <span>← 메인으로</span>
-        </button>
-      </div>
-      <img :src="`https://image.tmdb.org/t/p/w200${movieDetail.poster_path}`" 
-            class="img-fluid rounded shadow mb-4" 
-            alt="영화 포스터"
-            style="max-width: 300px;"/>
-      <div class="container">
-        <h3>{{ movieDetail.title }}</h3>
-        <p>개봉일: {{ movieDetail.release_date }}</p>
-        <p>러닝타임: {{ movieDetail.runtime }}</p>
-        <p>TMDB 평점: {{ movieDetail.vote_average }}</p>
-
-        <div class="like-section">
-          <button 
-            @click="toggleLike" 
-            class="like-button"
-            :class="{ 'liked': isLiked }"
-          >
-            <span class="like-icon">{{ isLiked ? '❤️' : '🤍' }}</span>
-            <span class="like-count">{{ likeCount }}</span>
-          </button>
+  <div class="container-fluid p-0">
+    <!-- Backdrop Image -->
+    <div class="backdrop" :style="`background-image: url(https://image.tmdb.org/t/p/original${movieDetail.backdrop_path})`">
+      <div class="backdrop-overlay">
+        <div class="container py-5">
+          <div class="row">
+            <!-- Back Button -->
+            <div class="col-12 mb-4">
+              <button @click="goToMain" class="back-button">
+                <span>← 메인으로</span>
+              </button>
+            </div>
+ 
+            <!-- Poster and Basic Info -->
+            <div class="col-md-4">
+              <img :src="`https://image.tmdb.org/t/p/w400${movieDetail.poster_path}`" 
+                   class="movie-poster img-fluid rounded shadow" 
+                   alt="영화 포스터"/>
+            </div>
+            
+            <div class="col-md-8 text-white">
+              <h1 class="movie-title">{{ movieDetail.title }}</h1>
+              <div class="movie-meta">
+                <p class="mb-2">감독: {{ director }}</p>
+                <p class="mb-2">개봉일: {{ movieDetail.release_date }}</p>
+                <p class="mb-2">러닝타임: {{ movieDetail.runtime }}분</p>
+                <p class="mb-2">평점: {{ movieDetail.vote_average }}</p>
+              </div>
+              
+              <!-- 장르 -->
+              <div class="genre-badge">
+                <span v-for="genre in movieDetail.genres" 
+                      :key="genre.id" 
+                      class="badge bg-primary me-2">
+                  # {{ genre.name }}
+                </span>
+              </div>
+ 
+              <div class="like-section">
+                <button @click="toggleLike" 
+                        class="like-button"
+                        :class="{ 'liked': isLiked }">
+                  <span class="like-icon">{{ isLiked ? '❤️' : '🤍' }}</span>
+                  <span class="like-count">{{ likeCount }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-
       </div>
-      <hr>
-      <div>
-          <h3>장르</h3>
-          <p v-for="genre in movieDetail.genres" :key="genre.id" class="badge bg-primary me-2 mb-2">{{ genre.name }}</p>
-      </div>
-      <hr>
-      <div>
-        <h3>출연 배우</h3>
+    </div>
+ 
+    <!-- Content Section -->
+    <div class="container mt-5">
+      <!-- Overview -->
+      <section class="mb-5">
+        <h2 class="section-title">줄거리</h2>
+        <p>{{ movieDetail.overview }}</p>
+      </section>
+ 
+      <!-- Cast -->
+      <section class="mb-5">
+        <h2 class="section-title">출연진</h2>
         <div class="cast-grid">
           <div v-for="actor in castList" :key="actor.id" class="cast-card">
             <div class="cast-image-container">
-              <img 
-                :src="actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : '/public/default_profile.png'"
-                :alt="actor.name"
-                class="cast-image"
-              />
+              <img :src="actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : '/public/default_profile.png'"
+                   :alt="actor.name"
+                   class="cast-image"/>
               <div class="cast-overlay">
                 <div class="cast-info">
                   <p class="actor-name">{{ actor.name }}</p>
@@ -54,22 +77,18 @@
             </div>
           </div>
         </div>
-      </div>
-      <hr>
-      <div>
-          <h3>줄거리</h3>
-          <p>{{ movieDetail.overview }}</p>
-      </div>
-      <hr>
-      <div>
-          <h3>공식 예고편</h3>
-          <button class="youtube-btn">
-            <i class="fa-brands fa-youtube"></i>
-          </button>
-      </div>
+      </section>
+ 
+      <!-- Trailer -->
+      <section class="mb-5">
+        <h2 class="section-title">공식 예고편</h2>
+        <button class="youtube-btn">
+          <i class="fa-brands fa-youtube"></i>
+        </button>
+      </section>
     </div>
   </div>
-</template>
+ </template>
 
 <script setup>
 import { onMounted, ref } from "vue";
@@ -161,7 +180,7 @@ const goToMain = () => {
 
 
 const castList = ref([]);
-
+const director = ref('');
 // 출연진 정보를 가져오는 함수
 const loadCastInfo = async () => {
   try {
@@ -175,6 +194,9 @@ const loadCastInfo = async () => {
     );
     // 주요 출연진만 필터링 (예: 상위 10명)
     castList.value = res.data.cast.slice(0, 10);
+    // 감독 정보 찾기
+    const directorInfo = res.data.crew.find(person => person.job === 'Director');
+    director.value = directorInfo ? directorInfo.name : '정보 없음';
   } catch (err) {
     console.error('출연진 정보 로드 실패:', err);
   }
@@ -196,7 +218,11 @@ onMounted(() => {
 
 <style scoped>
 .genre-badge {
-  transition: background-color 0.3s ease;
+  display: inline-block;
+  margin-bottom: 10px;
+  background-color: rgba(255,255,255,0.1);
+  border-radius: 20px;
+  font-size: 1.25rem;  /* 폰트 크기 변경 */
 }
 
 .youtube-btn {
@@ -212,8 +238,10 @@ onMounted(() => {
   font-size: 2rem;
 }
 
+/* 좋아요 */
 .like-section {
   margin: 1rem 0;
+  text-align: left; 
 }
 
 .like-button {
@@ -226,7 +254,7 @@ onMounted(() => {
   background: #f8f9fa;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin: 0 auto;
+  margin: 0;
 }
 
 .like-button.liked {
@@ -327,6 +355,44 @@ onMounted(() => {
   opacity: 0.8;
 }
 
+.backdrop {
+ position: relative;
+ background-size: cover;
+ background-position: center;
+ min-height: 600px;
+}
+
+.backdrop-overlay {
+ background: rgba(0, 0, 0, 0.7);
+ min-height: 600px;
+}
+
+.movie-poster {
+ max-width: 100%;
+ box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.section-title {
+ font-size: 2rem;
+ margin-bottom: 1.5rem;
+ color: #ede7e7;
+}
+
+.movie-title{
+  margin-bottom: 30px;
+  font-size: 3.5rem;
+  font-weight: 300;
+  line-height: 1.2;
+  text-align: left; /* 왼쪽 정렬 */
+  margin-left: 0;   /* 왼쪽 마진 제거 */
+}
+
+.movie-meta{
+  margin-bottom:  30px;
+  font-size: 1.25rem;
+}
+
+
 /* 호버 효과 */
 .cast-card:hover .cast-overlay {
   opacity: 1;
@@ -335,6 +401,7 @@ onMounted(() => {
 .cast-card:hover .cast-image {
   transform: scale(1.1);
 }
+
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
@@ -358,6 +425,7 @@ onMounted(() => {
     font-size: 0.8em;
   }
 }
+
 
 
 

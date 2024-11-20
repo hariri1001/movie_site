@@ -11,7 +11,7 @@
             :class="selectedGenre && selectedGenre.id === genre.id ? 
               'bg-white text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'"
           >
-            #{{ genre.name }}
+            # {{ genre.name }}
           </button>
         </div>
       </div>
@@ -19,10 +19,11 @@
       <!-- 영화 목록 -->
       <div v-if="selectedGenre" class="mt-8">
         <div class="grid-layout">
-          <div 
+          <RouterLink
             v-for="movie in movies" 
             :key="movie.id"
             class="movie-card"
+            :to="{ name: 'MovieDetail', params: { movieId: movie.id }}"
           >
             <img 
               v-if="movie.poster_path"
@@ -31,7 +32,7 @@
               class="poster-image"
             />
             <div class="movie-title">{{ movie.title }}</div>
-          </div>
+          </RouterLink>
         </div>
       </div>
   

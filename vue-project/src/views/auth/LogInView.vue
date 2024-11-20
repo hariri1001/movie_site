@@ -19,6 +19,7 @@
         <RouterLink :to="{ name: 'SignUpView' }">회원가입</RouterLink>
      </div>
     </form>
+    <SocialLogin />
   </div>
 </template>
 
@@ -26,6 +27,7 @@
 import { ref } from 'vue'
 import { useCounterStore } from '@/stores/counter'
 import { useRouter } from 'vue-router'
+import SocialLogin from '@/components/Auth/SocialLogIn.vue'
 
 const username = ref(null)
 const password = ref(null)
