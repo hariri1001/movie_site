@@ -4,18 +4,7 @@
     <div class="profile-header">
       <!-- 왼쪽: 프로필 정보 -->
       <div class="profile-info">
-
-
-        <!-- 프로필이미지 업로드 -->
-        <div class="profile-image-section">
-          <img :src="store.userProfile?.profile_image ? `${store.API_URL}${store.userProfile.profile_image}` : 
-              '/public/default_profile.png'" alt="프로필 이미지" class="profile-image">
-          <input type="file" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none">
-          <button @click="$refs.fileInput.click()">이미지 변경</button>
-        </div>
-
-
-        
+        <div class="profile-image"></div>
         <p class="username">{{ store.userProfile?.username }}</p>
         
         <div class="stats">
@@ -25,7 +14,6 @@
           <p>followers: 0</p>
           <p>following: 0</p>
         </div>
-
         <button v-if="!isEditing" @click="startEditing" class="edit-button">
           프로필 수정
         </button>
@@ -51,18 +39,19 @@
       
     </div>
 
-    <!-- 하단: 작성한 코멘트 섹션 -->
     <div class="comments-section">
-      <h2>내가 작성한 코멘트들</h2>
-      <div class="comments-grid">
-        <!-- 추후 코멘트 데이터 연동 -->
-        <div class="comment-card" v-for="i in 3" :key="i">
-          <div class="comment-content">
-            코멘트 내용이 들어갈 자리입니다
-          </div>
-        </div>
+  <h2>내가 작성한 게시글</h2>
+  <div class="comments-grid">
+    <div class="comment-card" v-for="article in userArticles" :key="article.id">
+      <div class="comment-content">
+        <h3>{{ article.title }}</h3>
+        <p>{{ article.content }}</p>
+        <button @click="goToArticleDetail(article.id)">자세히 보기</button>
       </div>
     </div>
+  </div>
+</div>
+
 
     <!-- 프로필 수정 폼 -->
     <form v-if="isEditing" @submit.prevent="submitUpdate" class="profile-form">
@@ -100,166 +89,124 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useCounterStore } from '@/stores/counter'
-import axios from 'axios'
+import { ref, onMounted } from 'vue';
+import { useCounterStore } from '@/stores/counter';
+import axios from 'axios';
+import { useRouter } from 'vue-router';
 
-const store = useCounterStore()
-const isEditing = ref(false)
-const error = ref(null) //추가
+const store = useCounterStore();
+const isEditing = ref(false);
+const error = ref(null);
 const editForm = ref({
   first_name: '',
-  email: ''
-})
-const likedMovies = ref([])
+  email: '',
+});
+const likedMovies = ref([]);
+const userArticles = ref([]); // 내가 작성한 게시글 데이터를 저장
+const router = useRouter();
 
-
-// axios 인스턴스 생성
+// Axios 인스턴스 생성
 const api = axios.create({
   baseURL: 'http://localhost:8000',
-  withCredentials: true,  // credentials 포함
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
-  }
-})
+  },
+});
 
 // 요청 인터셉터 추가
-api.interceptors.request.use(config => {
-  const token = store.token
+api.interceptors.request.use((config) => {
+  const token = store.token;
   if (token) {
-    config.headers.Authorization = `Token ${token}`  // 또는 Bearer ${token}
+    config.headers.Authorization = `Token ${token}`;
   }
-  return config
-})
+  return config;
+});
 
+// 좋아요한 영화 가져오기
 const fetchLikedMovies = async () => {
   try {
-    error.value = null
-    console.log('Fetching liked movies...')
-    // URL 경로 수정
-    const response = await api.get('/movies/liked-movies/')
-    console.log('Response:', response.data)
-    likedMovies.value = response.data
+    error.value = null;
+    const response = await api.get('/movies/liked-movies/');
+    likedMovies.value = response.data;
   } catch (err) {
-    console.error('좋아요한 영화를 불러오는데 실패했습니다:', err)
-    if (err.response) {
-      const status = err.response.status
-      if (status === 404) {
-        error.value = 'API 엔드포인트를 찾을 수 없습니다. URL을 확인해주세요.'
-      } else if (status === 401) {
-        error.value = '인증이 필요합니다. 로그인을 해주세요.'
-      } else {
-        error.value = `서버 오류 (${status}): ${err.response.data.message || '알 수 없는 오류가 발생했습니다.'}`
-      }
-      console.error('Response data:', err.response.data)
-    } else if (err.request) {
-      error.value = '서버에 연결할 수 없습니다.'
-    } else {
-      error.value = '요청 설정 중 오류가 발생했습니다.'
-    }
+    console.error("좋아요한 영화를 불러오는데 실패했습니다:", err);
   }
-}
+};
 
+// 사용자 게시글 가져오기
+const fetchUserArticles = async () => {
+  try {
+    error.value = null;
+    const response = await api.get('/api/v1/articles/user/');
+    userArticles.value = response.data;
+  } catch (err) {
+    console.error("사용자 게시글 데이터를 불러오는데 실패했습니다:", err);
+  }
+};
 
-import { useRouter } from 'vue-router'
-const router = useRouter()
-
+// 상세보기 이동
 const goToMovieDetail = (movieId) => {
- router.push({ name: 'MovieDetail', params: { movieId }})
-}
+  router.push({ name: 'MovieDetail', params: { movieId } });
+};
 
+const goToArticleDetail = (articleId) => {
+  router.push({ name: 'DetailView', params: { id: articleId } });
+};
 
-onMounted(() => {
-  store.getProfile()
-  fetchLikedMovies()
-})
+// 페이지 로드 시 데이터 가져오기
+onMounted(async () => {
+  try {
+    await store.getProfile();
+    await fetchLikedMovies();
+    await fetchUserArticles();
+  } catch (err) {
+    console.error("데이터를 불러오는데 실패했습니다:", err);
+  }
+});
 
+// 프로필 수정 관련 함수
 const startEditing = () => {
   editForm.value = {
     first_name: store.userProfile?.first_name || '',
-    email: store.userProfile?.email || ''
-  }
-  isEditing.value = true
-}
+    email: store.userProfile?.email || '',
+  };
+  isEditing.value = true;
+};
 
 const cancelEditing = () => {
-  isEditing.value = false
-}
+  isEditing.value = false;
+};
 
 const submitUpdate = async () => {
-  // 입력값 검증
   if (!editForm.value.email) {
-    alert('이메일은 필수 입력값입니다.')
-    return
+    alert("이메일은 필수 입력값입니다.");
+    return;
   }
-
   if (editForm.value.newPassword !== editForm.value.confirmPassword) {
-    alert('새 비밀번호와 비밀번호 확인이 일치하지 않습니다.')
-    return
+    alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+    return;
   }
-
-  // store의 updateProfile 함수 호출 시 editForm 데이터 전달
-  const success = await store.updateProfile(editForm.value)
-  
+  const success = await store.updateProfile(editForm.value);
   if (success) {
-    isEditing.value = false
-    alert('프로필이 성공적으로 업데이트되었습니다.')
+    isEditing.value = false;
+    alert("프로필이 성공적으로 업데이트되었습니다.");
   } else {
-    alert('프로필 업데이트에 실패했습니다.')
+    alert("프로필 업데이트에 실패했습니다.");
   }
-}
+};
 
-// 회원탈퇴
+// 계정 삭제
 const deleteAccount = async () => {
-  if (!confirm('정말 탈퇴하시겠습니까?')) return
-  
-  const success = await store.deleteAccount()
+  if (!confirm("정말 탈퇴하시겠습니까?")) return;
+  const success = await store.deleteAccount();
   if (success) {
-    router.push({ name: 'LogInView' })
-    alert('회원탈퇴가 완료되었습니다.')
+    router.push({ name: 'LogInView' });
+    alert("회원탈퇴가 완료되었습니다.");
   } else {
-    alert('회원탈퇴에 실패했습니다.')
+    alert("회원탈퇴에 실패했습니다.");
   }
-}
-
-
-// 프로필 이미지 상태 관리
-const defaultImage = '/public/default_profile.png'
-
-// 파일 입력 참조
-const fileInput = ref(null)
-
-// 이미지 업로드 처리 함수
-const handleImageUpload = async (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-
-  const formData = new FormData()
-  formData.append('image', file)
-
-  try {
-    const response = await axios.post(
-      `${store.API_URL}/api/v1/accounts/profile/image/`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Token ${store.token}`,
-        },
-      }
-    )
-    console.log('이미지 업로드 성공:', response.data)
-    // 프로필 정보 새로고침
-    await store.getProfile()
-  } catch (error) {
-    console.error('이미지 업로드 실패:', error)
-  }
-}
-
-
-
-
-
+};
 </script>
 
 <style scoped>
@@ -285,47 +232,16 @@ const handleImageUpload = async (event) => {
   align-items: center;
 }
 
-
-
-/* 이미지 업로드 스타일 */
-.profile-image-section {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;  /* 이미지와 버튼 사이의 간격 */
-  margin-bottom: 20px;  /* username과의 간격 */
-}
-
 .profile-image {
-  width: 170px;  /* 너비와 높이를 같게 설정하여 완벽한 원형 유지 */
-  height: 170px;
-  border-radius: 50%;  /* 원형으로 만들기 */
-  object-fit: cover;
-  border: 2px solid #4CAF50;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-color: #333;
+  margin-bottom: 15px;
 }
-
-.image-upload-button {
-  text-align: center;
-}
-
-button {
-  padding: 6px 12px;  /* 버튼 크기 약간 축소 */
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9em;
-}
-
-button:hover {
-  background-color: #45a049;
-}
-
 
 .username {
   font-size: 1.2em;
-  margin-top: 10px;
   margin-bottom: 10px;
 }
 
