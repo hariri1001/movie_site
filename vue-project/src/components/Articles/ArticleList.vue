@@ -10,8 +10,8 @@
 </template>
 
 <script setup>
-import ArticleListItem from '@/components/ArticleListItem.vue'
-import { useCounterStore } from '@/stores/counter'
+import { useCounterStore } from '@/stores/counter';
+import ArticleListItem from '@/components/Articles/ArticleListItem.vue';
 
-const store = useCounterStore()
+const store = useCounterStore();
 </script>

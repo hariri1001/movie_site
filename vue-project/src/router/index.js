@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from "vue-router";
 import MainView from "@/views/movies/MainView.vue";
-import ArticleView from "@/views/ArticleView.vue";
-import DetailView from "@/views/DetailView.vue";
-import CreateView from "@/views/CreateView.vue";
+import ArticleView from "@/views/articles/ArticleView.vue";
+import DetailView from "@/views/articles/DetailView.vue";
+import CreateView from "@/views/articles/CreateView.vue";
 import { useCounterStore } from "@/stores/counter";
 
 // Auth
@@ -68,6 +68,15 @@ const router = createRouter({
       name: "SearchView",
       component: SearchView,
     },
+    { path: "/articles", 
+      name: "ArticleView", 
+      component: ArticleView },
+    { path: "/articles/create", 
+      name: "CreateView", 
+      component: CreateView },
+    { path: "/articles/:id", 
+      name: "DetailView", 
+      component: DetailView },
   ],
 });
 
