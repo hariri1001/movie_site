@@ -96,6 +96,7 @@ const toggleLike = async () => {
 // 영화 상세 정보 로드
 const loadMovieDetail = async () => {
   try {
+    console.log('전달받은 movie ID:', route.params.movieId); // 디버깅용 로그 추가
     const res = await axios.get(
       `https://api.themoviedb.org/3/movie/${route.params.movieId}?language=ko-KR`,
       {
@@ -109,7 +110,7 @@ const loadMovieDetail = async () => {
     
     // 영화 데이터 저장
     const movieData = {
-      id: res.data.id,
+      tmdb_id: res.data.id,
       title: res.data.title,
       overview: res.data.overview,
       release_date: res.data.release_date,

@@ -12,16 +12,18 @@ from rest_framework.decorators import api_view
 @permission_classes([IsAuthenticated])
 def save_movie(request):
     data = request.data
-    movie = Movie.objects.create(
-        tmdb_id=data['id'],  # TMDB ID 사용
-        title=data['title'],
-        overview=data['overview'],
-        release_date=data['release_date'],
-        vote_count=data['vote_count'],
-        vote_average=data['vote_average'],
-        poster_path=data['poster_path']
+    movie, created = Movie.objects.get_or_create(
+        tmdb_id=data['tmdb_id'],  # 여기를 수정
+        defaults={
+            'title': data['title'],
+            'overview': data['overview'],
+            'release_date': data['release_date'],
+            'vote_count': data['vote_count'],
+            'vote_average': data['vote_average'],
+            'poster_path': data['poster_path']
+        }
     )
-    return Response({'message': 'Movie saved'})
+    return Response({'message': 'Movie saved', 'movie_id': movie.tmdb_id})
 
 
 

@@ -27,7 +27,7 @@
             좋아요한 영화가 없습니다.
         </div>
         <div v-else class="content-grid">
-          <div v-for="movie in likedMovies" :key="movie.id" class="movie-card" @click="goToMovieDetail(movie.id)">
+          <div v-for="movie in likedMovies" :key="movie.id" class="movie-card" @click="goToMovieDetail(movie.tmdb_id)">
             <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" :alt="movie.title" class="movie-poster">
           </div>
         </div>
