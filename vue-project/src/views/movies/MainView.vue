@@ -1,7 +1,8 @@
 <template>
     <div>
         <MovieVideo/>
-        <MovieListView/>    
+        <MovieListView/>
+        <GenreMovies/>
     </div>
     
 </template>
@@ -10,6 +11,7 @@
 
 import MovieListView from './MovieListView.vue';
 import MovieVideo from '@/components/movies/MovieVideo.vue';
+import GenreMovies from '@/components/movies/GenreMovies.vue';
 
 </script>
 

@@ -21,7 +21,3 @@ class Movie(models.Model):
     
     def __str__(self):
        return self.title
-
-
-class Rank(models.Model):
-    pass

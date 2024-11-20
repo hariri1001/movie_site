@@ -13,10 +13,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = get_user_model()
         fields = ('username', 'first_name', 'email', 'password1', 'password2')
 
-    # def validate(self, data):
-    #     if data['password1'] != data['password2']:
-    #         raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
-    #     return data        
+      
     def create(self, validated_data):
             # 비밀번호 일치 검증
             if validated_data['password1'] != validated_data['password2']:

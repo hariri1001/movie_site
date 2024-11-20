@@ -8,8 +8,7 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),  # 프로필 조회
     path('profile/update/', views.profile_update),  # 프로필 수정
     path('delete/', views.delete_account, name='delete'), # 회원 탈퇴
-    # path('profile/password/', views.change_password, name='change_password'),
-    # path('profile/<int:user_id>/follow/', views.toggle_follow, name='toggle_follow'),
-    path('profile/image/', views.profile_image_upload, name='profile-image-upload'),
+    # path('profile/password/', views.change_password, name='change_password'), # 패스워드 변경
+    path('profile/image/', views.profile_image_upload, name='profile-image-upload'), # 프로필 이미지 업로드
 
 ]

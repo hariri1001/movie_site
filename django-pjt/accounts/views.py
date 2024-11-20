@@ -6,6 +6,7 @@ from rest_framework.response import Response
 
 from rest_framework import status
 
+# 회원가입
 @api_view(['POST'])
 def signup(request):
     print('회원가입 요청 데이터:', request.data)  # 데이터 확인
@@ -17,6 +18,7 @@ def signup(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# 회원탈퇴
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_account(request):
@@ -24,6 +26,7 @@ def delete_account(request):
     user.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
+# 프로필
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def profile_view(request):
@@ -31,6 +34,7 @@ def profile_view(request):
     print('프로필 데이터:', serializer.data)  # 데이터 확인용 로그
     return Response(serializer.data)
 
+#프로필 수정
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def profile_update(request):
@@ -43,6 +47,7 @@ def profile_update(request):
     return Response(serializer.errors, status=400)
 
 
+# 프로필 이미지 업로드
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def profile_image_upload(request):

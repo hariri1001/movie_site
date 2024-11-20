@@ -1,9 +1,9 @@
-from .models import Movie
+from .models import Movie, Genre
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
-from .serializers import MovieSerializer
+from .serializers import MovieSerializer, GenreSerializer
 from rest_framework.decorators import api_view
 
 
@@ -84,12 +84,12 @@ def search_movies(request):
 
 
 
-# # 장르 목록
-# @api_view(['GET'])
-# def genre_list(request):
-#     genres = Genre.objects.all()
-#     serializer = GenreSerializer(genres, many=True)
-#     return Response(serializer.data)
+# 장르 목록
+@api_view(['GET'])
+def genre_list(request):
+    genres = Genre.objects.all()
+    serializer = GenreSerializer(genres, many=True)
+    return Response(serializer.data)
 
 # # 특정 장르의 영화 목록
 # @api_view(['GET'])
@@ -97,3 +97,22 @@ def search_movies(request):
 #     movies = Movie.objects.filter(genre_ids=genre_pk)
 #     serializer = MovieSerializer(movies, many=True)
 #     return Response(serializer.data)
+
+
+
+
+
+# 특정 장르의 영화 목록
+@api_view(['GET'])
+def genre_movies(request):
+    genre_id = request.GET.get('genre_id')
+    
+    # 전체 영화 또는 특정 장르 영화 필터링
+    movies = Movie.objects.filter(genres=genre_id)
+    # 영화 목록 생성
+    movie_list = [{
+        'title': movie.title,
+        'genre': movie.genres.name,  # genres 필드 사용
+    } for movie in movies]
+    
+    return Response({'movies': movie_list})

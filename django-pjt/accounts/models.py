@@ -24,6 +24,7 @@ class LikedMovie(models.Model):
     def __str__(self):
         return f'{self.user.username} liked {self.movie.title}'  # LikedMovie 인스턴스의 문자열 표현 추가
     
-    
+
+# 영화id와 TMDB의 id 중복 이슈
 class Movie(models.Model):
    id = models.IntegerField(primary_key=True)
