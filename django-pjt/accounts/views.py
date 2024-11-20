@@ -38,6 +38,13 @@ def profile_view(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def profile_update(request):
+    user = request.user
+    print('받은 데이터:', request.data)
+    
+    # 비밀번호 수정 처리
+    if 'password' in request.data and request.data['password']:
+        user.set_password(request.data['password'])
+
     serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
     print('받은 데이터:', request.data)
     if serializer.is_valid():

@@ -31,7 +31,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    # 비밀번호 수정시 필요
+    password = serializers.CharField(write_only=True, required=False)
+
     class Meta:
         model = get_user_model()
-        fields = ('id', 'username', 'email', 'first_name', 'profile_image')
+        fields = ('id', 'username', 'email', 'first_name', 'profile_image', 'password')
         read_only_fields = ('username',)
+        
+    # 비밀번호 수정
+    def update(self, instance, validated_data):
+        # 비밀번호 처리
+        if 'password' in validated_data:
+            instance.set_password(validated_data.pop('password'))
+        
+        # 나머지 필드 업데이트
+        return super().update(instance, validated_data)

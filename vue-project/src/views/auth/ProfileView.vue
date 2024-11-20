@@ -15,7 +15,7 @@
           <p>following: 0</p>
         </div>
         <button v-if="!isEditing" @click="startEditing" class="edit-button">
-          프로필 수정
+          회원 정보 수정
         </button>
         <button @click="deleteAccount" class="delete-button">회원탈퇴</button>
       </div>

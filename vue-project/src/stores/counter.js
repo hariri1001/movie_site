@@ -1,4 +1,4 @@
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { useRouter } from "vue-router";
@@ -7,10 +7,9 @@ export const useCounterStore = defineStore("counter", () => {
   const articles = ref([]); // 전체 게시글 목록
   const currentArticle = ref(null); // 현재 상세 보기 중인 게시글
   const API_URL = "http://127.0.0.1:8000";
-  const token = ref(null);
+  const token = ref(sessionStorage.getItem('userToken') || null);
   const router = useRouter();
 
-  const isLogin = computed(() => !!token.value);
 
   // **게시글 관련 메서드**
   const getArticles = async () => {
@@ -23,7 +22,6 @@ export const useCounterStore = defineStore("counter", () => {
       console.error('게시글 목록 불러오기 실패:', error.response?.data || error);
     }
   };
-
   const getArticleById = async (articleId) => {
     try {
       const response = await axios.get(`${API_URL}/api/v1/articles/${articleId}/`, {
@@ -34,8 +32,6 @@ export const useCounterStore = defineStore("counter", () => {
       console.error('게시글 상세 불러오기 실패:', error.response?.data || error);
     }
   };
-
-
   // 새 게시글 작성
   const createArticle = async (payload) => {
     try {
@@ -58,7 +54,8 @@ export const useCounterStore = defineStore("counter", () => {
     }
   };
 
-  // **인증 관련 메서드**
+  //** 유저 기능 **
+  // 회원가입 메서드
   const signUp = async function (payload) {
     try {
       const signupResponse = await axios({
@@ -83,6 +80,31 @@ export const useCounterStore = defineStore("counter", () => {
     }
   };
 
+  // 토큰 변경 감지 및 저장
+  watch(() => token.value, (newToken) => {
+    if (newToken) {
+      sessionStorage.setItem('userToken', newToken);
+    } else {
+      sessionStorage.removeItem('userToken');
+    }
+  });
+
+  // 페이지 로드 시 토큰 확인
+  const checkAuth = async () => {
+    const storedToken = sessionStorage.getItem('userToken');
+    if (storedToken) {
+      token.value = storedToken;
+      try {
+        await getProfile();
+      } catch (error) {
+        clearAllData();
+      }
+    }
+  };
+
+
+  const isLogin = computed(() => !!token.value);
+  // 로그인 메서드
   const logIn = async function (payload) {
     try {
       const response = await axios({
@@ -94,7 +116,8 @@ export const useCounterStore = defineStore("counter", () => {
         },
       });
       token.value = response.data.key;
-      console.log("로그인 성공:", token.value);
+      sessionStorage.setItem('userToken', response.data.key);
+      await getProfile();
       router.push({ name: "MainView" });
     } catch (error) {
       console.error("로그인 실패:", error);
@@ -102,6 +125,14 @@ export const useCounterStore = defineStore("counter", () => {
     }
   };
 
+  const clearAllData = () => {
+    token.value = null;
+    sessionStorage.removeItem('userToken');
+    userProfile.value = null;
+  };
+
+
+  // 로그아웃 메서드
   const logOut = function () {
     if (!token.value) {
       clearAllData();
@@ -127,17 +158,21 @@ export const useCounterStore = defineStore("counter", () => {
       });
   };
 
-  const clearAllData = () => {
-    token.value = null;
-    localStorage.clear();
-    document.cookie.split(";").forEach((c) => {
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+
+
+  if (typeof window !== 'undefined') {
+    // 페이지 닫힐 때
+    window.addEventListener('beforeunload', () => {
+      if (!document.hidden) {  // 새로고침이 아닌 경우만
+        localStorage.removeItem('userToken');
+      }
     });
-  };
+  }
+
 
   // **프로필 관련 메서드**
   const userProfile = ref(null);
-
+ // 프로필 조회(생성)
   const getProfile = async () => {
     try {
       const response = await axios({
@@ -153,6 +188,7 @@ export const useCounterStore = defineStore("counter", () => {
     }
   };
 
+  // 프로필 수정
   const updateProfile = async (profileData) => {
     try {
       const response = await axios({
@@ -164,6 +200,7 @@ export const useCounterStore = defineStore("counter", () => {
         data: {
           first_name: profileData.first_name,
           email: profileData.email,
+          password: profileData.newPassword,
         },
       });
       userProfile.value = response.data;
@@ -174,6 +211,7 @@ export const useCounterStore = defineStore("counter", () => {
     }
   };
 
+  // 회원탈퇴
   const deleteAccount = async () => {
     try {
       await axios({
@@ -191,6 +229,8 @@ export const useCounterStore = defineStore("counter", () => {
       return false;
     }
   };
+
+  // **게시글 수정/삭제/토글 메서드 **
   const deleteArticle = async function (articleId) {
     try {
       await axios.delete(`${API_URL}/api/v1/articles/${articleId}/`, {
@@ -269,5 +309,6 @@ export const useCounterStore = defineStore("counter", () => {
     userProfile,
     getProfile,
     toggleArticleLike,
+    checkAuth,
   };
 });
