@@ -15,6 +15,7 @@ import SearchView from "@/views/movies/SearchView.vue";
 import MovieListView from "@/views/movies/MovieListView.vue";
 import MovieDetailView from "@/views/movies/MovieDetailView.vue";
 
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -53,6 +54,8 @@ const router = createRouter({
       name: "ProfileView",
       component: ProfileView,
     },
+
+    // 영화
     {
       path: "/movies",
       name: "MovieList",
@@ -68,6 +71,9 @@ const router = createRouter({
       name: "SearchView",
       component: SearchView,
     },
+
+
+    // 게시글(커멘트)
     { path: "/articles", 
       name: "ArticleView", 
       component: ArticleView },

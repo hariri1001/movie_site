@@ -6,7 +6,8 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     # 유저가 팔로우 하는 사람들
     followings = models.ManyToManyField('self', symmetrical=False, related_name='followers')
-
+    profile_image = models.ImageField(upload_to='profile_images/', null=True, blank=True)
+    
     def get_followers_count(self):
         return self.followers.count()
     

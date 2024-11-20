@@ -10,5 +10,6 @@ urlpatterns = [
     path('delete/', views.delete_account, name='delete'), # 회원 탈퇴
     # path('profile/password/', views.change_password, name='change_password'),
     # path('profile/<int:user_id>/follow/', views.toggle_follow, name='toggle_follow'),
+    path('profile/image/', views.profile_image_upload, name='profile-image-upload'),
 
 ]

@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <!-- 현재 인기 상영작 -->
-    
     <h2 class="carousel-title">인기 상영작</h2>
     <div class="carousel-container">
       <div class="carousel">

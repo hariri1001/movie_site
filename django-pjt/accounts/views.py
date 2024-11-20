@@ -42,3 +42,17 @@ def profile_update(request):
     print('유효성 검사 실패:', serializer.errors)  # 에러 확인
     return Response(serializer.errors, status=400)
 
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def profile_image_upload(request):
+    if 'image' not in request.FILES:
+        return Response({'error': '이미지가 제공되지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    user = request.user
+    user.profile_image = request.FILES['image']
+    user.save()
+    
+    serializer = UserProfileSerializer(user)
+    return Response(serializer.data)
+

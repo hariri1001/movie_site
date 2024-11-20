@@ -4,7 +4,18 @@
     <div class="profile-header">
       <!-- 왼쪽: 프로필 정보 -->
       <div class="profile-info">
-        <div class="profile-image"></div>
+
+
+        <!-- 프로필이미지 업로드 -->
+        <div class="profile-image-section">
+          <img :src="store.userProfile?.profile_image ? `${store.API_URL}${store.userProfile.profile_image}` : 
+              '/public/default_profile.png'" alt="프로필 이미지" class="profile-image">
+          <input type="file" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none">
+          <button @click="$refs.fileInput.click()">이미지 변경</button>
+        </div>
+
+
+        
         <p class="username">{{ store.userProfile?.username }}</p>
         
         <div class="stats">
@@ -14,6 +25,7 @@
           <p>followers: 0</p>
           <p>following: 0</p>
         </div>
+
         <button v-if="!isEditing" @click="startEditing" class="edit-button">
           프로필 수정
         </button>
@@ -88,7 +100,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useCounterStore } from '@/stores/counter'
 import axios from 'axios'
 
@@ -157,21 +169,10 @@ const goToMovieDetail = (movieId) => {
 }
 
 
-
-
-onMounted(async () => {
-  try {
-    await store.getProfile()
-    await fetchLikedMovies()
-  } catch (err) {
-    console.error('프로필 정보를 불러오는데 실패했습니다:', err)
-    error.value = '프로필 정보를 불러오는데 실패했습니다.'
-  }
+onMounted(() => {
+  store.getProfile()
+  fetchLikedMovies()
 })
-// onMounted(() => {
-//   store.getProfile()
-//   fetchLikedMovies()
-// })
 
 const startEditing = () => {
   editForm.value = {
@@ -208,6 +209,7 @@ const submitUpdate = async () => {
   }
 }
 
+// 회원탈퇴
 const deleteAccount = async () => {
   if (!confirm('정말 탈퇴하시겠습니까?')) return
   
@@ -219,6 +221,44 @@ const deleteAccount = async () => {
     alert('회원탈퇴에 실패했습니다.')
   }
 }
+
+
+// 프로필 이미지 상태 관리
+const defaultImage = '/public/default_profile.png'
+
+// 파일 입력 참조
+const fileInput = ref(null)
+
+// 이미지 업로드 처리 함수
+const handleImageUpload = async (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  const formData = new FormData()
+  formData.append('image', file)
+
+  try {
+    const response = await axios.post(
+      `${store.API_URL}/api/v1/accounts/profile/image/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Token ${store.token}`,
+        },
+      }
+    )
+    console.log('이미지 업로드 성공:', response.data)
+    // 프로필 정보 새로고침
+    await store.getProfile()
+  } catch (error) {
+    console.error('이미지 업로드 실패:', error)
+  }
+}
+
+
+
+
 
 </script>
 
@@ -245,16 +285,47 @@ const deleteAccount = async () => {
   align-items: center;
 }
 
-.profile-image {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background-color: #333;
-  margin-bottom: 15px;
+
+
+/* 이미지 업로드 스타일 */
+.profile-image-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;  /* 이미지와 버튼 사이의 간격 */
+  margin-bottom: 20px;  /* username과의 간격 */
 }
+
+.profile-image {
+  width: 170px;  /* 너비와 높이를 같게 설정하여 완벽한 원형 유지 */
+  height: 170px;
+  border-radius: 50%;  /* 원형으로 만들기 */
+  object-fit: cover;
+  border: 2px solid #4CAF50;
+}
+
+.image-upload-button {
+  text-align: center;
+}
+
+button {
+  padding: 6px 12px;  /* 버튼 크기 약간 축소 */
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9em;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
 
 .username {
   font-size: 1.2em;
+  margin-top: 10px;
   margin-bottom: 10px;
 }
 

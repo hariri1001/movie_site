@@ -3,7 +3,7 @@
 </template>
   
 <script setup>
-import MovieDetailInfo from '@/components/MovieDetailInfo.vue';
+import MovieDetailInfo from '@/components/movies/MovieDetailInfo.vue';
 
     
 

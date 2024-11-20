@@ -7,7 +7,8 @@ export const useCounterStore = defineStore('counter', () => {
   const articles = ref([]) // 전체 게시글 목록
   const currentArticle = ref(null) // 현재 상세 보기 중인 게시글
   const API_URL = 'http://127.0.0.1:8000'
-  const token = ref(null)
+  // const token = ref(null)
+  const token = ref(localStorage.getItem('token'))
   const router = useRouter()
 
   const isLogin = computed(() => !!token.value)
@@ -95,6 +96,18 @@ export const useCounterStore = defineStore('counter', () => {
     }
   }
 
+  
+  // 토큰 설정 함수
+  const setToken = (newToken) => {
+    token.value = newToken
+    if (newToken) {
+      localStorage.setItem('token', newToken)
+    } else {
+      localStorage.removeItem('token')
+    }
+  }
+
+
   const logIn = async function (payload) {
     try {
       const response = await axios({
@@ -105,8 +118,7 @@ export const useCounterStore = defineStore('counter', () => {
           password: payload.password,
         },
       })
-      token.value = response.data.key
-      console.log('로그인 성공:', token.value)
+      setToken(response.data.key)  // 토큰 저장
       router.push({ name: 'MainView' })
     } catch (error) {
       console.error('로그인 실패:', error)
@@ -114,10 +126,21 @@ export const useCounterStore = defineStore('counter', () => {
     }
   }
 
+  const clearAllData = () => {
+    setToken(null)  // 토큰 제거
+    localStorage.clear()
+    // 쿠키 제거 로직은 유지
+  }
+
+
+
+
+
+  
   const logOut = function () {
     if (!token.value) {
       clearAllData()
-      router.push({ name: 'ArticleView' })
+      router.push({ name: 'MainView' })
       return
     }
 
@@ -130,24 +153,24 @@ export const useCounterStore = defineStore('counter', () => {
     })
       .then(() => {
         clearAllData()
-        router.push({ name: 'ArticleView' })
+        router.push({ name: 'MainView' })
       })
       .catch((err) => {
         console.error('로그아웃 실패:', err)
         clearAllData()
-        router.push({ name: 'ArticleView' })
+        router.push({ name: 'MainView' })
       })
   }
 
-  const clearAllData = () => {
-    token.value = null
-    localStorage.clear()
-    document.cookie.split(';').forEach((c) => {
-      document.cookie = c
-        .replace(/^ +/, '')
-        .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/')
-    })
-  }
+  // const clearAllData = () => {
+  //   token.value = null
+  //   localStorage.clear()
+  //   document.cookie.split(';').forEach((c) => {
+  //     document.cookie = c
+  //       .replace(/^ +/, '')
+  //       .replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/')
+  //   })
+  // }
 
   // **프로필 관련 메서드**
   const userProfile = ref(null)

@@ -36,6 +36,27 @@
       </div>
       <hr>
       <div>
+        <h3>출연 배우</h3>
+        <div class="cast-grid">
+          <div v-for="actor in castList" :key="actor.id" class="cast-card">
+            <div class="cast-image-container">
+              <img 
+                :src="actor.profile_path ? `https://image.tmdb.org/t/p/w200${actor.profile_path}` : '/public/default_profile.png'"
+                :alt="actor.name"
+                class="cast-image"
+              />
+              <div class="cast-overlay">
+                <div class="cast-info">
+                  <p class="actor-name">{{ actor.name }}</p>
+                  <p class="character-name">{{ actor.character }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <hr>
+      <div>
           <h3>줄거리</h3>
           <p>{{ movieDetail.overview }}</p>
       </div>
@@ -127,9 +148,7 @@ const loadMovieDetail = async () => {
   }
 };
 
-onMounted(() => {
-  loadMovieDetail();
-});
+
 
 //뒤로가기
 import { useRouter } from 'vue-router'
@@ -139,6 +158,38 @@ const router = useRouter()
 const goToMain = () => {
  router.push({ name: 'MainView' })
 }
+
+
+const castList = ref([]);
+
+// 출연진 정보를 가져오는 함수
+const loadCastInfo = async () => {
+  try {
+    const res = await axios.get(
+      `https://api.themoviedb.org/3/movie/${route.params.movieId}/credits?language=ko-KR`,
+      {
+        headers: {
+          Authorization: `Bearer ${TMDB_KEY}`,
+        },
+      }
+    );
+    // 주요 출연진만 필터링 (예: 상위 10명)
+    castList.value = res.data.cast.slice(0, 10);
+  } catch (err) {
+    console.error('출연진 정보 로드 실패:', err);
+  }
+};
+
+
+
+
+
+
+
+onMounted(() => {
+  loadMovieDetail();
+  loadCastInfo();
+});
 
 
 </script>
@@ -211,5 +262,103 @@ const goToMain = () => {
 .back-button:hover {
  background-color: #45a049;
 }
+
+/* 출연진 */
+.cast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+}
+
+.cast-card {
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  background: #000;
+}
+
+.cast-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.cast-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.cast-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.overlay-content {
+  text-align: center;
+  color: white;
+  padding: 10px;
+}
+
+.actor-name {
+  font-size: 1em;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+}
+
+.character-name {
+  font-size: 0.9em;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* 호버 효과 */
+.cast-card:hover .cast-overlay {
+  opacity: 1;
+}
+
+.cast-card:hover .cast-image {
+  transform: scale(1.1);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .cast-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  
+  .cast-card {
+    width: 120px;
+  }
+
+  .cast-image-container {
+    height: 180px;
+  }
+
+  .actor-name {
+    font-size: 0.9em;
+  }
+
+  .character-name {
+    font-size: 0.8em;
+  }
+}
+
+
 
 </style>

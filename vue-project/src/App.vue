@@ -2,6 +2,7 @@
   <header>
     <div class="wrapper">
       <AppNavbar/>
+
     </div>
   </header>
 
