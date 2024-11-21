@@ -14,7 +14,7 @@ import ProfileView from "@/views/auth/ProfileView.vue";
 import SearchView from "@/views/movies/SearchView.vue";
 import MovieListView from "@/views/movies/MovieListView.vue";
 import MovieDetailView from "@/views/movies/MovieDetailView.vue";
-
+import MovieRandomView from "@/views/movies/MovieRandomView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -65,14 +65,20 @@ const router = createRouter({
       path: "/:movieId",
       name: "MovieDetail",
       component: MovieDetailView,
-      // 걱정
+      
     },
+
     {
       path: "/search", // 검색 라우트 추가
       name: "SearchView",
       component: SearchView,
     },
-
+    {
+      path: '/random',
+      name: 'MovieRandom',
+      component: MovieRandomView,
+    }
+    
   ],
 });
 
@@ -94,3 +100,5 @@ router.beforeEach((to, from) => {
 });
 
 export default router;
+
+

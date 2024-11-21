@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('dj_rest_auth.urls')), 
@@ -28,4 +29,5 @@ urlpatterns = [
     path('accounts/signup/', include('dj_rest_auth.registration.urls')),
     path('api/v1/', include('articles.urls')),  # Articles 앱의 URL 연결
     path('accounts/social/', include('allauth.urls')),  # 소셜 로그인
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
