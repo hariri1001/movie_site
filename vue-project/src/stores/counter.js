@@ -121,7 +121,21 @@ export const useCounterStore = defineStore("counter", () => {
       router.push({ name: "MainView" });
     } catch (error) {
       console.error("로그인 실패:", error);
-      alert("로그인에 실패했습니다.");
+
+      // 에러 응답 상태 코드에 따른 메시지 표시
+      if (error.response) {
+        if (error.response.status === 400) {
+          alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+        } else if (error.response.status === 404) {
+          alert("등록되지 않은 사용자입니다.");
+        } else {
+          alert("로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+      } else {
+        alert("서버와 통신 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      }
+
+
     }
   };
 
@@ -136,7 +150,7 @@ export const useCounterStore = defineStore("counter", () => {
   const logOut = function () {
     if (!token.value) {
       clearAllData();
-      router.push({ name: "ArticleView" });
+      router.push({ name: "MainView" });
       return;
     }
 
@@ -149,12 +163,12 @@ export const useCounterStore = defineStore("counter", () => {
     })
       .then(() => {
         clearAllData();
-        router.push({ name: "ArticleView" });
+        router.push({ name: "MainView" }, { replace: true });
       })
       .catch((err) => {
         console.error("로그아웃 실패:", err);
         clearAllData();
-        router.push({ name: "ArticleView" });
+        router.push({ name: "MainView" }, { replace: true });
       });
   };
 

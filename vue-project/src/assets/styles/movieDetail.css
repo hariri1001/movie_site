@@ -1,0 +1,328 @@
+.genre-badge {
+    display: inline-block;
+    margin-bottom: 10px;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    font-size: 1.25rem;  /* 폰트 크기 변경 */
+  }
+  
+  .youtube-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .fa-youtube {
+    color: #FF0000;
+    font-size: 2rem;
+  }
+  
+  /* 좋아요 */
+  .like-section {
+    margin: 1rem 0;
+    text-align: left; 
+  }
+  
+  .like-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0;
+  }
+  
+  .like-button.liked {
+    background: #ffe0e0;
+  }
+  
+  .like-icon {
+    font-size: 1.2em;
+  }
+  
+  .like-count {
+    font-size: 0.9em;
+    margin-left: 4px;
+  }
+  
+  .like-button:hover {
+    transform: scale(1.05);
+  }
+  
+  /* 뒤로가기 버튼 */
+  .back-button {
+   margin-top: 20px; /* 네브바 아래로 조정 */
+   padding: 10px 10px;
+   background-color: #4CAF50;
+   color: white;
+   border: none;
+   border-radius: 4px;
+   cursor: pointer;
+   font-size: 1rem;
+   align-self: flex-start; /* 왼쪽 정렬 */
+  }
+  
+  .back-button:hover {
+   background-color: #45a049;
+  }
+  
+  /* 출연진 */
+  .cast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    justify-items: center;
+  }
+  
+  .cast-card {
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+  }
+  
+  .cast-image-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+  
+  .cast-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .cast-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .overlay-content {
+    text-align: center;
+    color: white;
+    padding: 10px;
+  }
+  
+  .actor-name {
+    font-size: 1em;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+  }
+  
+  .character-name {
+    font-size: 0.9em;
+    margin: 0;
+    opacity: 0.8;
+  }
+  
+  .backdrop {
+   position: relative;
+   background-size: cover;
+   background-position: center;
+   min-height: 600px;
+  }
+  
+  .backdrop-overlay {
+   background: rgba(0, 0, 0, 0.7);
+   min-height: 600px;
+  }
+  
+  .movie-poster {
+   max-width: 100%;
+   box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  }
+  
+  .section-title {
+   font-size: 2rem;
+   margin-bottom: 1.5rem;
+   color: #ede7e7;
+  }
+  
+  .movie-title{
+    margin-bottom: 30px;
+    font-size: 3.5rem;
+    font-weight: 300;
+    line-height: 1.2;
+    text-align: left; /* 왼쪽 정렬 */
+    margin-left: 0;   /* 왼쪽 마진 제거 */
+  }
+  
+  .movie-meta{
+    margin-bottom:  30px;
+    font-size: 1.25rem;
+  }
+  
+  
+  /* 호버 효과 */
+  .cast-card:hover .cast-overlay {
+    opacity: 1;
+  }
+  
+  .cast-card:hover .cast-image {
+    transform: scale(1.1);
+  }
+  
+  
+  /* 반응형 디자인 */
+  @media (max-width: 768px) {
+    .cast-grid {
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+    
+    .cast-card {
+      width: 120px;
+    }
+  
+    .cast-image-container {
+      height: 180px;
+    }
+  
+    .actor-name {
+      font-size: 0.9em;
+    }
+  
+    .character-name {
+      font-size: 0.8em;
+    }
+  }
+  
+  /* 트레일러 모달 스타일 */
+  .trailer-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .trailer-content {
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+  }
+  
+  .video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 비율 */
+    height: 0;
+    overflow: hidden;
+  }
+  
+  .video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .close-button {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    z-index: 1001;
+  }
+  
+  /* 트레일러 썸네일 스타일 */
+  .trailer-thumbnails {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .video-card {
+    width: 300px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  
+  .video-card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .thumbnail-container {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 비율 */
+    overflow: hidden;
+  }
+  
+  .thumbnail-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .play-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  
+  .play-overlay i {
+    font-size: 3rem;
+    color: white;
+  }
+  
+  .video-card:hover .play-overlay {
+    opacity: 1;
+  }
+  
+  .video-title {
+    padding: 12px;
+  }
+  
+  .video-title h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: white;
+    font-weight: normal;
+  }
+  .text-muted {
+    color: white;
+  }
