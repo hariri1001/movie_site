@@ -27,6 +27,9 @@
               >
               <button class="btn btn-outline-light" type="submit">Search</button>
             </form>
+
+
+
             <li class="nav-item">
               <RouterLink class="nav-link" :to="{ name: 'MainView' }">Home</RouterLink>
             </li>
@@ -46,6 +49,14 @@
             <template v-else>
                 <li class="nav-item">
                     <RouterLink class="nav-link" :to="{ name: 'ProfileView' }">MyProfile</RouterLink>
+                </li>
+                <li class="nav-item">
+                  <RouterLink 
+                    class="nav-link" 
+                    :to="{ name: 'MovieRandom' }"
+                  >
+                    <i class="fas fa-thumbs-up me-1"></i>랜덤 무비
+                  </RouterLink>
                 </li>
                 <li class="nav-item">
                     <button class="btn btn-link nav-link" @click="logOut">Logout</button>

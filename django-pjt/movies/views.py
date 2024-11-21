@@ -5,6 +5,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework.decorators import api_view, permission_classes
 from .serializers import MovieSerializer, GenreSerializer
 from rest_framework.decorators import api_view
+##################################################
+import requests
+from django.http import JsonResponse
+from django.conf import settings
+
+
 
 
 # Create your views here.
@@ -60,8 +66,6 @@ def user_liked_movies(request):
     serializer = MovieSerializer(liked_movies, many=True)
     return Response(serializer.data)
 
-
-
 # 검색 기능
 @api_view(['GET'])
 def search_movies(request):
@@ -77,30 +81,12 @@ def search_movies(request):
     return Response({'message': '검색어를 입력해주세요'})
 
 
-
-
-
-
-
-
-
 # 장르 목록
 @api_view(['GET'])
 def genre_list(request):
     genres = Genre.objects.all()
     serializer = GenreSerializer(genres, many=True)
     return Response(serializer.data)
-
-# # 특정 장르의 영화 목록
-# @api_view(['GET'])
-# def genre_movies(request, genre_pk):
-#     movies = Movie.objects.filter(genre_ids=genre_pk)
-#     serializer = MovieSerializer(movies, many=True)
-#     return Response(serializer.data)
-
-
-
-
 
 # 특정 장르의 영화 목록
 @api_view(['GET'])
@@ -116,3 +102,42 @@ def genre_movies(request):
     } for movie in movies]
     
     return Response({'movies': movie_list})
+
+
+###################################################
+
+def get_random_movie(request):
+    # TMDB API 엔드포인트와 API 키 설정
+    url = "https://api.themoviedb.org/3/discover/movie"
+    params = {
+        "api_key": settings.TMDB_API_KEY,
+        "sort_by": "popularity.desc",
+        "page": 1
+    }
+
+    # TMDB API에 요청 보내기
+    response = requests.get(url, params=params)
+    data = response.json()
+
+    # 결과에서 랜덤으로 영화 선택
+    random_movie = random.choice(data["results"])
+
+    # 필요한 영화 정보 추출
+    movie_data = {
+        "id": random_movie["id"],
+        "title": random_movie["title"],
+        "poster_path": random_movie["poster_path"],
+        "overview": random_movie["overview"]
+    }
+
+    return JsonResponse(movie_data)
+
+
+
+
+
+
+
+
+
+
