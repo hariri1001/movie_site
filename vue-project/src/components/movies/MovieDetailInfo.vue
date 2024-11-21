@@ -82,10 +82,41 @@
       <!-- Trailer -->
       <section class="mb-5">
         <h2 class="section-title">공식 예고편</h2>
-        <button class="youtube-btn">
-          <i class="fa-brands fa-youtube"></i>
-        </button>
+        <div v-if="trailerKey" class="trailer-thumbnails">
+          <div class="video-card" @click="showTrailer = true">
+            <div class="thumbnail-container">
+              <img 
+                :src="`https://img.youtube.com/vi/${trailerKey}/maxresdefault.jpg`"
+                alt="영화 예고편 썸네일"
+                class="thumbnail-image"
+              />
+              <div class="play-overlay">
+                <i class="fa-solid fa-play"></i>
+              </div>
+            </div>
+            <div class="video-title">
+              <h3>{{ movieDetail.title }} 공식 예고편</h3>
+            </div>
+          </div>
+        </div>
+        <p v-if="noTrailerMessage">{{ noTrailerMessage }}</p>
+
+        <!-- YouTube Modal -->
+        <div v-if="showTrailer" class="trailer-modal">
+          <div class="trailer-content">
+            <button @click="showTrailer = false" class="close-button">×</button>
+            <div class="video-container">
+              <iframe 
+                :src="`https://www.youtube.com/embed/${trailerKey}?autoplay=1`"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+              </iframe>
+            </div>
+          </div>
+        </div>
       </section>
+
     </div>
   </div>
  </template>
@@ -95,6 +126,7 @@ import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import axios from 'axios';
 import api from '@/api';
+import '@/assets/styles/movieDetail.css';
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const route = useRoute();
@@ -122,8 +154,17 @@ const loadLikeState = async () => {
   }
 };
 
+// 로그인된 사용자만 좋아요 가능
+// const isLoggedIn = ref(localStorage.getItem('isLoggedIn') === 'true');
+const isLoggedIn = ref(true); 
+console.log(localStorage.getItem('isLoggedIn'));
 // 좋아요 토글
 const toggleLike = async () => {
+  if (!isLoggedIn.value) {
+    alert('로그인이 필요합니다.');
+    return;
+  }
+
   try {
     const response = await api.post(`/movies/${route.params.movieId}/likes/`);
     isLiked.value = response.data.liked;
@@ -203,6 +244,47 @@ const loadCastInfo = async () => {
 };
 
 
+// YouTube 관련 상태 추가
+const trailerKey = ref(null);
+const showTrailer = ref(false);
+const noTrailerMessage = ref('예고편이 없습니다.');
+
+// 예고편 정보를 가져오는 함수
+const loadTrailerInfo = async () => {
+  try {
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/movie/${route.params.movieId}/videos?language=ko-KR`,
+      {
+        headers: {
+          Authorization: `Bearer ${TMDB_KEY}`,
+        },
+      }
+    );
+    
+    // 한국어 예고편 우선, 없으면 영어 예고편 사용
+    const trailer = response.data.results.find(
+      video => 
+        (video.type === 'Trailer' || video.type === 'Teaser') && 
+        (video.site === 'YouTube') &&
+        (video.iso_639_1 === 'ko')
+    ) || response.data.results.find(
+      video => 
+        (video.type === 'Trailer' || video.type === 'Teaser') && 
+        (video.site === 'YouTube')
+    );
+
+    if (trailer) {
+      trailerKey.value = trailer.key;
+      noTrailerMessage.value = ''; // 예고편 정보가 있으면 메시지 초기화
+    } else {
+      trailerKey.value = null;
+      noTrailerMessage.value = '예고편이 없습니다.';
+    }
+  } catch (error) {
+    console.error('예고편 정보 로드 실패:', error);
+    noTrailerMessage.value = '예고편 정보를 불러오는 데 실패했습니다.';
+  }
+};
 
 
 
@@ -211,222 +293,12 @@ const loadCastInfo = async () => {
 onMounted(() => {
   loadMovieDetail();
   loadCastInfo();
+  loadTrailerInfo();
 });
 
 
 </script>
 
 <style scoped>
-.genre-badge {
-  display: inline-block;
-  margin-bottom: 10px;
-  background-color: rgba(255,255,255,0.1);
-  border-radius: 20px;
-  font-size: 1.25rem;  /* 폰트 크기 변경 */
-}
-
-.youtube-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.fa-youtube {
-  color: #FF0000;
-  font-size: 2rem;
-}
-
-/* 좋아요 */
-.like-section {
-  margin: 1rem 0;
-  text-align: left; 
-}
-
-.like-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 20px;
-  background: #f8f9fa;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin: 0;
-}
-
-.like-button.liked {
-  background: #ffe0e0;
-}
-
-.like-icon {
-  font-size: 1.2em;
-}
-
-.like-count {
-  font-size: 0.9em;
-  margin-left: 4px;
-}
-
-.like-button:hover {
-  transform: scale(1.05);
-}
-
-/* 뒤로가기 버튼 */
-.back-button {
- margin-top: 20px; /* 네브바 아래로 조정 */
- padding: 10px 10px;
- background-color: #4CAF50;
- color: white;
- border: none;
- border-radius: 4px;
- cursor: pointer;
- font-size: 1rem;
- align-self: flex-start; /* 왼쪽 정렬 */
-}
-
-.back-button:hover {
- background-color: #45a049;
-}
-
-/* 출연진 */
-.cast-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  justify-items: center;
-}
-
-.cast-card {
-  width: 120px;
-  height: 120px;
-  border-radius: 8px;
-  overflow: hidden;
-  position: relative;
-  background: #000;
-}
-
-.cast-image-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.cast-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-}
-
-.cast-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.overlay-content {
-  text-align: center;
-  color: white;
-  padding: 10px;
-}
-
-.actor-name {
-  font-size: 1em;
-  font-weight: bold;
-  margin: 0 0 5px 0;
-}
-
-.character-name {
-  font-size: 0.9em;
-  margin: 0;
-  opacity: 0.8;
-}
-
-.backdrop {
- position: relative;
- background-size: cover;
- background-position: center;
- min-height: 600px;
-}
-
-.backdrop-overlay {
- background: rgba(0, 0, 0, 0.7);
- min-height: 600px;
-}
-
-.movie-poster {
- max-width: 100%;
- box-shadow: 0 0 20px rgba(0,0,0,0.5);
-}
-
-.section-title {
- font-size: 2rem;
- margin-bottom: 1.5rem;
- color: #ede7e7;
-}
-
-.movie-title{
-  margin-bottom: 30px;
-  font-size: 3.5rem;
-  font-weight: 300;
-  line-height: 1.2;
-  text-align: left; /* 왼쪽 정렬 */
-  margin-left: 0;   /* 왼쪽 마진 제거 */
-}
-
-.movie-meta{
-  margin-bottom:  30px;
-  font-size: 1.25rem;
-}
-
-
-/* 호버 효과 */
-.cast-card:hover .cast-overlay {
-  opacity: 1;
-}
-
-.cast-card:hover .cast-image {
-  transform: scale(1.1);
-}
-
-
-/* 반응형 디자인 */
-@media (max-width: 768px) {
-  .cast-grid {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  }
-  
-  .cast-card {
-    width: 120px;
-  }
-
-  .cast-image-container {
-    height: 180px;
-  }
-
-  .actor-name {
-    font-size: 0.9em;
-  }
-
-  .character-name {
-    font-size: 0.8em;
-  }
-}
-
-
-
 
 </style>

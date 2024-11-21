@@ -4,7 +4,17 @@
     <div class="profile-header">
       <!-- 왼쪽: 프로필 정보 -->
       <div class="profile-info">
-        <div class="profile-image"></div>
+
+        <!-- 프로필이미지 업로드 -->
+        <div class="profile-image-section">
+          <img :src="store.userProfile?.profile_image ? `${store.API_URL}${store.userProfile.profile_image}` : 
+              '/public/default_profile.png'" alt="프로필 이미지" class="profile-image">
+          <input type="file" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none">
+          <button @click="$refs.fileInput.click()">이미지 변경</button>
+        </div>
+
+
+
         <p class="username">{{ store.userProfile?.username }}</p>
         
         <div class="stats">
@@ -93,6 +103,7 @@ import { ref, onMounted } from 'vue';
 import { useCounterStore } from '@/stores/counter';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
+import '@/assets/styles/profile.css'
 
 const store = useCounterStore();
 const isEditing = ref(false);
@@ -207,177 +218,48 @@ const deleteAccount = async () => {
     alert("회원탈퇴에 실패했습니다.");
   }
 };
+
+// 프로필 이미지 상태 관리
+const defaultImage = '/public/default_profile.png'
+
+// 파일 입력 참조
+const fileInput = ref(null)
+
+// 이미지 업로드 처리 함수
+const handleImageUpload = async (event) => {
+  const file = event.target.files[0]
+  if (!file) return
+
+  const formData = new FormData()
+  formData.append('image', file)
+
+  try {
+    const response = await axios.post(
+      `${store.API_URL}/api/v1/accounts/profile/image/`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Token ${store.token}`,
+        },
+      }
+    )
+    console.log('이미지 업로드 성공:', response.data)
+    // 프로필 정보 새로고침
+    await store.getProfile()
+  } catch (error) {
+    console.error('이미지 업로드 실패:', error)
+  }
+}
+
+
+
+
+
+
 </script>
 
 <style scoped>
-.profile-container {
-  /* max-width: 1200px; */
-  width: 100%;
-  margin: 0 auto;
-  padding: 40px 20px;
-  background-color: #1a1a1a;
-  color: white;
-}
 
-.profile-header {
-  display: flex;
-  gap: 40px;
-  margin-bottom: 40px;
-}
-
-.profile-info {
-  width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.profile-image {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background-color: #333;
-  margin-bottom: 15px;
-}
-
-.username {
-  font-size: 1.2em;
-  margin-bottom: 10px;
-}
-
-.stats {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 0.9em;
-  color: #ccc;
-}
-
-.delete-button {
- background-color: #dc3545;
- color: white;
- padding: 8px 16px;
- border: none;
- border-radius: 4px;
- cursor: pointer;
- margin-top: 10px;
-}
-
-
-.liked-content {
-  flex: 1;
-}
-
-.content-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
-  gap: 15px;
-  margin-top: 20px;
-}
-
-.movie-card {
-  /* 영화 포스터 비율 (2:3) 유지 */
-  aspect-ratio: 2/3;
-  overflow: hidden;
-  border-radius: 8px;
-  background-color: #333;
-  transition: transform 0.3s ease;
-  /* 카드 최대 크기 제한 */
-  max-width: 200px;
-  justify-self: center;
-}
-
-.movie-card:hover {
-  transform: scale(1.05);
-}
-
-.movie-poster {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* cover에서 contain으로 변경하여 이미지가 짤리지 않도록 */
-}
-
-.comments-section {
-  margin-top: 40px;
-}
-
-.comments-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  margin-top: 20px;
-}
-
-.comment-card {
-  background-color: #333;
-  padding: 20px;
-  border-radius: 8px;
-  aspect-ratio: 16/9;
-}
-
-.edit-button {
-  padding: 8px 16px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 10px;
-}
-
-/* 기존 폼 스타일 유지 */
-.profile-form {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #1a1a1a;
-  padding: 40px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 460px;
-  z-index: 1000;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  color: white;
-  margin-bottom: 5px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #4CAF50;
-  border-radius: 4px;
-  background-color: #333;
-  color: white;
-}
-
-.button-group {
-  display: flex;
-  gap: 10px;
-}
-
-.save-button {
-  background-color: #4CAF50;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.cancel-button {
-  background-color: #f44336;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
 
 </style>
