@@ -29,5 +29,4 @@ urlpatterns = [
     path('accounts/signup/', include('dj_rest_auth.registration.urls')),
     path('api/v1/', include('articles.urls')),  # Articles 앱의 URL 연결
     path('accounts/social/', include('allauth.urls')),  # 소셜 로그인
-    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
