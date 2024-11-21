@@ -117,7 +117,7 @@ const toggleLike = async (article) => {
       <span
         class="like-button"
         :class="{ liked: article.isLiked }"
-        @click="toggleLike(article)"
+        @click="$emit('toggle-like', article)"
       >
         ❤️
       </span>
@@ -139,16 +139,6 @@ defineProps({
 });
 
 const store = useCounterStore();
-
-const toggleLike = async (article) => {
-  try {
-    const { liked, likes_count } = await store.toggleArticleLike(article.id);
-    article.isLiked = liked;
-    article.likes_count = likes_count;
-  } catch (error) {
-    console.error("좋아요 상태 업데이트 실패:", error);
-  }
-};
 </script>
 
 <style scoped>
