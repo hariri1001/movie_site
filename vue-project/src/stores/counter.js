@@ -290,10 +290,16 @@ export const useCounterStore = defineStore("counter", () => {
           headers: { Authorization: `Token ${token.value}` },
         }
       );
-      return {
-        liked: response.data.liked,
-        likesCount: response.data.likes_count,
-      };
+      const { liked, likes_count } = response.data;
+  
+      // articles 배열에서 해당 게시글 상태 업데이트
+      const targetArticle = articles.value.find((article) => article.id === articleId);
+      if (targetArticle) {
+        targetArticle.isLiked = liked;
+        targetArticle.likes_count = likes_count;
+      }
+  
+      return { liked, likes_count };
     } catch (error) {
       console.error("좋아요 API 호출 실패:", error);
       throw error;

@@ -46,6 +46,8 @@ class ArticleLikeAPIView(APIView):
             else:
                 article.liked_users.add(request.user)
                 liked = True
+            # 디버깅용 출력
+            print("현재 좋아요 개수:", article.liked_users.count())
             return Response({"liked": liked, "likes_count": article.liked_users.count()})
         except Article.DoesNotExist:
             return Response({"error": "Article not found."}, status=404)
@@ -56,16 +58,7 @@ class ArticleListAPIView(APIView):
 
     def get(self, request, *args, **kwargs):
         articles = Article.objects.all()
-        data = [
-            {
-                "id": article.id,
-                "title": article.title,
-                "content": article.content,
-                "author": article.author.username,
-                "rating": article.rating,
-                "likes_count": article.liked_users.count(),
-                "is_liked": request.user in article.liked_users.all(),
-            }
-            for article in articles
-        ]
-        return Response(data)
+        serializer = ArticleSerializer(
+            articles, many=True, context={'request': request}
+        )
+        return Response(serializer.data)
