@@ -71,7 +71,10 @@ const findMovieWithTrailer = async (movies) => {
         if (trailer) {
             return {
                 ...movie,
-                videoKey: trailer.key
+                videoKey: trailer.key,  // 원래 키만 저장
+                videoParams: {          // 유튜브 자막 숨김
+                    cc_load_policy: 0
+                }
             };
         }
     }

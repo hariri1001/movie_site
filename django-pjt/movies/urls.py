@@ -20,11 +20,7 @@ urlpatterns = [
     # 영화 좋아요
     path('liked-movies/', views.user_liked_movies, name='user_liked_movies'),
 
-    # 영화 추천
-    # path('recommendations/', views.movie_recommendations, name='movie_recommendations'),
-    # path('update-tags/', views.update_user_tags, name='update_user_tags'),
-    # 랜덤 영화 추천
-    path('random/', views.get_random_movie, name='random_movie'),
-
+    # 챗봇
+    path('api/recommend/', views.recommend_movies, name='recommend_movies'),
     ]
 

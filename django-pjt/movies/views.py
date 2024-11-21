@@ -8,7 +8,11 @@ from rest_framework.decorators import api_view
 ##################################################
 import requests
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+import json
 from django.conf import settings
+import requests
 
 
 
@@ -104,33 +108,58 @@ def genre_movies(request):
     return Response({'movies': movie_list})
 
 
-###################################################
+###########################################
 
-def get_random_movie(request):
-    # TMDB API 엔드포인트와 API 키 설정
-    url = "https://api.themoviedb.org/3/discover/movie"
-    params = {
-        "api_key": settings.TMDB_API_KEY,
-        "sort_by": "popularity.desc",
-        "page": 1
-    }
+TMDB_BASE_URL = 'https://api.themoviedb.org/3'
 
-    # TMDB API에 요청 보내기
-    response = requests.get(url, params=params)
-    data = response.json()
+# 장르 ID 매핑
+genre_mapping = {
+    "액션": 28,
+    "로맨스": 10749,
+    "공포": 27,
+    "코미디": 35,
+    "SF": 878
+}
 
-    # 결과에서 랜덤으로 영화 선택
-    random_movie = random.choice(data["results"])
+@csrf_exempt
+@require_http_methods(["POST"])
+def recommend_movies(request):
+   try:
+       data = json.loads(request.body)
+       genre = data.get('0')
+       
+       # JWT 토큰으로 인증 헤더 설정
+       headers = {
+           'Authorization': f'Bearer {settings.VITE_TMDB_API_KEY}',
+           'accept': 'application/json'
+       }
+       
+       response = requests.get(
+           f'{TMDB_BASE_URL}/discover/movie',
+           headers=headers,  # 헤더 추가
+           params={
+               'language': 'ko-KR',
+               'sort_by': 'popularity.desc',
+               'with_genres': genre_mapping.get(genre, '28'),
+               'page': 1
+           }
+       )
+       
+       print(f"Response status: {response.status_code}")
+       print(f"Response content: {response.text}")
+       
+       movies = response.json().get('results', [])[:5]
+       recommendations = [{
+           'title': movie['title'],
+           'rating': movie['vote_average'],
+           'overview': movie.get('overview', ''),
+           'poster_path': f"https://image.tmdb.org/t/p/w500{movie.get('poster_path', '')}"
+       } for movie in movies]
 
-    # 필요한 영화 정보 추출
-    movie_data = {
-        "id": random_movie["id"],
-        "title": random_movie["title"],
-        "poster_path": random_movie["poster_path"],
-        "overview": random_movie["overview"]
-    }
-
-    return JsonResponse(movie_data)
+       return JsonResponse(recommendations, safe=False)
+   except Exception as e:
+       print(f"Error: {type(e).__name__}, {str(e)}")
+       return JsonResponse({'error': str(e)}, status=400)
 
 
 
