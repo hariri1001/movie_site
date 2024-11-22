@@ -135,8 +135,8 @@ def recommend_movies(request):
        }
        
        response = requests.get(
-           f'{TMDB_BASE_URL}/discover/movie',
-           headers=headers,  # 헤더 추가
+           f'{TMDB_BASE_URL}/discover/movie', # TMDB API의 영화 검색 URL
+           headers=headers,  # Bearer 인증 사용 - 헤더 추가
            params={
                'language': 'ko-KR',
                'sort_by': 'popularity.desc',
@@ -145,17 +145,20 @@ def recommend_movies(request):
            }
        )
        
-       print(f"Response status: {response.status_code}")
-       print(f"Response content: {response.text}")
+       print(f"Response status: {response.status_code}") # 디버깅
+       print(f"Response content: {response.text}") # 디버깅
        
+       # TMDB에서 반환된 영화 목록을 파싱하여 상위 5개 영화만 선택
        movies = response.json().get('results', [])[:5]
+
        recommendations = [{
            'title': movie['title'],
            'rating': movie['vote_average'],
-           'overview': movie.get('overview', ''),
+           'overview': movie.get('overview', '등록된 줄거리가 없습니다.'),
            'poster_path': f"https://image.tmdb.org/t/p/w500{movie.get('poster_path', '')}"
        } for movie in movies]
 
+        # 추천 목록을 JSON 형식으로 반환
        return JsonResponse(recommendations, safe=False)
    except Exception as e:
        print(f"Error: {type(e).__name__}, {str(e)}")

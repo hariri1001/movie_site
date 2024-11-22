@@ -22,12 +22,7 @@
     </div>
 
     <!-- 모달 컴포넌트 추가 -->
-    <MovieDetailModal
-      v-if="showModal"
-      :movie="selectedMovie"
-      :showModal="showModal"
-      @close="closeModal"
-    />
+    <MovieDetailModal v-if="showModal" :movie="selectedMovie" :showModal="showModal" @close="closeModal"/>
 
 
   </div>

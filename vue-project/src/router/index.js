@@ -77,7 +77,7 @@ const router = createRouter({
       path: '/random',
       name: 'MovieRandom',
       component: MovieRandomView,
-    }
+    },
     
   ],
 });
