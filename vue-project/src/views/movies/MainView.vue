@@ -4,7 +4,7 @@
         <MovieListView/>
         <GenreMovies/>
     </div>
-    <router-view />
+    <!-- <router-view /> -->
     <!-- 챗봇 버튼 추가 -->
     <ChatbotButton />
 </template>

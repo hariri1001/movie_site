@@ -1,6 +1,7 @@
 <template>
   <div class="d-flex mt-4">
       <MovieCard/>
+      
   </div>
 </template>
 

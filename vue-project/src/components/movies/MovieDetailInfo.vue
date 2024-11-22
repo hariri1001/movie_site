@@ -38,9 +38,7 @@
               </div>
  
               <div class="like-section">
-                <button @click="toggleLike" 
-                        class="like-button"
-                        :class="{ 'liked': isLiked }">
+                <button @click="toggleLike" class="like-button" :class="{ 'liked': isLiked }">
                   <span class="like-icon">{{ isLiked ? '❤️' : '🤍' }}</span>
                   <span class="like-count">{{ likeCount }}</span>
                 </button>
@@ -160,17 +158,13 @@ const isLoggedIn = ref(true);
 console.log(localStorage.getItem('isLoggedIn'));
 // 좋아요 토글
 const toggleLike = async () => {
-  if (!isLoggedIn.value) {
-    alert('로그인이 필요합니다.');
-    return;
-  }
-
   try {
     const response = await api.post(`/movies/${route.params.movieId}/likes/`);
     isLiked.value = response.data.liked;
     likeCount.value = response.data.like_count;
   } catch (error) {
     console.error('좋아요 처리 실패:', error);
+    alert('로그인이 필요합니다.');
   }
 };
 

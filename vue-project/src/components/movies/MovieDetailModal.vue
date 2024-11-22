@@ -1,20 +1,32 @@
 <template>
     <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
-        <button class="close-btn" @click="closeModal">X</button>
+        
         
         <div class="modal-body">
           <!-- 왼쪽: 포스터 -->
+          
           <div class="poster-container">
             <img :src="posterUrl" alt="Movie Poster" class="poster" />
           </div>
-  
+            
           <!-- 오른쪽: 영화 정보 -->
           <div class="movie-info">
-            <h2>{{ movie.title }}</h2>
-            <p>{{ truncatedOverview }}<span v-if="isTruncated" @click="toggleOverview" class="more-link">... 더보기</span></p>
-            <p><strong>개봉일:</strong> {{ movie.release_date }}</p>
-            <p><strong>평점:</strong> {{ movie.vote_average }}</p>
+            <div class="info-header">
+              <h2>{{ movie.title }}</h2>
+              <button class="close-btn" @click="closeModal">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+              
+            </div>
+            <div class="info-content">
+              
+              <p>{{ truncatedOverview }}<span v-if="isTruncated" @click="toggleOverview" class="more-link">... 더보기</span></p>
+              <p><strong>개봉일:</strong> {{ movie.release_date }}</p>
+              <p><strong>평점:</strong> {{ movie.vote_average }}</p>
+            </div>
+            
+            
           </div>
         </div>
       </div>
@@ -79,6 +91,7 @@
     width: 80%;
     height: 70%;
     max-width: 800px; /* 화면 크기에 따라 모달 크기 조정 */
+    max-height: 800px;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     position: relative;
@@ -86,15 +99,25 @@
     flex-direction: row; /* 좌우 배치 */
     }
 
+    .info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
     .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #333;
-    cursor: pointer;
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 5px;
+      margin-left: 10px;
+      
+    }
+
+    .info-content {
+      margin-top: 10px;
     }
 
     .modal-body {
@@ -136,7 +159,10 @@
     h2 {
     font-size: 24px;
     margin-bottom: 10px;
+    margin-top: 10px;
     text-align: center;
+    /* padding: 0;
+    max-width: 80%; */
     }
 </style>
   

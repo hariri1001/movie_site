@@ -1,66 +1,142 @@
 <template>
-  <div>
-    <!-- 왼쪽 상단 고정 아이콘 (스크롤에 따라 이동) -->
+  <div class="fixed-chat">
+    <!-- 챗봇 버튼 -->
     <button 
-      @click="isOpen = !isOpen"
-      class="fixed top-4 left-4 p-2 text-gray-600 hover:text-gray-800 transition-all duration-300 z-50"
-      :style="{ top: `${buttonTop}px` }"
+      @click="showModal = !showModal"
+      class="chat-button"
     >
-      <span class="text-xl">💬</span>
+      <span class="chat-button-text">💬</span>
     </button>
- 
-    <!-- 모달 오버레이 -->
+
+    <!-- 부트스트랩 모달 -->
     <div 
-      v-if="isOpen"
-      class="fixed inset-0 bg-black bg-opacity-50 z-40"
-      @click="isOpen = false"
-    ></div>
- 
-    <!-- 챗봇 모달 -->
-    <Transition
-      enter-active-class="transition ease-out duration-200"
-      enter-from-class="opacity-0 translate-y-4"
-      enter-to-class="opacity-100 translate-y-0"
-      leave-active-class="transition ease-in duration-150"
-      leave-from-class="opacity-100 translate-y-0"
-      leave-to-class="opacity-0 translate-y-4"
+      class="modal fade" 
+      id="chatModal" 
+      tabindex="-1"
+      :class="{ 'show': showModal }"
+      :style="{ display: showModal ? 'block' : 'none' }"
     >
-      <div 
-        v-if="isOpen"
-        class="fixed z-50 top-20 left-4 w-96 max-h-[600px] bg-white rounded-lg shadow-xl overflow-hidden"
-        :style="{ top: `${modalTop}px` }"
-      >
-        <div class="flex justify-between items-center p-4 border-b">
-          <h3 class="font-semibold">영화 추천 봇</h3>
-          <button @click="isOpen = false" class="text-gray-500 hover:text-gray-700">✖</button>
-        </div>
-        <div class="p-4">
-          <MovieRecommender />
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="background-color: rgb(247, 218, 125);">
+          <!-- 모달 헤더 -->
+          <div class="modal-header border-0">
+            <div class="header-logo d-flex align-items-center gap-2">
+              <div class="logo-icon">
+                <span class="logo-icon-text">🎬</span>
+              </div>
+              <h5 class="modal-title">영화 추천 봇</h5>
+            </div>
+            <button 
+              type="button" 
+              class="btn-close" 
+              @click="showModal = false"
+            ></button>
+          </div>
+
+          <!-- 모달 바디 -->
+          <div class="modal-body p-0">
+            <MovieRecommender />
+          </div>
         </div>
       </div>
-    </Transition>
+    </div>
+
+    <!-- 배경 오버레이 -->
+    <div 
+      v-if="showModal" 
+      class="modal-backdrop fade show"
+      @click="showModal = false"
+    ></div>
   </div>
- </template>
- 
- <script setup>
- import { ref, onMounted, onUnmounted } from 'vue'
- import MovieRecommender from '@/components/movies/MovieRecommender.vue'
- 
- const isOpen = ref(false)
- const buttonTop = ref(16)
- const modalTop = ref(80)
- 
- const handleScroll = () => {
-  const scrollY = window.scrollY
-  buttonTop.value = Math.max(16, scrollY + 16)
-  modalTop.value = Math.max(80, scrollY + 80)
- }
- 
- onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
- })
- 
- onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
- })
- </script>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import MovieRecommender from '@/components/movies/MovieRecommender.vue'
+
+const showModal = ref(false)
+</script>
+
+<style scoped>
+.chat-button {
+  position: fixed;
+  bottom: 6rem;
+  right: 6rem;
+  width: 4rem;
+  height: 4rem;
+  background-color: #10b981;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  z-index: 1040;
+}
+
+.chat-button:hover {
+  background-color: #059669;
+}
+
+.chat-button-text {
+  color: white;
+  font-size: 1.25rem;
+}
+
+/* 모달 커스터마이징 */
+.modal-dialog {
+  max-width: 800px;
+  margin: 1.75rem auto;
+}
+
+.modal-content {
+  border-radius: 1.5rem;
+  overflow: hidden;
+}
+
+.modal-header {
+  background-color: rgb(247, 218, 125);
+  padding: 1rem 1.5rem;
+}
+
+.logo-icon {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+}
+
+.modal-title {
+  color: #333;
+  margin: 0;
+  font-weight: 600;
+}
+
+.btn-close {
+  color: #333;
+  opacity: 0.8;
+}
+
+.btn-close:hover {
+  opacity: 1;
+}
+
+.modal-body {
+  background-color: white;
+  min-height: 400px;
+}
+
+/* 모달이 표시될 때 스크롤바 방지 */
+:deep(body.modal-open) {
+  overflow: hidden;
+}
+
+/* MovieRecommender 컴포넌트 스타일 오버라이드 */
+:deep(.movie-recommender) {
+  height: 100%;
+  background-color: white;
+}
+</style>

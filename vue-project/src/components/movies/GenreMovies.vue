@@ -6,7 +6,7 @@
           <button
             v-for="genre in genres"
             :key="genre.id"
-            @click.prevent="selectGenre(genre)"
+            @click="selectGenre(genre)"
             class="px-4 py-2 rounded-full"
             :class="selectedGenre && selectedGenre.id === genre.id ? 
               'bg-white text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'"
