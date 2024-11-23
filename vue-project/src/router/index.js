@@ -9,6 +9,7 @@ import { useCounterStore } from "@/stores/counter";
 import SignUpView from "@/views/auth/SignUpView.vue";
 import LogInView from "@/views/auth/LogInView.vue";
 import ProfileView from "@/views/auth/ProfileView.vue";
+import UserProfileView from "@/views/auth/UserProfileView.vue";
 
 // 영화
 import SearchView from "@/views/movies/SearchView.vue";
@@ -78,7 +79,12 @@ const router = createRouter({
       name: 'MovieRandom',
       component: MovieRandomView,
     },
-    
+    // 다른 사용자의 프로필
+    {
+      path: '/profile/:username',
+      name: 'UserProfile',
+      component: UserProfileView,
+    }
   ],
 });
 

@@ -47,3 +47,30 @@ class UserProfileSerializer(serializers.ModelSerializer):
         
         # 나머지 필드 업데이트
         return super().update(instance, validated_data)
+    
+
+######################################
+User = get_user_model()
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    followers_count = serializers.SerializerMethodField()
+    followings_count = serializers.SerializerMethodField()
+    is_followed = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email', 'followers_count', 'followings_count', 'is_followed')
+
+    def get_followers_count(self, obj):
+        return obj.followers.count()
+
+    def get_followings_count(self, obj):
+        return obj.followings.count()
+
+    def get_is_followed(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.followers.filter(pk=request.user.pk).exists()
+        return False
+
+
