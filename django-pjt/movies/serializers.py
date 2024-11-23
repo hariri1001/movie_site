@@ -18,14 +18,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class MovieSerializer(serializers.ModelSerializer):
-    # genre_ids = GenreSerializer(many=True, read_only=True)
     like_count = serializers.SerializerMethodField()
     is_liked = serializers.SerializerMethodField()
 
     class Meta:
         model = Movie
         fields = '__all__'
-        # read_only_fields = ('like_users',)
 
     def get_like_count(self, obj):
         return obj.like_users.count()

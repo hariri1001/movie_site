@@ -1,71 +1,33 @@
-<!-- <template>
-  <div>
-    <h1>Create New Article</h1>
-    <form @submit.prevent="submitArticle">
-      <label>
-        Title:
-        <input type="text" v-model="title" />
-      </label>
-      <label>
-        Content:
-        <textarea v-model="content"></textarea>
-      </label>
-      <button type="submit">Submit</button>
-    </form>
-  </div>
-</template>
-
-<script setup>
-import { ref } from 'vue';
-import { useCounterStore } from '@/stores/counter';
-
-const store = useCounterStore();
-const title = ref('');
-const content = ref('');
-
-const submitArticle = () => {
-  store.createArticle({ title: title.value, content: content.value });
-};
-</script> -->
-
-<!-- 평점 작성 -->
 <template>
   <div>
     <h1>{{ isEditing ? "Edit Article" : "Create New Article" }}</h1>
     <form @submit.prevent="submitArticle">
-      <!-- 제목 입력 -->
       <label>
-        Title:
+        제목:
         <input type="text" v-model="title" />
       </label>
-      <!-- 내용 입력 -->
+
       <label>
-        Content:
+        내용:
         <textarea v-model="content"></textarea>
       </label>
-      <!-- 별점 추가 -->
+
       <div class="rating-container">
-        <h3>Rate this article:</h3>
+        <h3>별점:</h3>
         <div class="stars" @mouseleave="resetHover">
-          <span
-            v-for="star in 5"
-            :key="star"
-            class="star"
-            @mousemove="updateHover($event, star)"
-            @click="setRating()"
+          <span v-for="star in 5" :key="star" class="star" @mousemove="updateHover($event, star)" @click="setRating()"
             :style="{
               background: `linear-gradient(to right, gold ${getFillPercentage(star)}%, lightgray ${getFillPercentage(star)}%)`,
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-            }"
-          >
+            }">
             ★
           </span>
         </div>
         <p class="rating-text">Selected Rating: {{ rating.toFixed(1) }} / 5</p>
       </div>
-      <!-- 제출 버튼 -->
-      <button type="submit">{{ isEditing ? "Update" : "Submit" }}</button>
+
+      <button type="submit">{{ isEditing ? "수정" : "제출" }}</button>
     </form>
   </div>
 </template>

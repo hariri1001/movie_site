@@ -11,17 +11,6 @@ export const useCounterStore = defineStore("counter", () => {
   const router = useRouter();
 
 
-  // **게시글 관련 메서드**
-  const getArticles = async () => {
-    try {
-      const response = await axios.get(`${API_URL}/api/v1/articles/`, {
-        headers: { Authorization: `Token ${token.value}` },
-      });
-      articles.value = response.data;
-    } catch (error) {
-      console.error('게시글 목록 불러오기 실패:', error.response?.data || error);
-    }
-  };
   const getArticleById = async (articleId) => {
     try {
       const response = await axios.get(`${API_URL}/api/v1/articles/${articleId}/`, {
@@ -32,27 +21,55 @@ export const useCounterStore = defineStore("counter", () => {
       console.error('게시글 상세 불러오기 실패:', error.response?.data || error);
     }
   };
+
+
+
   // 새 게시글 작성
   const createArticle = async (payload) => {
-    try {
-      await axios.post(
-        `${API_URL}/api/v1/articles/`,
-        {
-          title: payload.title,
-          content: payload.content,
-          rating: payload.rating,
-        },
-        {
-          headers: { Authorization: `Token ${token.value}` },
-        }
-      );
-      await getArticles();
-      router.push({ name: 'ArticleView' });
-    } catch (error) {
-      console.error('게시글 작성 실패:', error.response?.data || error);
-      alert('게시글 작성에 실패했습니다.');
-    }
-  };
+  try {
+    const response = await axios.post(
+      `${API_URL}/api/v1/articles/`,
+      {
+        title: payload.title,
+        content: payload.content,
+        rating: payload.rating,
+      },
+      {
+        headers: { Authorization: `Token ${token.value}` },
+      }
+    );
+ 
+    // 새 게시글을 articles 배열에 추가
+    articles.value.unshift(response.data);
+    // 또는 전체 목록 새로고침
+    // await getArticles(); 
+    
+    router.push({ name: 'ArticleView' });
+  } catch (error) {
+    console.error('게시글 작성 실패:', error.response?.data || error);
+    alert('게시글 작성에 실패했습니다.');
+  }
+ };
+ 
+ // 게시글 목록 가져오기 
+ const getArticles = async () => {
+  try {
+    console.log('게시글 목록 요청 시작');
+    const response = await axios.get(
+      `${API_URL}/api/v1/articles/list/`,
+      {
+        headers: { Authorization: `Token ${token.value}` }
+      }
+    );
+    console.log('받은 응답:', response.data);
+    articles.value = response.data;
+  } catch (error) {
+    console.error('게시글 목록 가져오기 실패:', error.response?.data || error);
+  }
+ };
+
+
+
 
   //** 유저 기능 **
   // 회원가입 메서드
@@ -305,6 +322,99 @@ export const useCounterStore = defineStore("counter", () => {
       throw error;
     }
   };
+
+  const getUserProfile = async (username) => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/api/v1/accounts/profile/${username}/`,
+        {
+          headers: { Authorization: `Token ${token.value}` },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('프로필 조회 실패:', error);
+      throw error;
+    }
+  };
+
+// 특정 사용자의 게시글 목록 가져오기
+// const getUserArticles = async (username) => {
+//   try {
+//     const response = await axios.get(
+//       `${API_URL}/api/v1/articles/user/${username}/`,
+//       {
+//         headers: { Authorization: `Token ${token.value}` },
+//       }
+//     );
+//     return response.data;
+//   } catch (error) {
+//     console.error('사용자 게시글 조회 실패:', error);
+//     throw error;
+//   }
+// };
+
+
+
+const getUserArticles = async (username) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/v1/articles/user/`,  // 기존 URL 사용
+      {
+        headers: { Authorization: `Token ${token.value}` },
+        params: { username }  // 쿼리 파라미터로 username 전달
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('사용자 게시글 조회 실패:', error);
+    throw error;
+  }
+};
+
+
+
+// 특정 사용자가 좋아요한 영화 목록 가져오기
+const getUserLikedMovies = async (username) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/movies/liked-movies/`,  // 기존 API 사용
+      {
+        headers: { Authorization: `Token ${token.value}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('좋아요한 영화 조회 실패:', error);
+    throw error;
+  }
+};
+
+// 팔로우/언팔로우 토글
+const toggleFollow = async (username) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/api/v1/accounts/follow/${username}/`,
+      {},
+      {
+        headers: { Authorization: `Token ${token.value}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('팔로우 처리 실패:', error);
+    throw error;
+  }
+};
+
+
+
+
+
+
+
+
+
   
   return {
     articles,
@@ -312,23 +422,33 @@ export const useCounterStore = defineStore("counter", () => {
     API_URL,
     token,
     isLogin,
+
+    // 게시글
     getArticles,
     getArticleById,
     createArticle,
     deleteArticle,
     updateArticle,
+
+    // 회원가입, 로그인/로그아웃
     signUp,
     logIn,
     logOut,
+
+    //프로필
     userProfile,
     updateProfile,
     getProfile,
     clearAllData,
     deleteAccount,
-    // 수정본
-    userProfile,
-    getProfile,
+ 
     toggleArticleLike,
     checkAuth,
+    // 팔로잉, 팔로우 기능
+    getUserProfile,
+    getUserArticles,
+    getUserLikedMovies,
+    toggleFollow,
+
   };
 });

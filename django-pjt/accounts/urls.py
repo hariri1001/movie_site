@@ -10,5 +10,7 @@ urlpatterns = [
     path('delete/', views.delete_account, name='delete'), # 회원 탈퇴
     # path('profile/password/', views.change_password, name='change_password'), # 패스워드 변경
     path('profile/image/', views.profile_image_upload, name='profile-image-upload'), # 프로필 이미지 업로드
+    path('profile/<str:username>/', views.user_profile, name='user-profile'),  # 특정 사용자 프로필 조회
+    path('follow/<str:username>/', views.toggle_follow, name='toggle-follow'),  # 팔로우/언팔로우
 
 ]
