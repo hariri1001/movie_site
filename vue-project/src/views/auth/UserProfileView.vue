@@ -152,7 +152,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 기존 프로필 페이지의 스타일을 그대로 사용 */
 .follow-button {
   padding: 8px 20px;
   border-radius: 20px;
