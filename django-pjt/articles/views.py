@@ -1,8 +1,8 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Article
-from .serializers import ArticleSerializer
+from .models import Article, Comment
+from .serializers import ArticleSerializer, CommentSerializer
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
@@ -82,15 +82,6 @@ def article_list(request):
     serializer = ArticleSerializer(articles, many=True, context={'request': request})
     return Response(serializer.data)
 
-# # 로그인한 사용자의 게시글 목록
-# @api_view(['GET'])
-# def user_article_list(request):
-#     if not request.user.is_authenticated:
-#         return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
-    
-#     articles = Article.objects.filter(author=request.user)
-#     serializer = ArticleSerializer(articles, many=True, context={'request': request})
-#     return Response(serializer.data)
 
 @api_view(['GET'])
 def user_article_list(request):
@@ -113,3 +104,37 @@ def user_article_list(request):
     
     serializer = ArticleSerializer(articles, many=True, context={'request': request})
     return Response(serializer.data)
+
+# 게시글 댓글
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def comment_list_create(request, pk):
+    article = get_object_or_404(Article, pk=pk)
+    
+    if request.method == 'GET':
+        comments = Comment.objects.filter(article=article)
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+    
+    elif request.method == 'POST':
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(
+                author=request.user,
+                article=article
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def comment_detail(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    
+    # 자신의 댓글만 삭제 가능
+    if request.user != comment.author:
+        return Response({'detail': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDEN)
+    
+    comment.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+

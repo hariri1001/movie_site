@@ -34,7 +34,7 @@
     height: 170px;
     border-radius: 50%;  /* 원형으로 만들기 */
     object-fit: cover;
-    border: 2px solid #4CAF50;
+    border: 2px solid #28d32e;
   }
   
   .image-upload-button {

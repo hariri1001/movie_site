@@ -338,22 +338,6 @@ export const useCounterStore = defineStore("counter", () => {
     }
   };
 
-// 특정 사용자의 게시글 목록 가져오기
-// const getUserArticles = async (username) => {
-//   try {
-//     const response = await axios.get(
-//       `${API_URL}/api/v1/articles/user/${username}/`,
-//       {
-//         headers: { Authorization: `Token ${token.value}` },
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     console.error('사용자 게시글 조회 실패:', error);
-//     throw error;
-//   }
-// };
-
 
 
 const getUserArticles = async (username) => {
@@ -408,7 +392,50 @@ const toggleFollow = async (username) => {
 };
 
 
+const createComment = async (payload) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/api/v1/articles/${payload.article_id}/comments/`,
+      { content: payload.content },
+      {
+        headers: { Authorization: `Token ${token.value}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('댓글 작성 실패:', error);
+    throw error;
+  }
+};
 
+const getComments = async (articleId) => {
+  try {
+    const response = await axios.get(
+      `${API_URL}/api/v1/articles/${articleId}/comments/`,
+      {
+        headers: { Authorization: `Token ${token.value}` },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('댓글 조회 실패:', error);
+    throw error;
+  }
+};
+
+const deleteComment = async (commentId) => {
+  try {
+    await axios.delete(
+      `${API_URL}/api/v1/comments/${commentId}/`,
+      {
+        headers: { Authorization: `Token ${token.value}` },
+      }
+    );
+  } catch (error) {
+    console.error('댓글 삭제 실패:', error);
+    throw error;
+  }
+};
 
 
 
@@ -450,5 +477,8 @@ const toggleFollow = async (username) => {
     getUserLikedMovies,
     toggleFollow,
 
+    createComment,
+    getComments,
+    deleteComment,
   };
 });

@@ -5,7 +5,7 @@
       <h3>{{ store.currentArticle.title }}</h3>
       <p>{{ store.currentArticle.content }}</p>
       <p>
-        <strong>작성자:</strong>
+        <strong>작성자 : </strong>
         <span @click="goToUserProfile(store.currentArticle.author)" class="author-link">
           {{ store.currentArticle.author }}
         </span>
@@ -21,12 +21,45 @@
       </template>
     </div>
 
+    <div class="comments-section">
+      <h3>댓글</h3>
+      
+      <!-- 댓글 작성 폼 -->
+      <div class="comment-form">
+        <textarea 
+          v-model="newComment" 
+          placeholder="댓글을 작성해주세요"
+          class="comment-input"
+        ></textarea>
+        <button @click="submitComment" class="comment-submit-btn">댓글 작성</button>
+      </div>
+
+      <!-- 댓글 목록 -->
+      <div class="comments-list">
+        <div v-for="comment in comments" :key="comment.id" class="comment-item">
+          <div class="comment-header">
+            <span class="comment-author">{{ comment.author }}</span>
+            <span class="comment-date">{{ comment.created_at }}</span>
+          </div>
+          <p class="comment-content">{{ comment.content }}</p>
+          <!-- 자신의 댓글만 삭제 가능 -->
+          <button 
+            v-if="comment.author === store.userProfile?.username" 
+            @click="deleteComment(comment.id)"
+            class="comment-delete-btn"
+          >
+            삭제
+          </button>
+        </div>
+      </div>
+    </div>
+
 
   </div>
 </template>
 
 <script setup>
-import { onMounted, computed  } from 'vue';
+import { onMounted, computed, ref  } from 'vue';
 import { useCounterStore } from '@/stores/counter';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -43,13 +76,9 @@ const isAuthor = computed(() => {
 });
 
 
-
-
 const goBackToList = () => {
   router.push({ name: 'ArticleView' });
 };
-
-
 
 
 const editArticle = () => {
@@ -83,11 +112,61 @@ onMounted(async () => {
   if (!store.userProfile) {
     await store.getProfile();
   }
+  await fetchComments();
 });
 
 // 다른 사용자의 프로필로 이동
 const goToUserProfile = (username) => {
   router.push({ name: 'UserProfile', params: { username } });
+};
+
+
+
+// 댓글 관련 상태 추가
+const comments = ref([]);
+const newComment = ref('');
+
+// 댓글 작성
+const submitComment = async () => {
+  if (!newComment.value.trim()) {
+    alert('댓글 내용을 입력해주세요.');
+    return;
+  }
+
+  try {
+    await store.createComment({
+      article_id: route.params.id,
+      content: newComment.value
+    });
+    newComment.value = ''; // 입력창 초기화
+    await fetchComments(); // 댓글 목록 새로고침
+  } catch (error) {
+    console.error('댓글 작성 실패:', error);
+    alert('댓글 작성에 실패했습니다.');
+  }
+};
+
+// 댓글 삭제
+const deleteComment = async (commentId) => {
+  if (!confirm('댓글을 삭제하시겠습니까?')) return;
+
+  try {
+    await store.deleteComment(commentId);
+    await fetchComments(); // 댓글 목록 새로고침
+  } catch (error) {
+    console.error('댓글 삭제 실패:', error);
+    alert('댓글 삭제에 실패했습니다.');
+  }
+};
+
+// 댓글 목록 가져오기
+const fetchComments = async () => {
+  try {
+    const response = await store.getComments(route.params.id);
+    comments.value = response;
+  } catch (error) {
+    console.error('댓글 로드 실패:', error);
+  }
 };
 
 

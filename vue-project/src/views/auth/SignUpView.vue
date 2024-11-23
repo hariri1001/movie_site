@@ -1,42 +1,43 @@
 <template>
-  <div class="signup-container">
-    <h1>Sign Up Page</h1>
-    <form @submit.prevent="signUp" class="signup-form">
-      <div class="form-group">
-        <label for="firstName">name : </label>
-        <input type="text" id="firstName" v-model.trim="firstName">
+  <div class="signup-page" >
+    <div class="signup-container">
+      <div class="signup">
+        <h1>회원 가입</h1>
       </div>
       
-      <div class="form-group">
-        <label for="username">userID : </label>
-        <input type="text" id="username" v-model.trim="username">
-      </div>
-
-      <div class="form-group">
-        <label for="password1">Password : </label>
-        <input type="password" id="password1" v-model.trim="password1">
-      </div>
-      
-
-      <div class="form-group">
-        <label for="password2">Password confirmation : </label>
-        <input type="password" id="password2" v-model.trim="password2">
-      </div>
-      
-
-      <div class="form-group">
-        <label for="email">email : </label>
-        <div>
-          <input type="text" id="email" v-model.trim="email" placeholder="이메일">
-          <span class="at">@</span>
-          <select v-model="emailDomain" class="email-domain">
-            <option value="gmail.com">gmail.com</option>
-            <option value="naver.com">naver.com</option>
-          </select>
+      <form @submit.prevent="signUp" class="signup-form">
+        <div class="form-group">
+          <input type="text" id="firstName" v-model.trim="firstName" placeholder="이름">
         </div>
-      </div>
-      <input type="submit" value="SignUp" class="signup-button">
-    </form>
+        
+        <div class="form-group">
+          <input type="text" id="username" v-model.trim="username" placeholder="아이디">
+        </div>
+
+        <div class="form-group">
+          <input type="password" id="password1" v-model.trim="password1" placeholder="패스워드">
+        </div>
+        
+
+        <div class="form-group">
+          <input type="password" id="password2" v-model.trim="password2" placeholder="패스워드 확인">
+        </div>
+        
+
+        <div class="form-group">
+          <div class="email-container">
+            <input type="text" id="email" v-model.trim="email" placeholder="이메일" class="email-input">
+            <span class="at">@</span>
+            <select v-model="emailDomain" class="email-domain">
+              <option value="선택">선택</option>
+              <option value="gmail.com">gmail.com</option>
+              <option value="naver.com">naver.com</option>
+            </select>
+          </div>
+        </div>
+        <input type="submit" value="SignUp" class="signup-button">
+      </form>
+    </div>
   </div>
 </template>
 
@@ -49,7 +50,7 @@ const username = ref(null)
 const password1 = ref(null)
 const password2  = ref(null)
 const email  = ref(null)
-const emailDomain  = ref(null)
+const emailDomain  = ref('선택')
 
 const store = useCounterStore()
 
@@ -89,21 +90,46 @@ const Email = computed(() => {
 </script>
 
 <style>
-.signup-container {
- max-width: 460px;
- margin: 50px auto;
- padding: 40px;
- background-color: #1a1a1a;
- border-radius: 8px;
- box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+
+/* 전체 화면 배경 설정을 위한 스타일 */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
 }
 
-h1 {
- text-align: center;
+.signup-page {
+  /* 배경 이미지 설정 */
+  background-image: 
+    linear-gradient(
+      rgba(0, 0, 0, 0.4), /* 검은색 오버레이의 투명도 조절 (0.7 = 70% 불투명) */
+      rgba(0, 0, 0, 0.4)
+    ),
+    url('@/assets/signupimg.jpeg');
+  background-size: cover;  /* 화면을 꽉 채우도록 이미지 크기 조절 */
+  background-position: center;  /* 이미지를 중앙에 위치 */
+  background-repeat: no-repeat;  /* 이미지 반복 없음 */
+  background-attachment: fixed;  /* 스크롤해도 배경 고정 */
+  
+}
+
+.signup-container {
+  max-width: 460px;
+  margin: 50px auto;
+  padding: 40px;
+  background-color: rgba(0, 0, 0, 0.75); /* 배경색에 투명도 추가 */
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+
+.signup {
+ text-align: left;
  color: white;
  margin-bottom: 40px;
  font-size: 28px;
- font-weight: 600;
+ font-weight: 700;
 }
 
 .signup-form {
@@ -144,24 +170,45 @@ input:focus, select:focus {
  background-color: #404040;
 }
 
-.email-input-group {
+
+.email-container {
  display: flex;
  align-items: center;
- gap: 8px;
+ gap: 10px; /* 요소들 사이 간격 */
+ width: 100%;
 }
 
-.email-input-group input {
- flex: 1;
-}
-
-.email-input-group select {
- width: 130px;
+.email-input {
+ width: 40%; /* 이메일 입력창 너비 */
+ padding: 10px;
+ background: rgba(0, 0, 0, 0.5);
+ border: 1px solid #333;
+ border-radius: 5px;
+ color: white;
 }
 
 .at {
  color: white;
  font-size: 16px;
 }
+
+.email-domain {
+ width: 60%; /* select 박스 너비 */
+ padding: 15px;
+ background: rgba(0, 0, 0, 0.5);
+ border: 1px solid #333;
+ border-radius: 5px;
+ color: white;
+}
+
+/* focus 스타일 */
+.email-input:focus, .email-domain:focus {
+ background: rgba(255, 255, 255, 0.1);
+ border: 1px solid #fff;
+ box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+ outline: none;
+}
+
 
 .signup-button {
  margin-top: 16px;

@@ -30,9 +30,9 @@
 
 
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
               <RouterLink class="nav-link" :to="{ name: 'MainView' }">Home</RouterLink>
-            </li>
+            </li> -->
             <li class="nav-item">
               <RouterLink class="nav-link" :to="{ name: 'ArticleView' }">Articles</RouterLink>
             </li>
@@ -40,26 +40,23 @@
             <!-- 로그인 상태에 따라 다른 메뉴 표시 -->
             <template v-if="!store.isLogin">
                 <li class="nav-item">
-                    <RouterLink class="nav-link" :to="{ name: 'LogInView' }">Login</RouterLink>
+                    <RouterLink class="nav-link" :to="{ name: 'LogInView' }">로그인</RouterLink>
                 </li>
                 <li class="nav-item">
-                    <RouterLink class="nav-link" :to="{ name: 'SignUpView' }">SignUp</RouterLink>
+                    <RouterLink class="nav-link" :to="{ name: 'SignUpView' }">회원가입</RouterLink>
                 </li>
             </template>
             <template v-else>
                 <li class="nav-item">
-                    <RouterLink class="nav-link" :to="{ name: 'ProfileView' }">MyProfile</RouterLink>
+                    <RouterLink class="nav-link" :to="{ name: 'ProfileView' }">프로필</RouterLink>
                 </li>
                 <li class="nav-item">
-                  <RouterLink 
-                    class="nav-link" 
-                    :to="{ name: 'MovieRandom' }"
-                  >
-                    <i class="fas fa-thumbs-up me-1"></i>랜덤 무비
+                  <RouterLink class="nav-link" :to="{ name: 'MovieRandom' }">
+                    <i class="fas fa-thumbs-up me-1"></i>랜덤무비
                   </RouterLink>
                 </li>
                 <li class="nav-item">
-                    <button class="btn btn-link nav-link" @click="logOut">Logout</button>
+                    <button class="btn btn-link nav-link" @click="logOut">로그아웃</button>
                 </li>
             </template>
           </ul>

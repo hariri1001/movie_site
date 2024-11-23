@@ -58,13 +58,17 @@ const showModal = ref(false)
 </script>
 
 <style scoped>
+.fixed-chat {
+  background-color: #000000;
+}
+
 .chat-button {
   position: fixed;
   bottom: 6rem;
   right: 6rem;
   width: 4rem;
   height: 4rem;
-  background-color: #10b981;
+  background-color: #00ba19;
   border-radius: 50%;
   border: none;
   display: flex;
@@ -76,7 +80,7 @@ const showModal = ref(false)
 }
 
 .chat-button:hover {
-  background-color: #059669;
+  background-color: #009e15;
 }
 
 .chat-button-text {
@@ -93,10 +97,11 @@ const showModal = ref(false)
 .modal-content {
   border-radius: 1.5rem;
   overflow: hidden;
+  background-color: #141414;
 }
 
 .modal-header {
-  background-color: rgb(247, 218, 125);
+  background-color: #141414;
   padding: 1rem 1.5rem;
 }
 
@@ -110,13 +115,13 @@ const showModal = ref(false)
 }
 
 .modal-title {
-  color: #333;
   margin: 0;
   font-weight: 600;
+  color: #00ba19;
 }
 
 .btn-close {
-  color: #333;
+  filter: invert(1);
   opacity: 0.8;
 }
 
@@ -125,7 +130,7 @@ const showModal = ref(false)
 }
 
 .modal-body {
-  background-color: white;
+  background-color: #1a1a1a;
   min-height: 400px;
 }
 
@@ -137,6 +142,6 @@ const showModal = ref(false)
 /* MovieRecommender 컴포넌트 스타일 오버라이드 */
 :deep(.movie-recommender) {
   height: 100%;
-  background-color: white;
+  background-color: #1a1a1a;
 }
 </style>

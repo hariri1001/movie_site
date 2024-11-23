@@ -4,7 +4,6 @@
     <div class="profile-header">
       <!-- 왼쪽: 프로필 정보 -->
       <div class="profile-info">
-
         <!-- 프로필이미지 업로드 -->
         <div class="profile-image-section">
           <img :src="store.userProfile?.profile_image ? `${store.API_URL}${store.userProfile.profile_image}` : 
@@ -12,8 +11,6 @@
           <input type="file" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none">
           <button @click="$refs.fileInput.click()">이미지 변경</button>
         </div>
-
-
 
         <p class="username">{{ store.userProfile?.username }}</p>
         
@@ -31,36 +28,34 @@
       </div>
 
       <!-- 오른쪽: 좋아요한 영화 그리드 -->
-      <div class="liked-content">
-        <h2>내가 좋아하는 영화</h2>
-        <div v-if="likedMovies.length === 0" class="no-movies">
-            좋아요한 영화가 없습니다.
+      <div class="content-section">
+        <div class="liked-content">
+          <h2>내가 좋아하는 영화</h2>
+          <div v-if="likedMovies.length === 0" class="no-movies">
+              좋아요한 영화가 없습니다.
+          </div>
+          <div v-else class="content-grid">
+            <div v-for="movie in likedMovies" :key="movie.id" class="movie-card" @click="goToMovieDetail(movie.tmdb_id)">
+              <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" :alt="movie.title" class="movie-poster">
+            </div>
+          </div>
         </div>
-        <div v-else class="content-grid">
-          <div v-for="movie in likedMovies" :key="movie.id" class="movie-card" @click="goToMovieDetail(movie.tmdb_id)">
-            <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" :alt="movie.title" class="movie-poster">
+
+        <!-- 내가 작성한 게시글 섹션을 여기로 이동 -->
+        <div class="comments-section">
+          <h2>내가 작성한 게시글</h2>
+          <div class="comments-grid">
+            <div class="comment-card" v-for="article in userArticles" :key="article.id">
+              <div class="comment-content">
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.content }}</p>
+                <button @click="goToArticleDetail(article.id)">자세히 보기</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-
-
-
-      
     </div>
-
-    <div class="comments-section">
-  <h2>내가 작성한 게시글</h2>
-  <div class="comments-grid">
-    <div class="comment-card" v-for="article in userArticles" :key="article.id">
-      <div class="comment-content">
-        <h3>{{ article.title }}</h3>
-        <p>{{ article.content }}</p>
-        <button @click="goToArticleDetail(article.id)">자세히 보기</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 
     <!-- 프로필 수정 폼 -->

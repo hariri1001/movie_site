@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Article
+from .models import Article, Comment
 
 class ArticleSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')
@@ -19,3 +19,12 @@ class ArticleSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return request.user in obj.liked_users.all()
         return False
+    
+class CommentSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.username')
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S", read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'content', 'author', 'created_at', 'article']
+        read_only_fields = ('author', 'article')
