@@ -8,7 +8,7 @@ pip list (패키지 목록 확인)
 -vue
 npm install
 
-.env파일
+.env파일, 
 
 
 # 팀원 정보 및 업무 분담 내역
