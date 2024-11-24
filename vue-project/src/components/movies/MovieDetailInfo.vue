@@ -3,7 +3,7 @@
     <!-- Backdrop Image -->
     <div class="backdrop" :style="`background-image: url(https://image.tmdb.org/t/p/original${movieDetail.backdrop_path})`">
       <div class="backdrop-overlay">
-        <div class="container py-5">
+        <div class="container py-1">
           <div class="row">
             <!-- Back Button -->
             <div class="col-12 mb-4">
@@ -50,7 +50,7 @@
     </div>
  
     <!-- Content Section -->
-    <div class="container mt-5">
+    <div class="Content-container">
       <!-- Overview -->
       <section class="mb-5">
         <h2 class="section-title">줄거리</h2>
@@ -92,7 +92,7 @@
                 <i class="fa-solid fa-play"></i>
               </div>
             </div>
-            <div class="video-title">
+            <div class="video-title ">
               <h3>{{ movieDetail.title }} 공식 예고편</h3>
             </div>
           </div>
@@ -294,5 +294,181 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.backdrop {
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  height: 500px !important; /* !important 추가 */
+  min-height: 500px !important; /* 최소 높이도 강제 지정 */
+  width: 100%;
+  overflow: hidden; /* 내부 컨텐츠가 넘치지 않도록 */
+}
 
+.backdrop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 300px ;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* 기존 스타일들을 유지하면서 포스터 이미지 크기도 조절 */
+.movie-poster {
+  max-height: 350px; /* 포스터 높이도 함께 조절 */
+  width: auto;
+  object-fit: cover;
+  margin-left: 140px;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-button:hover {
+  opacity: 0.8;
+}
+
+.movie-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.movie-meta {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.genre-badge {
+  margin: 1rem 0;
+}
+
+.genre-badge .badge {
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+}
+
+.like-button {
+  background: none;
+  border: 2px solid white;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.like-button.liked {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.like-icon {
+  font-size: 1.2rem;
+}
+
+.Content-container{
+  max-width: 1200px; /* 최대 너비 설정 */
+  margin: 0 auto; /* 중앙 정렬 */
+  padding-left: 5rem !important; /* 왼쪽 여백 */
+  padding-right: 5rem !important; /* 오른쪽 여백 */
+}
+
+.cast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1.5rem;
+  padding: 0rem;
+  margin: 0; /* 마진 제거 */
+}
+
+.cast-card {
+  text-align: center; /* 카드 내부 텍스트 중앙 정렬 */
+  
+}
+
+.cast-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1/1;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 0.5rem; /* 이미지와 텍스트 사이 간격 */
+}
+
+.cast-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cast-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+  padding: 1rem 0.5rem;
+  text-align: center; /* 오버레이 내부 텍스트 중앙 정렬 */
+}
+
+.cast-info {
+  color: white;
+}
+
+.actor-name {
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin: 0;
+  margin-bottom: 0.2rem;
+}
+
+.character-name {
+  font-size: 0.8rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+  .cast-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 1rem;
+  }
+  
+  .actor-name {
+    font-size: 0.8rem;
+  }
+  
+  .character-name {
+    font-size: 0.7rem;
+  }
+}
+
+
+/* 예고편 섹션 하단 여백 추가 */
+section.mb-5:last-child {
+  margin-bottom: 5rem !important; /* 마지막 섹션에 더 큰 여백 추가 */
+}
+
+.trailer-thumbnails {
+  padding: 0;
+  margin-bottom: 3rem; /* 예고편 섹션 아래 여백 추가 */
+}
+
+.video-card {
+  max-width: 800px;
+  margin-bottom: 5rem; /* 비디오 카드 아래 여백 추가 */
+}
 </style>

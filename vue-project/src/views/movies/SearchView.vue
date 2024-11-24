@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-4">
+  <div class="container-fluid px-4">
     <h2>검색 결과: "{{ $route.query.title }}"</h2>
     
     <div v-if="loading" class="text-center">
@@ -16,25 +16,17 @@
       검색 결과가 없습니다.
     </div>
 
-    <div v-else class="row row-cols-1 row-cols-md-4 g-4">
+    <div v-else class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
       <div v-for="movie in movies" :key="movie.id" class="col">
         <div class="card h-100" @click="goToMovie(movie.id)">
-          <img 
-            :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
-            class="card-img-top" 
-            alt="movie poster"
-            @error="handleImageError"
-          >
-          <!-- <div class="card-body">
-            <h5 class="card-title">{{ movie.title }}</h5>
-            <p class="card-text">{{ movie.overview?.slice(0, 100) }}...</p>
-            <p class="card-text">
-              <small class="text-muted">평점: {{ movie.vote_average }}</small>
-            </p>
+          <div class="poster-wrapper">
+            <img
+              :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`"
+              class="card-img-top"
+              alt="movie poster"
+              @error="handleImageError"
+            >
           </div>
-          <div class="card-footer">
-            <small class="text-muted">개봉일: {{ movie.release_date }}</small>
-          </div> -->
         </div>
       </div>
     </div>
@@ -81,7 +73,7 @@ const searchMovies = async (query) => {
 }
 
 const handleImageError = (e) => {
-  e.target.src = '/no-image.jpg'  // 적절한 대체 이미지 경로로 변경
+  e.target.src = '/no-image.jpg'
 }
 
 watch(() => route.query.title, (newQuery) => {
@@ -94,25 +86,41 @@ onMounted(() => {
   }
 })
 
-// 영화 상세 페이지로 이동
 const goToMovie = (movieId) => {
-  router.push({ 
-    name: 'MovieDetail',  // 또는 실제 사용 중인 라우트 이름
-    params: { movieId: movieId }  // route.params.movieId를 사용하고 있으므로 'movieId'로 변경
+  router.push({
+    name: 'MovieDetail',
+    params: { movieId: movieId }
   })
 }
-
-
 </script>
 
 <style scoped>
+.container-fluid {
+  max-width: 1200px;
+}
+
+.poster-wrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 150%; /* 2:3 영화 포스터 비율 */
+  overflow: hidden;
+}
+
 .card-img-top {
-  height: 300px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
 .card {
   transition: transform 0.2s;
+  border: none; /* 테두리 제거 */
+  border-radius: 8px;
+  overflow: hidden;
+  background: none; /* 배경색 제거 */
 }
 
 .card:hover {
@@ -120,17 +128,39 @@ const goToMovie = (movieId) => {
   cursor: pointer;
 }
 
-/* 긴 제목이나 설명이 카드 레이아웃을 깨지지 않도록 */
-.card-title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+/* 반응형 그리드 설정 */
+@media (max-width: 576px) {
+  .row-cols-1 > * {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 }
 
-.card-text {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+@media (min-width: 576px) and (max-width: 768px) {
+  .row-cols-sm-2 > * {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+  .row-cols-md-3 > * {
+    flex: 0 0 33.333333%;
+    max-width: 33.333333%;
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1200px) {
+  .row-cols-lg-4 > * {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .row-cols-xl-5 > * {
+    flex: 0 0 20%;
+    max-width: 20%;
+  }
 }
 </style>

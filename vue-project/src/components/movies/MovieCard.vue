@@ -1,12 +1,13 @@
 <template>
   <div class="container">
     <!-- 현재 인기 상영작 -->
-    <h2 class="carousel-title">인기 상영작</h2>
+    
     <div class="carousel-container">
+      <h2 class="carousel-title">인기 상영작</h2>
       <div class="carousel">
         <div class="movie-cards" :style="{ transform: `translateX(-${popularPosition}px)` }">
             <div class="movie-card" v-for="(movie, index) in popularMovies" :key="movie.id">
-                <span class="top-badge">TOP 10</span>
+                <!-- <span class="top-badge">TOP 10</span> -->
                 <span class="rank-number">{{index + 1}}</span>
                 <RouterLink :to="{ name: 'MovieDetail', params: { movieId: movie.id }}" class="text-decoration-none">
                   <div class="card">
@@ -35,8 +36,9 @@
 
 
     <!-- 평점 많이 받은 영화 -->
-    <h2 class="carousel-title">최고 평점 영화</h2>
+    
     <div class="carousel-container">
+      <h2 class="carousel-title">최고 평점 영화</h2>
       <div class="carousel" ref="carousel">
         <div class="movie-cards" :style="{ transform: `translateX(-${topRatedPosition}px)` }">
           <div class="movie-card" v-for="movie in topRatedMovies" :key="movie.id">
@@ -156,6 +158,10 @@ onMounted(() => {
   padding: 0 60px; /* 버튼 공간 확보를 위해 패딩 증가 */
   margin: 20px 0;
   overflow: hidden;
+
+  /* 컨테이너 너비 고정 */
+  max-width: 1400px; /* 전체 너비 조정 */
+  margin: 20px auto; /* 중앙 정렬 */
 }
 
 .carousel {
@@ -170,9 +176,10 @@ onMounted(() => {
 
 .movie-card {
   flex: 0 0 auto;
-  width: 230px;
-  margin-right: 10px;
+  width: calc(20% - 40px); /* 5개의 카드를 위한 너비 (20%) 및 마진 고려 */
+  margin-right: 40px; /* 카드 간격 증가 */
   transition: transform 0.3s ease;
+  position: relative; /* position 추가 */
 }
 
 .card {
@@ -203,7 +210,7 @@ onMounted(() => {
 }
 
 /* TOP 10 배지 */
-.top-badge {
+/* .top-badge {
   position: absolute;
   top: 10px;
   left: 10px;
@@ -213,7 +220,7 @@ onMounted(() => {
   border-radius: 4px;
   font-weight: bold;
   z-index: 1;
-}
+} */
 
 
 /* 순위 숫자 */
@@ -225,13 +232,16 @@ onMounted(() => {
 
 .rank-number {
   position: absolute;
-  top: 200px;
+  top: 140px;
+  left: 115px;
   font-size: 120px;
   font-weight: bold;
   color: rgb(255, 255, 255);
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   z-index: 1;
   opacity: 0.8;
+  font-style: italic; /* 이탤릭체 추가 */
+  
 }
 
 /* 스타일 버튼 */
@@ -241,7 +251,7 @@ onMounted(() => {
  bottom: 0;
  width: 100px;
  border: none;
- background: transparent;
+ background: rgba(0, 0, 0, 0.5); /* 배경 추가 */
  cursor: pointer;
  z-index: 2;
  padding: 0;

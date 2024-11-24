@@ -1,8 +1,8 @@
 <template>
-    <nav class="navbar bg-dark navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg" style="background-color: black;" data-bs-theme="dark">
       <div class="container-fluid">
         <RouterLink class="navbar-brand" :to="{ name: 'MainView' }">
-          <img src="/favicon.ico" alt="Logo" height="30" class="d-inline-block align-text-top">
+          <img src="/POSTlogo.png" alt="Logo" height="30" class="d-inline-block align-text-top">
         </RouterLink>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
@@ -11,10 +11,6 @@
         </button>
         
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-          
-          
-
-
           <ul class="navbar-nav mb-2 mb-lg-0">
             <!-- 검색창 추가 -->
             <form class="d-flex me-auto" @submit.prevent="searchMovies">

@@ -296,10 +296,12 @@ export default {
 
 <style scoped>
 .movie-recommender {
-  background-color: white;
+  background-color: #767676;
   height: 100%;
   display: flex;
   flex-direction: column;
+  border-radius: 15px;
+  padding: 20px;
 }
 
 .modal-content-wrapper {
@@ -310,73 +312,104 @@ export default {
 
 .question-section {
   flex: 1;
-  background-color: white;
-}
-
-.results-section {
-  background-color: white;
-  overflow-y: auto;
+  text-align: center;
+  padding: 1.5rem;
 }
 
 .question-text {
-  font-size: 1.75rem;
-  font-weight: 500;
+  font-size: 1.2rem;
+  font-weight: bold;
   margin-bottom: 2rem;
-  color: #333;
+  color: #ffffff;
 }
 
+/* 옵션 버튼 스타일링 */
 .option-btn {
-  height: 60px;
-  font-size: 1.2rem;
-  color: #000000;
-  background-color: #fcaaff;
+  width: 100%;
+  padding: 15px;
+  margin: 8px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: black;
+  background-color: #00ba19;
   border: none;
-  text-align: left;
+  border-radius: 10px;
+  text-align: center;
   transition: all 0.3s ease;
 }
 
 .option-btn:hover {
-  background-color: #f3f4f6;
+  background-color: #7AB076;
   transform: translateY(-2px);
+}
+
+/* 추천 결과 섹션 */
+.results-section {
+  background-color: rgb(50, 50, 50);
+  border-radius: 15px;
+  padding: 20px;
 }
 
 .results-title {
   font-size: 1.75rem;
   font-weight: 500;
   text-align: center;
-  color: #333;
+  color: #dad9d9;
+  margin-bottom: 2rem;
 }
 
-.description {
-  font-size: 0.875rem;
-  line-height: 1.4;
-  color: #666;
-}
-
+/* 카드 스타일링 */
 .card {
+  border: none;
+  border-radius: 15px;
+  overflow: hidden;
   transition: transform 0.3s ease;
-  background-color: white;
 }
 
 .card:hover {
   transform: translateY(-5px);
 }
 
+.card-body {
+  padding: 1.25rem;
+}
+
+/* 모달 푸터 */
 .modal-footer {
+  background-color: rgb(50, 50, 50) !important;
+  border: none;
   padding: 1rem;
 }
 
-/* 스크롤바 스타일링 */
-::-webkit-scrollbar {
-  width: 6px;
+.modal-footer .btn-primary {
+  width: 100%;
+  background-color: #00ba19;
+  border: none;
+  padding: 12px;
+  font-size: 1.1rem;
+  border-radius: 10px;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+.modal-footer .btn-primary:hover {
+  background-color: #00ba19;
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+/* 로딩 스피너 */
+.spinner-border {
+  color: #90C88C !important;
+}
+
+/* 알림 메시지 */
+.alert {
+  border-radius: 10px;
+}
+
+/* 챗봇 아이콘 스타일 */
+.logo-icon {
+  margin-bottom: 1.5rem;
+}
+
+.logo-icon-text {
+  font-size: 2rem;
 }
 </style>

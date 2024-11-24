@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .serializers import UserProfileSerializer, UserSerializer
+from .serializers import UserProfileSerializer, MyUserSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
@@ -15,7 +15,7 @@ User = get_user_model()
 @api_view(['POST'])
 def signup(request):
     print('회원가입 요청 데이터:', request.data)  # 데이터 확인
-    serializer = UserSerializer(data=request.data)
+    serializer = MyUserSerializer(data=request.data)
     
     if serializer.is_valid():
         user = serializer.save()

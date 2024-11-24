@@ -11,7 +11,7 @@
             <iframe 
                 width="100%" 
                 height="100%" 
-                :src="`https://www.youtube.com/embed/${selectedMovie.videoKey}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${selectedMovie.videoKey}&modestbranding=1&showinfo=0`"
+                :src="`https://www.youtube.com/embed/${selectedMovie.videoKey}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${selectedMovie.videoKey}&modestbranding=1&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`"
                 frameborder="0" 
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen>
@@ -124,7 +124,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.Movie-trailer {
+/* .Movie-trailer {
     position: relative;
     width: 100%;
     height: 600px;
@@ -133,10 +133,32 @@ onMounted(() => {
 
 .Movie-trailer iframe {
     position: absolute;
+    width: 130%;
+    height: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    
+}  */
+
+.Movie-trailer {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+}
+
+.Movie-trailer iframe {
+    position: absolute;
     width: 100%;
     height: 100%;
     pointer-events: none;
+    object-fit: contain;
+    transform: scale(1.5); /* 필요한 경우 값 조절 */
+    transform-origin: center;
+    
 }
+
 
 .overlay {
     position: absolute;

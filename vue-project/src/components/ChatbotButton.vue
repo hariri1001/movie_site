@@ -24,7 +24,7 @@
               <div class="logo-icon">
                 <span class="logo-icon-text">🎬</span>
               </div>
-              <h5 class="modal-title">영화 추천 봇</h5>
+              <h5 class="modal-title">삐빅- 영화 추천을 도와드립니다.</h5>
             </div>
             <button 
               type="button" 

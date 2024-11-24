@@ -21,6 +21,11 @@
       </div>
     </div>
 
+    <!-- 다시 뽑기 버튼 추가 -->
+    <button class="reset-button" @click="resetCards">
+      다시 뽑기
+    </button>
+
     <!-- 모달 컴포넌트 추가 -->
     <MovieDetailModal v-if="showModal" :movie="selectedMovie" :showModal="showModal" @close="closeModal"/>
 
@@ -111,6 +116,19 @@ export default {
       // 카드 다시 뒤집기
       this.isFlipped = Array(5).fill(false);
     },
+
+    resetCards() {
+      this.isSpread = false;
+      this.isFlipped = Array(5).fill(false);
+      this.showModal = false;
+      this.selectedMovie = null;
+      
+      // 새로운 영화들을 가져오기 전에 약간의 딜레이를 줌
+      setTimeout(() => {
+        this.getRandomMovies();
+      }, 300);
+    },
+
   },
   created() {
     this.getRandomMovies();
@@ -305,5 +323,42 @@ h3 {
   color: white;
   font-size: 14px;
   text-align: center;
+}
+
+
+
+/* 다시 뽑기 버튼 스타일 */
+.reset-button {
+  position: fixed;
+  bottom: 50px;
+  padding: 15px 30px;
+  font-size: 18px;
+  background-color: #00ba19;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  z-index: 1000;
+}
+
+.reset-button:hover {
+  background-color: #7b1fa2;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.reset-button:active {
+  transform: translateY(0);
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 */
+@media (max-width: 768px) {
+  .reset-button {
+    bottom: 30px;
+    padding: 12px 25px;
+    font-size: 16px;
+  }
 }
 </style>

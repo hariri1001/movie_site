@@ -213,6 +213,7 @@ export const useCounterStore = defineStore("counter", () => {
           Authorization: `Token ${token.value}`,
         },
       });
+      console.log(response.data);
       userProfile.value = response.data; // 사용자 프로필 데이터 저장
     } catch (error) {
       console.error("프로필 조회 실패:", error);

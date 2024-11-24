@@ -23,7 +23,7 @@
         :class="{ liked: article.isLiked }"
         @click="$emit('toggle-like', article)"
       >
-        ❤️
+      👍
       </span>
       <strong>{{ article.likes_count || 0 }}</strong> Likes
     </p>

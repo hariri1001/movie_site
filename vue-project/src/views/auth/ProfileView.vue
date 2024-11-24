@@ -2,6 +2,7 @@
   <div class="profile-container">
     <!-- 상단 프로필 섹션 -->
     <div class="profile-header">
+
       <!-- 왼쪽: 프로필 정보 -->
       <div class="profile-info">
         <!-- 프로필이미지 업로드 -->
@@ -12,10 +13,12 @@
           <button @click="$refs.fileInput.click()">이미지 변경</button>
         </div>
 
+
+
         <p class="username">{{ store.userProfile?.username }}</p>
-        
+        <p class="username">{{ store.userProfile?.first_name || '이름 없음' }}</p>
         <div class="stats">
-          <p class="username">{{ store.userProfile?.first_name }}</p>
+          
           <p class="username">{{ store.userProfile?.email }}</p>
           <p>movies: {{ likedMovies.length }}</p>
           <p>followers: {{ store.userProfile?.followers_count || 0 }}</p>
@@ -28,7 +31,7 @@
       </div>
 
       <!-- 오른쪽: 좋아요한 영화 그리드 -->
-      <div class="content-section">
+      <div class="articles-content">
         <div class="liked-content">
           <h2>내가 좋아하는 영화</h2>
           <div v-if="likedMovies.length === 0" class="no-movies">
@@ -41,7 +44,6 @@
           </div>
         </div>
 
-        <!-- 내가 작성한 게시글 섹션을 여기로 이동 -->
         <div class="comments-section">
           <h2>내가 작성한 게시글</h2>
           <div class="comments-grid">
@@ -54,8 +56,12 @@
             </div>
           </div>
         </div>
-      </div>
+
+
+      </div>  
     </div>
+
+    
 
 
     <!-- 프로필 수정 폼 -->
@@ -164,6 +170,8 @@ const goToArticleDetail = (articleId) => {
 onMounted(async () => {
   try {
     await store.getProfile();
+    
+    console.log('프로필 데이터:', store.userProfile);
     await fetchLikedMovies();
     await fetchUserArticles();
   } catch (err) {
@@ -255,6 +263,221 @@ const handleImageUpload = async (event) => {
 </script>
 
 <style scoped>
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
 
+.profile-header {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+}
 
+.profile-info {
+  flex: 0 0 300px;
+}
+
+.articles-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.liked-content {
+  margin-bottom: 30px;
+}
+
+.content-grid {
+  display: grid;
+  /* 5개의 열로 고정 */
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+}
+
+.movie-card {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.movie-card:hover {
+  transform: scale(1.05);
+}
+
+.movie-poster {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* 게시글 섹션 스타일 */
+.comments-section {
+  width: 100%;
+}
+
+.comments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.comment-card {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.comment-content h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2em;
+}
+
+.comment-content p {
+  margin: 0 0 15px 0;
+  font-size: 0.9em;
+  color: #666;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.comment-content button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.comment-content button:hover {
+  background: #0056b3;
+}
+
+.no-movies {
+  text-align: center;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 8px;
+  color: #666;
+}
+
+h2 {
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #eee;
+}
+
+/* 프로필 이미지 관련 스타일 */
+.profile-image-section {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+/* 프로필 수정 폼 스타일 */
+.profile-form {
+  margin-top: 20px;
+  padding: 20px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.button-group {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.save-button, .cancel-button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button {
+  background: #28a745;
+  color: white;
+}
+
+.cancel-button {
+  background: #dc3545;
+  color: white;
+}
+
+.edit-button, .delete-button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-button {
+  background: #007bff;
+  color: white;
+}
+
+.delete-button {
+  background: #dc3545;
+  color: white;
+  margin-top: 10px;
+}
+
+/* 반응형 디자인을 위한 미디어 쿼리 추가 */
+@media (max-width: 1200px) {
+  .content-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .content-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .content-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .profile-header {
+    flex-direction: column;
+  }
+  
+  .profile-info {
+    flex: none;
+    width: 100%;
+  }
+}
 </style>

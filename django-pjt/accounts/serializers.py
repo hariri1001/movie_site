@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 
-class UserSerializer(serializers.ModelSerializer):
+class MyUserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2  = serializers.CharField(write_only=True)
     
@@ -30,7 +30,7 @@ class UserSerializer(serializers.ModelSerializer):
             return user
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class MyUpdateUserSerializer(serializers.ModelSerializer):
     # 비밀번호 수정시 필요
     password = serializers.CharField(write_only=True, required=False)
 
