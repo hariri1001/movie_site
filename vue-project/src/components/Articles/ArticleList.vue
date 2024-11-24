@@ -1,32 +1,57 @@
-<template>
-  <div>
-    <h3>Article List</h3>
-    <ArticleListItem v-for="article in store.articles" :key="article.id" :article="article" @toggle-like="handleToggleLike"
-    />
+
+ <template>
+  <div class="review-list-container">
+    <div class="review-header">
+      <h2>영화 리뷰 목록</h2>
+      <div class="sort-controls">
+        <select v-model="sortBy" @change="sortReviews" class="sort-select">
+          <option value="latest">최신순</option>
+          <option value="rating">평점순</option>
+          <option value="likes">좋아요순</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="reviews-grid">
+      <ArticleListItem 
+        v-for="article in sortedArticles" 
+        :key="article.id" 
+        :article="article"
+        @toggle-like="handleToggleLike"
+      />
+    </div>
+
+    <div v-if="store.articles.length === 0" class="no-reviews">
+      아직 작성된 리뷰가 없습니다.
+    </div>
   </div>
 </template>
 
 <script setup>
-
-import { onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { useCounterStore } from "@/stores/counter";
 import ArticleListItem from "./ArticleListItem.vue";
 
 const store = useCounterStore();
+const sortBy = ref('latest');
 
-// 컴포넌트 마운트 시 게시글 로드
-onMounted(async () => {
-  await store.getArticles();
-  console.log('현재 게시글 목록:', store.articles); // 디버깅용
+const sortedArticles = computed(() => {
+  const articles = [...store.articles];
+  
+  switch (sortBy.value) {
+    case 'rating':
+      return articles.sort((a, b) => b.rating - a.rating);
+    case 'likes':
+      return articles.sort((a, b) => (b.likes_count || 0) - (a.likes_count || 0));
+    case 'latest':
+    default:
+      return articles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  }
 });
-
-
-
 
 const handleToggleLike = async (article) => {
   try {
     const { liked, likes_count } = await store.toggleArticleLike(article.id);
-
     const targetArticle = store.articles.find((a) => a.id === article.id);
     if (targetArticle) {
       targetArticle.isLiked = liked;
@@ -36,5 +61,57 @@ const handleToggleLike = async (article) => {
     console.error("좋아요 상태 업데이트 실패:", error);
   }
 };
+
+const sortReviews = () => {
+  // 정렬 방식이 변경될 때 필요한 추가 로직이 있다면 여기에 구현
+  console.log('Sort changed to:', sortBy.value);
+};
+
+onMounted(async () => {
+  await store.getArticles();
+});
 </script>
 
+<style scoped>
+.review-list-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.sort-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.sort-select {
+  padding: 8px;
+  border: 1px solid #f9abab;
+  border-radius: 4px;
+  background-color: rgb(135, 134, 134);
+  cursor: pointer;
+}
+
+.reviews-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.no-reviews {
+  text-align: center;
+  padding: 40px;
+  background-color: #fcffbd;
+  border-radius: 8px;
+  color: #666;
+}
+</style>

@@ -23,13 +23,42 @@ def article_list_create(request):
         if not request.user.is_authenticated:
             return Response({"detail": "Authentication credentials were not provided."}, status=status.HTTP_401_UNAUTHORIZED)
         
+        # 영화 정보 포함하여 저장
         serializer = ArticleSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(author=request.user)  # 현재 로그인한 사용자로 author 설정
+            article = serializer.save(
+                author=request.user,
+                movie_id=request.data.get('movie_id'),
+                movie_title=request.data.get('movie_title'),
+                movie_poster_path=request.data.get('movie_poster_path'),
+                movie_release_date=request.data.get('movie_release_date'),
+                movie_overview=request.data.get('movie_overview')
+            )
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # 게시글 상세보기
+# @api_view(['GET', 'PUT', 'DELETE'])
+# def article_detail(request, pk):
+#     try:
+#         article = Article.objects.get(pk=pk)
+#     except Article.DoesNotExist:
+#         return Response({"error": "Article not found."}, status=status.HTTP_404_NOT_FOUND)
+
+#     if request.method == 'GET':
+#         serializer = ArticleSerializer(article, context={'request': request})
+#         return Response(serializer.data)
+    
+#     elif request.method == 'PUT':
+#         serializer = ArticleSerializer(article, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+#     elif request.method == 'DELETE':
+#         article.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 @api_view(['GET', 'PUT', 'DELETE'])
 def article_detail(request, pk):
     try:
@@ -37,20 +66,37 @@ def article_detail(request, pk):
     except Article.DoesNotExist:
         return Response({"error": "Article not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    if request.method == 'GET':
-        serializer = ArticleSerializer(article, context={'request': request})
-        return Response(serializer.data)
-    
-    elif request.method == 'PUT':
+    if request.method == 'PUT':
+        if request.user != article.author:
+            return Response({"error": "Permission denied."}, 
+                          status=status.HTTP_403_FORBIDDEN)
+            
         serializer = ArticleSerializer(article, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            # 영화 정보 포함하여 업데이트
+            article = serializer.save(
+                movie_id=request.data.get('movie_id', article.movie_id),
+                movie_title=request.data.get('movie_title', article.movie_title),
+                movie_poster_path=request.data.get('movie_poster_path', article.movie_poster_path),
+                movie_release_date=request.data.get('movie_release_date', article.movie_release_date),
+                movie_overview=request.data.get('movie_overview', article.movie_overview)
+            )
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    # GET과 DELETE는 기존 코드 유지
+    elif request.method == 'GET':
+        serializer = ArticleSerializer(article, context={'request': request})
+        return Response(serializer.data)
     elif request.method == 'DELETE':
+        if request.user != article.author:
+            return Response({"error": "Permission denied."}, 
+                          status=status.HTTP_403_FORBIDDEN)
         article.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
 
 # 게시글 좋아요
 @api_view(['POST'])

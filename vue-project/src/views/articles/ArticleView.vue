@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>코멘트 게시판</h1>
+    <h1>Articles</h1>
     <RouterLink :to="{ name: 'CreateView' }">
       <h2>게시글 생성</h2>
     </RouterLink>

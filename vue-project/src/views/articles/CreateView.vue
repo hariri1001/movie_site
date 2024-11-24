@@ -1,39 +1,92 @@
+
 <template>
-  <div>
-    <h1>{{ isEditing ? "Edit Article" : "Create New Article" }}</h1>
-    <form @submit.prevent="submitArticle">
-      <label>
-        제목:
-        <input type="text" v-model="title" />
-      </label>
-
-      <label>
-        내용:
-        <textarea v-model="content"></textarea>
-      </label>
-
-      <div class="rating-container">
-        <h3>별점:</h3>
-        <div class="stars" @mouseleave="resetHover">
-          <span v-for="star in 5" :key="star" class="star" @mousemove="updateHover($event, star)" @click="setRating()"
-            :style="{
-              background: `linear-gradient(to right, gold ${getFillPercentage(star)}%, lightgray ${getFillPercentage(star)}%)`,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }">
-            ★
-          </span>
+  <div class="create-review-container">
+    <h1>{{ isEditing ? "영화 커멘트 수정" : "영화 커멘트 작성" }}</h1>
+    
+    <!-- 영화 검색 섹션 -->
+    <div v-if="!selectedMovie && !isEditing" class="search-section">
+      <div class="search-box">
+        <input 
+          type="text" 
+          v-model="searchQuery" 
+          @input="searchMovies"
+          placeholder="영화 제목을 입력하세요"
+          class="search-input"
+        />
+      </div>
+      
+      <div v-if="searchResults.length > 0" class="search-results">
+        <div 
+          v-for="movie in searchResults" 
+          :key="movie.id"
+          @click="selectMovie(movie)"
+          class="movie-item"
+        >
+          <h3>{{ movie.title }}</h3>
+          <p>{{ movie.releaseDate }}</p>
         </div>
-        <p class="rating-text">Selected Rating: {{ rating.toFixed(1) }} / 5</p>
+      </div>
+    </div>
+
+    <!-- 선택된 영화 정보 및 리뷰 작성 폼 -->
+    <div v-if="selectedMovie || isEditing" class="review-container">
+      <div class="selected-movie-info">
+        <img 
+          :src="`https://image.tmdb.org/t/p/w500${selectedMovie.posterPath}`" 
+          :alt="selectedMovie.title" 
+          class="movie-poster"
+        />
+        <h2>{{ selectedMovie.title }}</h2>
+        <p>개봉일: {{ selectedMovie.releaseDate }}</p>
       </div>
 
-      <button type="submit">{{ isEditing ? "수정" : "제출" }}</button>
-    </form>
+      <form @submit.prevent="submitReview" class="review-form">
+        <div class="rating-container">
+          <h3>별점</h3>
+          <div class="stars" @mouseleave="resetHover">
+            <span 
+              v-for="star in 5" 
+              :key="star" 
+              class="star" 
+              @mousemove="updateHover($event, star)" 
+              @click="setRating()"
+              :style="{
+                background: `linear-gradient(to right, gold ${getFillPercentage(star)}%, lightgray ${getFillPercentage(star)}%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }"
+            >★</span>
+          </div>
+          <p class="rating-text">선택한 별점: {{ rating.toFixed(1) }} / 5</p>
+        </div>
+
+        <div class="review-content">
+          <label>리뷰 내용:</label>
+          <textarea 
+            v-model="content" 
+            placeholder="영화에 대한 감상을 자유롭게 작성해주세요"
+            rows="6"
+          ></textarea>
+        </div>
+        <div class="button-group">
+        <button type="submit" class="submit-button">
+          {{ isEditing ? "리뷰 수정" : "리뷰 등록" }}
+        </button>
+        <button type="button" @click="cancelReview" class="cancel-button">
+          취소
+        </button>
+      </div>
+        
+      </form>
+    </div>
+
+    
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';  // storeToRefs 추가
 import { useRoute, useRouter } from 'vue-router';
 import { useCounterStore } from '@/stores/counter';
 
@@ -41,96 +94,248 @@ const store = useCounterStore();
 const route = useRoute();
 const router = useRouter();
 
-const title = ref('');
+// store에서 필요한 상태들을 가져옴
+const { searchResults, isLoading, error } = storeToRefs(store);
+
+const searchQuery = ref('');
+const selectedMovie = ref(null);
 const content = ref('');
-const rating = ref(0); // 선택된 별점 (소수점 포함)
-const hoverRating = ref(0); // 마우스 오버 시 별점 상태
-const isEditing = ref(false); // 수정 모드 여부
+const rating = ref(0);
+const hoverRating = ref(0);
+const isEditing = ref(false);
 
-// 게시글 수정 시 기존 데이터를 로드
-onMounted(() => {
-  const articleId = route.query.id;
-  if (articleId) {
-    isEditing.value = true;
-    store.getArticleById(articleId).then(() => {
-      const article = store.currentArticle;
-      title.value = article.title;
-      content.value = article.content;
-      rating.value = parseFloat(article.rating || 0); // 기존 별점 로드
-    });
+
+// 영화 검색 함수를 store의 함수 사용하도록 수정
+const searchMovies = async () => {
+  if (searchQuery.value.length < 2) {
+    return;
   }
-});
+  await store.searchMovies(searchQuery.value);
+};
 
-// 마우스 오버 시 점수 업데이트
+
+const selectMovie = (movie) => {
+  console.log(movie);
+  selectedMovie.value = {
+    id: movie.id,
+    title: movie.title,
+    posterPath: movie.posterPath, // poster_path로 수정
+    releaseDate: movie.release_date // releaseDate 추가
+  };
+  console.log(selectedMovie.value.posterPath);
+  console.log('selectedMovie.value:', selectedMovie.value);
+  searchQuery.value = '';
+};
+
+// 별점 관련 함수들
 const updateHover = (event, star) => {
   const rect = event.target.getBoundingClientRect();
-  const offsetX = event.clientX - rect.left; // 마우스 위치 계산
-  const percentage = (offsetX / rect.width) * 100; // 별 채움 비율 계산
-  hoverRating.value = star - 1 + percentage / 100; // 소수점 포함 계산
+  const offsetX = event.clientX - rect.left;
+  const percentage = (offsetX / rect.width) * 100;
+  hoverRating.value = star - 1 + percentage / 100;
 };
 
-// 별점 설정
 const setRating = () => {
-  rating.value = hoverRating.value; // 마우스 위치 기반으로 점수 설정
+  rating.value = hoverRating.value;
 };
 
-// 마우스 오버 해제 시 원래 점수로 복구
 const resetHover = () => {
   hoverRating.value = rating.value;
 };
 
-// 별의 채움 비율 계산
 const getFillPercentage = (star) => {
-  if (hoverRating.value >= star) {
-    return 100; // 별이 완전히 채워짐
-  } else if (hoverRating.value >= star - 1) {
-    return (hoverRating.value - (star - 1)) * 100; // 부분적으로 채움
-  }
-  return 0; // 별이 비어 있음
+  const currentRating = hoverRating.value || rating.value;
+  if (currentRating >= star) return 100;
+  if (currentRating >= star - 1) return (currentRating - (star - 1)) * 100;
+  return 0;
 };
 
-// 게시글 작성 및 수정 요청
-const submitArticle = async () => {
-  const articleId = route.query.id;
+// 리뷰 제출
+const submitReview = async () => {
+  if (!selectedMovie.value && !isEditing.value) {
+    alert('영화를 선택해주세요.');
+    return;
+  }
+
+  if (rating.value === 0) {
+    alert('별점을 선택해주세요.');
+    return;
+  }
+
+  if (!content.value.trim()) {
+    alert('리뷰 내용을 작성해주세요.');
+    return;
+  }
+
+  console.log('선택된 영화:', selectedMovie.value); // 로그 추가
+
   const payload = {
-    title: title.value,
+    movieId: selectedMovie.value.id,
+    movieTitle: selectedMovie.value.title,
     content: content.value,
-    rating: rating.value.toFixed(1), // 소수점 포함 점수
+    rating: rating.value.toFixed(1),
   };
 
-  if (isEditing.value) {
-    // 수정
-    await store.updateArticle(articleId, payload);
-  } else {
-    // 새 게시글 작성
-    store.createArticle(payload);
+  try {
+    if (isEditing.value) {
+      await store.updateArticle(route.query.id, payload);
+    } else {
+      await store.createArticle(payload);
+    }
+    router.push({ name: 'ArticleView' });
+  } catch (error) {
+    console.error('리뷰 저장 실패:', error);
+    alert('리뷰 저장에 실패했습니다.');
   }
-  router.push({ name: 'ArticleView' }); // 작성/수정 완료 후 리스트 페이지로 이동
 };
+
+const cancelReview = () => {
+  router.push({ name: 'ArticleView' });
+};
+
+// 수정 모드일 경우 기존 데이터 로드
+onMounted(async () => {
+  const articleId = route.query.id;
+  if (articleId) {
+    isEditing.value = true;
+    await store.getArticleById(articleId);
+    const article = store.currentArticle;
+    selectedMovie.value = {
+      id: article.movieId,
+      title: article.movieTitle,
+      posterPath: article.posterPath, // posterPath 추가
+      releaseDate: article.releaseDate // releaseDate 추가
+    };
+    content.value = article.content;
+    rating.value = parseFloat(article.rating || 0);
+  }
+});
 </script>
 
 <style scoped>
+.create-review-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.search-section {
+  margin-bottom: 30px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.search-results {
+  margin-top: 10px;
+  border: 1px solid #c4c3c3;
+  border-radius: 4px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.movie-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #797878;
+}
+
+.movie-item:hover {
+  background-color: #f89595;
+}
+
+.selected-movie-info {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #aed5fc;
+  border-radius: 4px;
+}
+
 .rating-container {
-  margin-top: 20px;
+  margin: 20px 0;
 }
 
 .stars {
   display: flex;
-  gap: 10px; /* 별 간격 */
+  gap: 10px;
   cursor: pointer;
 }
 
 .star {
-  font-size: 2.5rem; /* 별 크기 */
+  font-size: 2.5rem;
   transition: background 0.2s ease-in-out;
-  display: inline-block;
-  color: lightgray; /* 초기 색상 */
-  text-align: center;
-  line-height: 1; /* 텍스트가 정렬되도록 설정 */
+}
+
+.review-content textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #6e6d6d;
+  border-radius: 4px;
+}
+
+.button-group {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.submit-button, .cancel-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.submit-button {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #f44336;
+  color: white;
 }
 
 .rating-text {
   margin-top: 10px;
   font-weight: bold;
 }
+
+.movie-poster {
+  max-width: 200px;
+  height: auto;
+  border-radius: 4px;
+  margin-right: 20px;
+}
+
+.review-container {
+  display: flex;
+  gap: 40px;
+}
+
+.selected-movie-info {
+  flex: 1; /* Take up 1 part of the available space */
+  padding: 15px;
+  background-color: #aed5fc;
+  border-radius: 4px;
+}
+
+.review-form {
+  flex: 1; /* Take up 1 part of the available space */
+}
+
+/* Responsive styles */
+@media screen and (max-width: 768px) {
+  .review-container {
+    flex-direction: column;
+  }
+}
+
 </style>

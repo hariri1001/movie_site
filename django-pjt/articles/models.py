@@ -9,6 +9,16 @@ class Article(models.Model):
     liked_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_articles', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+
+     # 영화 관련 필드 추가
+    movie_id = models.IntegerField(null=True, blank=True)
+    movie_title = models.CharField(max_length=255, null=True, blank=True)
+    movie_poster_path = models.CharField(max_length=500, null=True, blank=True)
+    movie_release_date = models.DateField(null=True, blank=True)
+    movie_overview = models.TextField(null=True, blank=True)
+
+
+
     @property
     def likes_count(self):
         return self.liked_users.count()

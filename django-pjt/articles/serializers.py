@@ -8,7 +8,14 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = '__all__'
+        fields = [
+            'id', 'title', 'content', 'author', 
+            'rating', 'created_at', 'likes_count', 
+            'is_liked', 'liked_users',
+            # 영화 관련 필드 명시적으로 추가
+            'movie_id', 'movie_title', 'movie_poster_path', 
+            'movie_release_date', 'movie_overview'
+        ]
         read_only_fields = ['author', 'liked_users']
 
     def get_is_liked(self, obj):
@@ -19,6 +26,21 @@ class ArticleSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return request.user in obj.liked_users.all()
         return False
+    
+    def create(self, validated_data):
+        """
+        영화 정보를 포함하여 게시글 생성
+        """
+        instance = super().create(validated_data)
+        return instance
+
+    def update(self, instance, validated_data):
+        """
+        영화 정보를 포함하여 게시글 수정
+        """
+        instance = super().update(instance, validated_data)
+        return instance
+
     
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.ReadOnlyField(source='author.username')

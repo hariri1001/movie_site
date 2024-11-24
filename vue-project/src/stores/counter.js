@@ -24,32 +24,41 @@ export const useCounterStore = defineStore("counter", () => {
 
 
 
-  // 새 게시글 작성
-  const createArticle = async (payload) => {
+
+const createArticle = async (payload) => {
   try {
+    console.log('영화 상세 정보 요청:', payload.movieId); // 로그 추가
+    const movieDetails = await getMovieDetails(payload.movieId);
+    console.log('받은 영화 상세 정보:', movieDetails); // 로그 추가
     const response = await axios.post(
       `${API_URL}/api/v1/articles/`,
       {
-        title: payload.title,
+        title: `${movieDetails.title} 리뷰`,
         content: payload.content,
         rating: payload.rating,
+        movie_id: payload.movieId,
+        movie_title: movieDetails.title,
+        movie_poster_path: movieDetails.poster_path,
+        movie_release_date: movieDetails.release_date,
+        movie_overview: movieDetails.overview
       },
       {
         headers: { Authorization: `Token ${token.value}` },
       }
     );
- 
-    // 새 게시글을 articles 배열에 추가
+  
     articles.value.unshift(response.data);
-    // 또는 전체 목록 새로고침
-    // await getArticles(); 
-    
     router.push({ name: 'ArticleView' });
   } catch (error) {
-    console.error('게시글 작성 실패:', error.response?.data || error);
-    alert('게시글 작성에 실패했습니다.');
+    console.error('리뷰 작성 실패:', error.response?.data || error);
+    alert('리뷰 작성에 실패했습니다.');
   }
- };
+};
+
+
+
+
+
  
  // 게시글 목록 가져오기 
  const getArticles = async () => {
@@ -213,7 +222,6 @@ export const useCounterStore = defineStore("counter", () => {
           Authorization: `Token ${token.value}`,
         },
       });
-      console.log(response.data);
       userProfile.value = response.data; // 사용자 프로필 데이터 저장
     } catch (error) {
       console.error("프로필 조회 실패:", error);
@@ -278,26 +286,99 @@ export const useCounterStore = defineStore("counter", () => {
     }
   };
 
+  // const updateArticle = async (articleId, payload) => {
+  //   try {
+  //     await axios.put(
+  //       `${API_URL}/api/v1/articles/${articleId}/`,
+  //       {
+  //         title: payload.title,
+  //         content: payload.content,
+  //         rating: payload.rating,
+  //       },
+  //       {
+  //         headers: { Authorization: `Token ${token.value}` },
+  //       }
+  //     );
+  //     await getArticles();
+  //     alert('게시글 수정 성공!');
+  //   } catch (error) {
+  //     console.error('게시글 수정 실패:', error.response?.data || error);
+  //     alert('게시글 수정에 실패했습니다.');
+  //   }
+  // };
+
   const updateArticle = async (articleId, payload) => {
     try {
+      const movieDetails = await getMovieDetails(payload.movieId);
+      
       await axios.put(
         `${API_URL}/api/v1/articles/${articleId}/`,
         {
-          title: payload.title,
+          title: `${movieDetails.title} 리뷰`,
           content: payload.content,
           rating: payload.rating,
+          movieId: payload.movieId,
+          movieTitle: movieDetails.title,
+          moviePosterPath: movieDetails.poster_path,
+          movieReleaseDate: movieDetails.release_date,
+          movieOverview: movieDetails.overview
         },
         {
           headers: { Authorization: `Token ${token.value}` },
         }
       );
+      
       await getArticles();
-      alert('게시글 수정 성공!');
+      alert('리뷰가 수정되었습니다.');
     } catch (error) {
-      console.error('게시글 수정 실패:', error.response?.data || error);
-      alert('게시글 수정에 실패했습니다.');
+      console.error('리뷰 수정 실패:', error.response?.data || error);
+      alert('리뷰 수정에 실패했습니다.');
     }
   };
+
+
+// 정렬된 리뷰 목록을 위한 computed 속성들
+const sortedByRating = computed(() => {
+  return [...articles.value].sort((a, b) => b.rating - a.rating);
+});
+
+const sortedByLatest = computed(() => {
+  return [...articles.value].sort((a, b) => 
+    new Date(b.created_at) - new Date(a.created_at)
+  );
+});
+
+const sortedByLikes = computed(() => {
+  return [...articles.value].sort((a, b) => 
+    (b.likes_count || 0) - (a.likes_count || 0)
+  );
+});
+
+// 사용자별 리뷰 통계
+const userReviewStats = computed(() => {
+  if (!userProfile.value) return null;
+  
+  const reviews = articles.value.filter(
+    article => article.author === userProfile.value.username
+  );
+
+  return {
+    totalReviews: reviews.length,
+    averageRating: reviews.length ? 
+      (reviews.reduce((sum, review) => sum + Number(review.rating), 0) / reviews.length).toFixed(1) : 
+      0,
+    totalLikes: reviews.reduce((sum, review) => sum + (review.likes_count || 0), 0)
+  };
+});
+
+
+
+
+
+
+
+
+
 
   const toggleArticleLike = async (articleId) => {
     try {
@@ -441,6 +522,84 @@ const deleteComment = async (commentId) => {
 
 
 
+// 새로 추가할 영화 관련 상태
+const searchResults = ref([]);
+const isLoading = ref(false);
+const error = ref(null);
+
+// TMDB API 설정
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY; // .env 파일의 VITE_APP_TMDB_API_KEY 값을 사용
+const TMDB_BASE_URL = 'https://api.themoviedb.org/3';
+
+// 영화 검색 함수 수정
+const searchMovies = async (query) => {
+  if (!query || query.length < 2) {
+    searchResults.value = [];
+    return;
+  }
+
+  try {
+    isLoading.value = true;
+    error.value = null;
+
+    const response = await axios.get(`${TMDB_BASE_URL}/search/movie`, {
+      headers: {
+        'Authorization': `Bearer ${TMDB_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      params: {
+        query: query,
+        language: 'ko-KR'
+      }
+    });
+
+    searchResults.value = response.data.results.map(movie => ({
+      id: movie.id,
+      title: movie.title,
+      releaseDate: movie.release_date,
+      posterPath: movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : null,
+      overview: movie.overview
+    }));
+  } catch (err) {
+    console.error('영화 검색 실패:', err);
+    error.value = '영화를 검색하는 중 오류가 발생했습니다.';
+    searchResults.value = [];
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// 영화 상세 정보 조회 함수도 수정
+const getMovieDetails = async (movieId) => {
+  try {
+    const response = await axios.get(`${TMDB_BASE_URL}/movie/${movieId}`, {
+      headers: {
+        'Authorization': `Bearer ${TMDB_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      params: {
+        language: 'ko-KR'
+      }
+    });
+    return response.data;
+  } catch (err) {
+    console.error('영화 상세 정보 조회 실패:', err);
+    throw err;
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   
@@ -481,5 +640,17 @@ const deleteComment = async (commentId) => {
     createComment,
     getComments,
     deleteComment,
+
+    // 새로 추가된 반환값들
+    searchMovies,
+    getMovieDetails,
+    searchResults,
+    isLoading,
+    error,
+    sortedByRating,
+    sortedByLatest,
+    sortedByLikes,
+    userReviewStats
+
   };
 });
