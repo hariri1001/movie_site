@@ -456,6 +456,10 @@ onMounted(() => {
   }
 }
 
+section.mb-5 {
+  margin-top: 40px;
+}
+
 
 /* 예고편 섹션 하단 여백 추가 */
 section.mb-5:last-child {

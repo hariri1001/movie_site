@@ -1,5 +1,5 @@
 <template>
-    <nav class="navbar navbar-expand-lg" style="background-color: black;" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg" style="background-color: #1a1a1a;" data-bs-theme="dark">
       <div class="container-fluid">
         <RouterLink class="navbar-brand" :to="{ name: 'MainView' }">
           <img src="/POSTlogo.png" alt="Logo" height="30" class="d-inline-block align-text-top">

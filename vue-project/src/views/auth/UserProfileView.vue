@@ -30,28 +30,32 @@
         </button>
       </div>
 
-      <!-- 오른쪽: 좋아요한 영화 그리드 -->
-      <div class="liked-content">
-        <h2>좋아하는 영화</h2>
-        <div v-if="likedMovies.length === 0" class="no-movies">
-            좋아요한 영화가 없습니다.
-        </div>
-        <div v-else class="content-grid">
-          <div v-for="movie in likedMovies" :key="movie.id" class="movie-card" @click="goToMovieDetail(movie.tmdb_id)">
-            <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" :alt="movie.title" class="movie-poster">
+      <!-- 오른쪽: 컨텐츠 영역 -->
+      <div class="articles-content">
+        <!-- 좋아요한 영화 섹션 -->
+        <div class="liked-content">
+          <h2>좋아하는 영화</h2>
+          <div v-if="likedMovies.length === 0" class="no-movies">
+              좋아요한 영화가 없습니다.
+          </div>
+          <div v-else class="content-grid">
+            <div v-for="movie in likedMovies" :key="movie.id" class="movie-card" @click="goToMovieDetail(movie.tmdb_id)">
+              <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" :alt="movie.title" class="movie-poster">
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="comments-section">
-      <h2>작성한 게시글</h2>
-      <div class="comments-grid">
-        <div class="comment-card" v-for="article in userArticles" :key="article.id">
-          <div class="comment-content">
-            <h3>{{ article.title }}</h3>
-            <p>{{ article.content }}</p>
-            <button @click="goToArticleDetail(article.id)">자세히 보기</button>
+        <!-- 작성한 게시글 섹션 -->
+        <div class="comments-section">
+          <h2>작성한 게시글</h2>
+          <div class="comments-grid">
+            <div class="comment-card" v-for="article in userArticles" :key="article.id">
+              <div class="comment-content">
+                <h3>{{ article.title }}</h3>
+                <p>{{ article.content }}</p>
+                <button @click="goToArticleDetail(article.id)">자세히 보기</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -152,18 +156,202 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profile-header {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 40px;
+  margin-top: 30px;
+  border: 1px solid #00ba19;
+  border-radius: 8px;
+  padding: 40px;
+}
+
+.profile-info {
+  flex: 0 0 300px;
+}
+
+/* 프로필 이미지 관련 스타일 */
+.profile-image-section {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+  object-fit: cover;
+}
+
+/* 팔로우 버튼 스타일 수정 */
 .follow-button {
-  padding: 8px 20px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  background-color: #1da1f2;
-  color: white;
-  font-weight: bold;
+  width: 100%;
   margin-top: 10px;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #007bff;
+  color: white;
 }
 
 .follow-button.following {
-  background-color: #e0e0e0;
+  background: #005fc4;
+}
+
+/* 좋아요한 영화 섹션 */
+.liked-content {
+  margin-bottom: 30px;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 15px;
+}
+
+.movie-card {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.movie-card:hover {
+  transform: scale(1.05);
+}
+
+.movie-poster {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+/* 게시글 섹션 */
+.comments-section {
+  width: 100%;
+}
+
+.comments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.comment-card {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #00ba19;
+}
+
+.comment-content h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comment-content p {
+  margin: 0 0 15px 0;
+  font-size: 0.9em;
+  color: #666;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.comment-content button {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.comment-content button:hover {
+  background: #0056b3;
+}
+
+.no-movies {
+  text-align: center;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 8px;
+  color: #F8F9FA;
+}
+
+h2 {
+  margin: 0 0 20px 0;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #00ba19;
+  color: #F8F9FA;
+}
+
+/* 통계 스타일 */
+.stats {
+  margin: 20px 0;
+  color: #F8F9FA;
+}
+
+.stats p {
+  margin: 5px 0;
+}
+
+.username {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #F8F9FA;
+}
+
+.articles-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.liked-content {
+  margin-bottom: 30px;
+}
+
+
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+  .content-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .content-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .content-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .profile-header {
+    flex-direction: column;
+  }
+  
+  .profile-info {
+    flex: none;
+    width: 100%;
+  }
 }
 </style>

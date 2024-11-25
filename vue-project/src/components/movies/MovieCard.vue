@@ -1,33 +1,31 @@
 <template>
   <div class="container">
-    <!-- 현재 인기 상영작 -->
-    
+    <!-- 인기 상영작 캐러셀 -->
     <div class="carousel-container">
       <h2 class="carousel-title">인기 상영작</h2>
       <div class="carousel">
         <div class="movie-cards" :style="{ transform: `translateX(-${popularPosition}px)` }">
-            <div class="movie-card" v-for="(movie, index) in popularMovies" :key="movie.id">
-                <!-- <span class="top-badge">TOP 10</span> -->
-                <span class="rank-number">{{index + 1}}</span>
-                <RouterLink :to="{ name: 'MovieDetail', params: { movieId: movie.id }}" class="text-decoration-none">
-                  <div class="card">
-                    <div class="poster-wrapper">
-                      <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
-                          class="card-img-top" 
-                          alt="movie poster">
-                    </div>
-                  </div>
-                </RouterLink>
-            </div>
+          <div class="movie-card" v-for="(movie, index) in popularMovies" :key="movie.id">
+            <span class="rank-number">{{index + 1}}</span>
+            <RouterLink :to="{ name: 'MovieDetail', params: { movieId: movie.id }}" class="text-decoration-none">
+              <div class="card">
+                <div class="poster-wrapper">
+                  <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
+                      class="card-img-top" 
+                      alt="movie poster">
+                </div>
+              </div>
+            </RouterLink>
+          </div>
         </div>
       </div>
       <button class="carousel-btn prev" @click="movePopular('prev')" :disabled="popularPosition === 0">
-        <div class>
+        <div>
           <i class="fas fa-chevron-left"></i>
         </div>
       </button>
       <button class="carousel-btn next" @click="movePopular('next')" :disabled="isEndOfPopular">
-        <div class>
+        <div>
           <i class="fas fa-chevron-right"></i>
         </div>
       </button>
@@ -65,16 +63,7 @@
         </div>
       </button>
     </div>
-
-
-
-
-
-
-
-
-    
-  </div>
+    </div>
 </template>
 
 <script setup>
@@ -155,18 +144,19 @@ onMounted(() => {
 <style scoped>
 .carousel-container {
   position: relative;
-  padding: 0 60px; /* 버튼 공간 확보를 위해 패딩 증가 */
+  padding: 0 70px; /* 버튼 공간을 더 확보 */
   margin: 20px 0;
   overflow: hidden;
 
   /* 컨테이너 너비 고정 */
-  max-width: 1400px; /* 전체 너비 조정 */
-  margin: 20px auto; /* 중앙 정렬 */
+  max-width: 1400px; /* 중앙 정렬된 너비 */
+  margin: 20px auto;
 }
 
 .carousel {
   width: 100%;
   overflow: hidden;
+  margin-bottom: 30px;
 }
 
 .movie-cards {
@@ -176,8 +166,8 @@ onMounted(() => {
 
 .movie-card {
   flex: 0 0 auto;
-  width: calc(20% - 40px); /* 5개의 카드를 위한 너비 (20%) 및 마진 고려 */
-  margin-right: 40px; /* 카드 간격 증가 */
+  width: calc(20% - 30px); /* 카드 간격 감소 */
+  margin-right: 30px; /* 카드 간격 */
   transition: transform 0.3s ease;
   position: relative; /* position 추가 */
 }
@@ -201,106 +191,88 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 4px;
-  transition: transform 0.3s ease;
+  border-radius: 8px; /* 둥근 모서리 */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .movie-card:hover .card-img-top {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
-
-/* TOP 10 배지 */
-/* .top-badge {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #e50914;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-weight: bold;
-  z-index: 1;
-} */
-
 
 /* 순위 숫자 */
-
-.poster {
-  position: relative;
-}
-
-
 .rank-number {
   position: absolute;
-  top: 140px;
-  left: 115px;
-  font-size: 120px;
-  font-weight: bold;
-  color: rgb(255, 255, 255);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  z-index: 1;
-  opacity: 0.8;
-  font-style: italic; /* 이탤릭체 추가 */
-  
+  bottom: -30px; /* 아래쪽으로 더 많이 내려감 */
+  right: 10px; /* 오른쪽에서 10px 왼쪽으로 */
+  font-size: 120px; /* 기존 크기 유지 */
+  font-weight: bold; /* 기존 굵기 유지 */
+  color: rgba(255, 255, 255, 0.8); /* 기존 스타일 유지 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 기존 그림자 유지 */
+  font-style: italic; /* 기존 이탤릭체 유지 */
+  z-index: 1; /* 카드 이미지 위에 표시 */
 }
 
-/* 스타일 버튼 */
 .carousel-btn {
- position: absolute;
- top: 0;
- bottom: 0;
- width: 100px;
- border: none;
- background: rgba(0, 0, 0, 0.5); /* 배경 추가 */
- cursor: pointer;
- z-index: 2;
- padding: 0;
- display: flex;
- align-items: center;
- justify-content: center;
-}
-
-.carousel-btn:hover {
-  background: rgba(0, 0, 0, 0.7);
-}
-
-.button-circle {
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
+  position: absolute;
+  top: 50%; /* 버튼을 수직 중앙 정렬 */
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  border: none;
+  background: transparent; /* 배경 제거 */
+  cursor: pointer;
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease; /* 호버 시 크기 조정만 유지 */
 }
 
-.carousel-btn:hover .button-circle {
-  transform: scale(1.1);
+.carousel-btn:hover {
+  transform: translateY(-50%) scale(1.1); /* 버튼 크기 확대 */
 }
 
 .carousel-btn i {
-  color: #000;
-  font-size: 1.2rem;
+  color: white; /* 화살표를 흰색으로 */
+  font-size: 2rem; /* 화살표 크기 */
+  transition: color 0.3s ease; /* 호버 시 색상 전환 효과 */
+}
+
+.carousel-btn:hover i {
+  color: rgba(255, 255, 255, 0.7); /* 호버 시 약간 더 밝은 흰색 */
 }
 
 .prev {
-  left: 0;
+  left: 10px;
 }
 
 .next {
-  right: 0;
+  right: 10px;
 }
 
 .carousel-btn:disabled {
-  opacity: 0;
-  cursor: default;
+  opacity: 0.3; /* 비활성화된 버튼은 흐리게 표시 */
+  cursor: not-allowed;
 }
 
 /* 반응형 디자인 */
 @media (max-width: 1200px) {
   .movie-card {
-    width: 200px;
+    width: 220px;
+  }
+
+  .rank-number {
+    font-size: 80px;
+  }
+
+  .carousel-btn {
+    width: 50px;
+    height: 50px;
+  }
+
+  .carousel-btn i {
+    font-size: 1.2rem;
   }
 }
 
@@ -308,13 +280,18 @@ onMounted(() => {
   .movie-card {
     width: 170px;
   }
-  
+
   .carousel-container {
     padding: 0 50px;
   }
-  
+
+  .rank-number {
+    font-size: 60px;
+  }
+
   .carousel-btn {
-    width: 50px;
+    width: 45px;
+    height: 45px;
   }
 }
 
@@ -322,18 +299,22 @@ onMounted(() => {
   .movie-card {
     width: 140px;
   }
-  
+
   .carousel-container {
     padding: 0 40px;
   }
-  
+
   .carousel-btn {
     width: 40px;
+    height: 40px;
   }
-  
-  .button-circle {
-    width: 30px;
-    height: 30px;
+
+  .carousel-btn i {
+    font-size: 1rem;
+  }
+
+  .rank-number {
+    font-size: 50px;
   }
 }
 </style>

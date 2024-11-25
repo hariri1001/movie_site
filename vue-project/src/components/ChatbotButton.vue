@@ -66,9 +66,9 @@ const showModal = ref(false)
   position: fixed;
   bottom: 6rem;
   right: 6rem;
-  width: 4rem;
-  height: 4rem;
-  background-color: #00ba19;
+  width: 3rem;
+  height: 3rem;
+  background-color: #4CAF50;
   border-radius: 50%;
   border: none;
   display: flex;
@@ -80,7 +80,7 @@ const showModal = ref(false)
 }
 
 .chat-button:hover {
-  background-color: #009e15;
+  background-color: #00ba19;
 }
 
 .chat-button-text {
@@ -117,7 +117,8 @@ const showModal = ref(false)
 .modal-title {
   margin: 0;
   font-weight: 600;
-  color: #00ba19;
+  color: #F8F9FA;
+
 }
 
 .btn-close {

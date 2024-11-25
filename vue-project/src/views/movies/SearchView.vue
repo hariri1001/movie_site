@@ -1,6 +1,9 @@
 <template>
   <div class="container-fluid px-4">
-    <h2>검색 결과: "{{ $route.query.title }}"</h2>
+    <div class="title">
+      <h2>검색 결과: "{{ $route.query.title }}"</h2>
+    </div>
+    
     
     <div v-if="loading" class="text-center">
       <div class="spinner-border" role="status">
@@ -95,6 +98,12 @@ const goToMovie = (movieId) => {
 </script>
 
 <style scoped>
+.title{
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+
 .container-fluid {
   max-width: 1200px;
 }

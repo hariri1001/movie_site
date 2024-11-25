@@ -3,7 +3,7 @@
     <div class="article-content">
 
       <div class="article-header">
-        <p><strong>작성자:</strong> {{ article.author }}</p>
+        <div class="author"><strong>작성자:</strong> {{ article.author }}</div>
         <div class="rating-display">
           <span class="stars">
             <span v-for="star in 5" :key="star" class="star" :class="{ filled: star <= Math.ceil(article.rating) }">★</span>
@@ -71,11 +71,12 @@ const handleImageError = (event) => {
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 8px;
-  background-color: #F8F9FA;
+  background-color: #272727;
   width: 700px;
   height: 300px;
   box-sizing: border-box; /* 패딩을 높이/너비에 포함 */
-  color: black;
+  color: #F8F9FA;
+  border: 1px solid #00ba19;;
 }
 
 /* 메인 콘텐츠 영역 */
@@ -91,7 +92,7 @@ const handleImageError = (event) => {
   justify-content: space-between;
   align-items: center;
   padding: 0 10px 10px 10px; /* 상우하좌 패딩 */
-  border-bottom: 1px solid #00ba19;;
+  /* border-bottom: 1px solid #00ba19; */
   height: 24px; /* 헤더 높이 축소 */
   font-size: 0.9rem; /* 전체 폰트 크기 축소 */
 }
@@ -101,6 +102,11 @@ const handleImageError = (event) => {
   margin: 0;
   font-size: 0.9rem;
 }
+
+.author{
+  font-size: 1rem;
+}
+
 
 /* 별점 표시 스타일링 */
 .rating-display {
@@ -199,8 +205,9 @@ const handleImageError = (event) => {
   cursor: pointer;
   padding: 4px 8px;
   border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: transform 0.2s;
   font-size: 0.9rem;
+  background-color: transparent;
 }
 
 .like-button + strong {
@@ -209,7 +216,8 @@ const handleImageError = (event) => {
 }
 
 .like-button:hover {
-  background-color: #f0f0f0;
+  
+  background-color: transparent; /* 호버 시에도 배경색 투명 유지 */
 }
 
 .like-button.liked {
@@ -225,17 +233,17 @@ const handleImageError = (event) => {
 /* 상세보기 링크 스타일링 */
 .view-details {
   text-decoration: none;
-  color: #2c3e50;
+  color: #F8F9FA;
   padding: 4px 12px;
-  border: 1px solid #2c3e50;
-  border-radius: 4px;
+  border: 1px solid #00ba19;;
+  border-radius: 8px;
   transition: all 0.2s;
   font-size: 0.85rem;
 }
 
 .view-details:hover {
-  background-color: #2c3e50;
-  color: white;
+  background-color: #1a1a1a;
+  color: rgb(182, 182, 182);
 }
 
 /* 구분선 스타일링 */
@@ -243,5 +251,18 @@ hr {
   border: none;
   border-top: 1px solid #eee;
   margin: 20px 0;
+}
+
+.like-button:hover,
+.like-button:active,
+.like-button:focus {
+  transform: scale(1.1);
+  background-color: transparent !important;
+  outline: none;
+}
+
+.like-button.liked {
+  color: #ff4444;
+  background-color: transparent !important;
 }
 </style>

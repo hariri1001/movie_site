@@ -19,7 +19,7 @@
         <RouterLink :to="{ name: 'SignUpView' }">지금 가입하세요.</RouterLink>
      </div>
     </form>
-    <SocialLogin />
+    <!-- <SocialLogin /> -->
   </div>
 </template>
 
@@ -27,7 +27,7 @@
 import { ref } from 'vue'
 import { useCounterStore } from '@/stores/counter'
 import { useRouter } from 'vue-router'
-import SocialLogin from '@/components/Auth/SocialLogIn.vue'
+// import SocialLogin from '@/components/Auth/SocialLogIn.vue'
 
 const username = ref(null)
 const password = ref(null)
@@ -66,7 +66,7 @@ const logIn = function () {
 
 .login-container {
  max-width: 460px;
- margin: 50px auto;
+ margin: 100px auto;
  padding: 40px;
  background-color: rgba(0, 0, 0, 0.75);
  border-radius: 8px;

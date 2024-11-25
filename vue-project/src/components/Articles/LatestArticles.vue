@@ -84,6 +84,11 @@ onMounted(async () => {
 
 
 <style scoped>
+
+hr {
+  border: 1px solid #00ba19;;
+}
+
 .container {
   max-width: 1400px;
   margin: 0 auto;
@@ -120,6 +125,8 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  border: 1px solid #00ba19;;
+
 }
 
 .article-item h5 {
@@ -155,12 +162,32 @@ onMounted(async () => {
   color: gold;
 }
 
+
+
+/* 좋아요 버튼 스타일링 */
 .like-button {
-  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
-  /* color: lightgray; */
+  padding: 0px 8px;
+  border-radius: 4px;
+  transition: transform 0.2s;
+  font-size: 1rem;
+  background-color: transparent;
   width: 50px;
 }
+
+
+.like-button + strong {
+  margin-right: 2px;
+  font-size: 0.9rem;
+}
+
+.like-button:hover {
+  
+  background-color: transparent; /* 호버 시에도 배경색 투명 유지 */
+}
+
 
 .read-more {
   font-size: 0.8rem;

@@ -2,10 +2,10 @@
  <template>
   <div class="review-list-container">
     <div class="review-header">
-      <h2>커멘트 게시판</h2>
+      <h2>지금 뜨는 코멘트</h2>
       <div class="controls-container">
         <RouterLink :to="{ name: 'CreateView' }" class="create-link">
-          <h6>게시글 생성</h6>
+          <h6>코멘트 작성</h6>
         </RouterLink>
         <div class="sort-controls">
           <select v-model="sortBy" @change="sortReviews" class="sort-select">
@@ -102,10 +102,9 @@ onMounted(async () => {
 
 .sort-select {
   padding: 8px;
-  border: 1px solid #f9abab;
+  border: 1px solid #00ba19;;
   border-radius: 4px;
-  background-color: rgb(135, 134, 134);
-  cursor: pointer;
+  background-color: #1a1a1a;
 }
 
 .reviews-grid {

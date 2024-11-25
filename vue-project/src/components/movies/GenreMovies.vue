@@ -10,8 +10,8 @@
             :key="genre.id"
             @click="selectGenre(genre)"
             class="px-4 py-2 rounded-full"
-            :class="selectedGenre && selectedGenre.id === genre.id ? 
-              'bg-white text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'"
+            :class="{ 'genre-button-selected': selectedGenre && selectedGenre.id === genre.id }"
+
           >
           <span class="genre-text"># {{ genre.name }}</span>
           </button>
@@ -107,41 +107,54 @@
   </script>
   
   <style scoped>
+
+.genre-button {
+  padding: 8px 16px;   /* px-4 py-2 */
+  border-radius: 9999px;  /* rounded-full */
+  background-color: #1f2937;  /* bg-gray-800 */
+  color: #d1d5db;  /* text-gray-300 */
+  margin: 4px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.genre-button:hover {
+  background-color: #374151;  /* hover:bg-gray-700 */
+}
+
+.genre-button-selected {
+  background-color: #ffffff;  /* bg-white */
+  color: #000000;  /* text-black */
+}
+
+/* 선택된 버튼의 호버 효과를 다르게 하고 싶다면 */
+.genre-button-selected:hover {
+  background-color: #f3f4f6;
+}
+
+/* 텍스트 스타일링 */
+.genre-text {
+  font-size: 0.875rem;  /* text-sm */
+  font-weight: 500;     /* font-medium */
+}
+
+
+
+
+
+
+
   .genre-title{
     margin-bottom: 20px;
   }
-  /* .grid-layout {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px;
-    padding: 20px 0;
-  }
   
-  .movie-card {
-    position: relative;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-    aspect-ratio: 2/3;
-    background-color: #1a1a1a;
-    
-  }
-  
-  .movie-card:hover {
-    transform: scale(1.05);
-    z-index: 1;
-  }
-  
-  .poster-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  } */
 
   .container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 60px;
+    
   }
 
   .mb-6 {
@@ -170,6 +183,7 @@
   transition: transform 0.3s ease;
   position: relative;
   margin-bottom: 40px;
+  
 }
 
 /* 그리드 레이아웃을 flex로 변경 */

@@ -99,24 +99,24 @@ html, body {
   width: 100%;
 }
 
-.signup-page {
-  /* 배경 이미지 설정 */
+/* .signup-page {
+ 
   background-image: 
     linear-gradient(
-      rgba(0, 0, 0, 0.4), /* 검은색 오버레이의 투명도 조절 (0.7 = 70% 불투명) */
+      rgba(0, 0, 0, 0.4),
       rgba(0, 0, 0, 0.4)
     ),
     url('@/assets/signupimg.jpeg');
-  background-size: cover;  /* 화면을 꽉 채우도록 이미지 크기 조절 */
-  background-position: center;  /* 이미지를 중앙에 위치 */
-  background-repeat: no-repeat;  /* 이미지 반복 없음 */
-  background-attachment: fixed;  /* 스크롤해도 배경 고정 */
-  
-}
+  background-size: cover;
+  background-position: center; 
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+   
+}*/
 
 .signup-container {
   max-width: 460px;
-  margin: 50px auto;
+  margin: 100px auto;
   padding: 40px;
   background-color: rgba(0, 0, 0, 0.75); /* 배경색에 투명도 추가 */
   border-radius: 8px;

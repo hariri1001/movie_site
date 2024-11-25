@@ -1,6 +1,7 @@
 <template>
   <div class="profile-container">
     <!-- 상단 프로필 섹션 -->
+     <h1>My Profile</h1>
     <div class="profile-header">
 
       <!-- 왼쪽: 프로필 정보 -->
@@ -10,7 +11,7 @@
           <img :src="store.userProfile?.profile_image ? `${store.API_URL}${store.userProfile.profile_image}` : 
               '/public/default_profile.png'" alt="프로필 이미지" class="profile-image">
           <input type="file" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none">
-          <button @click="$refs.fileInput.click()">이미지 변경</button>
+          <button @click="$refs.fileInput.click()" class="img-button">이미지 변경</button>
         </div>
 
 
@@ -267,12 +268,20 @@ const handleImageUpload = async (event) => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  
 }
 
 .profile-header {
   display: flex;
   gap: 40px;
   margin-bottom: 40px;
+  margin-top: 30px;
+  border: 1px solid #00ba19;;
+  border-radius: 8px;
+  padding: 40px;
+  background-color: #272727;
+
+  
 }
 
 .profile-info {
@@ -300,6 +309,7 @@ const handleImageUpload = async (event) => {
 .movie-card {
   cursor: pointer;
   transition: transform 0.2s;
+  
 }
 
 .movie-card:hover {
@@ -308,8 +318,10 @@ const handleImageUpload = async (event) => {
 
 .movie-poster {
   width: 100%;
-  height: auto;
+  height: 100%;
+  /* height: auto; */
   border-radius: 8px;
+  object-fit: cover; /* cover로 변경하여 이미지가 꽉 차도록 */
 }
 
 /* 게시글 섹션 스타일 */
@@ -324,15 +336,20 @@ const handleImageUpload = async (event) => {
 }
 
 .comment-card {
-  background: #f5f5f5;
+  background: #1a1a1a;
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #00ba19;;
+  
 }
 
 .comment-content h3 {
   margin: 0 0 10px 0;
   font-size: 1.2em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .comment-content p {
@@ -390,7 +407,8 @@ h2 {
 .profile-form {
   margin-top: 20px;
   padding: 20px;
-  background: #f5f5f5;
+  background: #1a1a1a;
+  border: 1px solid #00ba19;;
   border-radius: 8px;
 }
 
@@ -414,18 +432,30 @@ h2 {
   margin-top: 20px;
   display: flex;
   gap: 10px;
+  border-radius: 8px;
 }
 
-.save-button, .cancel-button {
-  padding: 8px 15px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+.img-button{
+  border-radius: 8px;
 }
+
+/* .save-button, .cancel-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+
+} */
 
 .save-button {
   background: #28a745;
   color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
 }
 
 .cancel-button {

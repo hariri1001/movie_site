@@ -1,7 +1,8 @@
 
 <template>
   <div class="review-detail-container">
-    <h1>영화 리뷰</h1>
+    <h1>영화 코멘트</h1>
+    <br>
     <div v-if="store.currentArticle" class="review-content">
       <div class="movie-info">
         <div class="movie-content">
@@ -22,27 +23,32 @@
           </div>
 
           <div class="review-main">
-            <div class="rating-display">
-              <div class="stars">
+            <div class="review-header">
+              <div class="review-author">
+                <p><strong>작성자 : </strong>
                 <span 
-                  v-for="star in 5" 
-                  :key="star"
-                  class="star"
-                  :class="{ filled: star <= Math.ceil(store.currentArticle.rating) }"
-                >★</span>
+                  @click="goToUserProfile(store.currentArticle.author)" 
+                  class="author-link"
+                >
+                  {{ store.currentArticle.author }}
+                </span></p>
               </div>
-              <span class="rating-text">{{ store.currentArticle.rating }} / 5</span>
+
+              <div class="rating-display">
+                <div class="stars">
+                  <span 
+                    v-for="star in 5" 
+                    :key="star"
+                    class="star"
+                    :class="{ filled: star <= Math.ceil(store.currentArticle.rating) }"
+                  >★</span>
+                </div>
+                <span class="rating-text">{{ store.currentArticle.rating }} / 5</span>
+              </div>
             </div>
+
             <p class="review-text">{{ store.currentArticle.content }}</p>
-            <p class="review-author">
-              <strong>작성자 : </strong>
-              <span 
-                @click="goToUserProfile(store.currentArticle.author)" 
-                class="author-link"
-              >
-                {{ store.currentArticle.author }}
-              </span>
-            </p>
+            
           </div>
         </div>
       </div>
@@ -63,7 +69,7 @@
         <div class="comment-form">
           <textarea 
             v-model="newComment" 
-            placeholder="이 리뷰에 대한 의견을 남겨주세요"
+            placeholder="이 코멘트에 대한 의견을 남겨주세요"
             class="comment-input"
           ></textarea>
           <div class="button-wrapper">
@@ -117,8 +123,6 @@ const formatDate = (dateString) => {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
   });
 };
 
@@ -140,10 +144,10 @@ const deleteArticle = async () => {
     return;
   }
 
-  if (confirm('정말로 이 리뷰를 삭제하시겠습니까?')) {
+  if (confirm('정말로 이 코멘트 삭제하시겠습니까?')) {
     try {
       await store.deleteArticle(route.params.id);
-      alert('리뷰가 삭제되었습니다.');
+      alert('커멘트가 삭제되었습니다.');
       goBackToList();
     } catch (error) {
       console.error('삭제 중 오류:', error);
@@ -237,7 +241,7 @@ const handleImageError = (event) => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: #F8F9FA;
+  background-color: #272727;
   border: 2px solid #00ba19;
 }
 
@@ -248,20 +252,40 @@ const handleImageError = (event) => {
 }
 
 .review-main {
-  flex: 1;
+  background-color: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: #F8F9FA;
+  width: 100%;
 }
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #00ba19;
+}
+
+.review-author {
+  display: flex;
+  align-items: center;
+}
+
 
 .movie-poster-container {
   flex: 0 0 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: black;
+  color: #F8F9FA;
   font-size: 1.5rem;
 }
 
 .rating-display {
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 .stars {
@@ -278,22 +302,28 @@ const handleImageError = (event) => {
   color: gold;
 }
 
+
+
+.review-main {
+  background-color: #1a1a1a;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: #F8F9FA;
+}
+
 .rating-text {
   margin-left: 10px;
   font-weight: bold;
 }
 
-.review-main {
-  background-color: #F8F9FA;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  color: black;
-}
-
 .review-text {
   line-height: 1.6;
-  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.review-author p {
+  margin: 0;
 }
 
 .author-link {
@@ -301,6 +331,11 @@ const handleImageError = (event) => {
   cursor: pointer;
 }
 
+.rating-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .author-link:hover {
   text-decoration: underline;
 }
@@ -315,7 +350,7 @@ const handleImageError = (event) => {
 /* 공통 버튼 스타일 */
 .button {
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
   font-weight: bold;
@@ -378,8 +413,10 @@ const handleImageError = (event) => {
   padding: 10px;
   margin-bottom: 10px;
   border: 2px solid #00ba19;
-  border-radius: 4px;
+  border-radius: 8px;
   resize: vertical;
+  background-color: #272727;
+  color: #F8F9FA;
 }
 
 .button-wrapper {
@@ -392,7 +429,7 @@ const handleImageError = (event) => {
   background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   width: 120px; /* 모든 버튼 동일 너비 */
   height: 40px; /* 모든 버튼 동일 높이 */
@@ -406,8 +443,9 @@ const handleImageError = (event) => {
 .comments-list .comment-item {
   padding: 15px;
   margin-bottom: 10px;
-  background-color: #f8f9fa;
-  border-radius: 4px;
+  background-color: #272727;;
+  border-radius: 8px;
+  border: 2px solid #00ba19;;
 }
 
 .comment-header {
@@ -427,7 +465,7 @@ const handleImageError = (event) => {
   background-color: #f44336;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.8em;
 }

@@ -1,7 +1,7 @@
 
 <template>
   <div class="create-review-container">
-    <h1>{{ isEditing ? "영화 커멘트 수정" : "영화 커멘트 작성" }}</h1>
+    <h1>{{ isEditing ? "코멘트 수정" : "코멘트 작성" }}</h1>
     
     <!-- 영화 검색 섹션 -->
     <div v-if="!selectedMovie && !isEditing" class="search-section">
@@ -73,7 +73,7 @@
         </div>
 
         <div class="review-content">
-          <label>리뷰 내용:</label>
+          <label>내용:</label>
           <textarea 
             v-model="content" 
             placeholder="영화에 대한 감상을 자유롭게 작성해주세요"
@@ -83,7 +83,7 @@
 
         <div class="button-group">
         <button type="submit" class="submit-button">
-          {{ isEditing ? "리뷰 수정" : "리뷰 등록" }}
+          {{ isEditing ? "코멘트 수정" : "코멘트 등록" }}
         </button>
         <button type="button" @click="cancelReview" class="cancel-button">
           취소
@@ -177,7 +177,7 @@ const submitReview = async () => {
   }
 
   if (!content.value.trim()) {
-    alert('리뷰 내용을 작성해주세요.');
+    alert('커멘트 내용을 작성해주세요.');
     return;
   }
 
@@ -201,7 +201,7 @@ const submitReview = async () => {
     router.push({ name: 'ArticleView' });
   } catch (error) {
     console.error('리뷰 저장 실패:', error);
-    alert('리뷰 저장에 실패했습니다.');
+    alert('커멘트 저장에 실패했습니다.');
   }
 };
 
@@ -234,6 +234,10 @@ onMounted(async () => {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  border: 1px solid #00ba19;
+  border-radius: 8px;
+  margin-top: 30px;
+  background-color: #272727;
 }
 
 .search-section {
@@ -263,7 +267,7 @@ onMounted(async () => {
 }
 
 .movie-item:hover {
-  background-color: #f89595;
+  background-color: #1da746;
 }
 
 
@@ -272,10 +276,10 @@ onMounted(async () => {
   display: flex;
   gap: 30px;  /* 간격 증가 */
   align-items: flex-start;
-  background-color: #F8F9FA;
+  background-color: #1a1a1a;
   padding: 25px;
   border-radius: 8px;
-  color: black;
+  color: #F8F9FA;
   margin-top: 30px;
 }
 
@@ -302,6 +306,8 @@ onMounted(async () => {
   border: 1px solid #6e6d6d;
   border-radius: 4px;
   resize: vertical;
+  background-color: #1a1a1a;
+  color: #F8F9FA;
 }
 
 .review-content label {
