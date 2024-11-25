@@ -1,54 +1,46 @@
 <template>
   <div class="article-item">
     <div class="article-content">
-      <!-- 영화 포스터 추가 -->
-      <div class="movie-poster-container">
-        <img 
-          v-if="posterUrl" 
-          :src="posterUrl"
-          :alt="article.movieTitle"
-          class="movie-poster"
-          @error="handleImageError"
-        />
-        <div v-else class="poster-placeholder">
-          이미지 없음
-        </div>
-      </div>
 
-      <div class="article-info">
-        <h3 class="movie-title">{{ article.movie_title }}</h3>
-        <p class="review-content">{{ article.content }}</p>
+      <div class="article-header">
         <p><strong>작성자:</strong> {{ article.author }}</p>
         <div class="rating-display">
           <span class="stars">
-            <span 
-              v-for="star in 5" 
-              :key="star"
-              class="star"
-              :class="{ filled: star <= Math.ceil(article.rating) }"
-            >★</span>
+            <span v-for="star in 5" :key="star" class="star" :class="{ filled: star <= Math.ceil(article.rating) }">★</span>
           </span>
           <span class="rating-text">({{ article.rating }} / 5)</span>
         </div>
+      </div>
+
+      <!-- 영화 포스터 -->
+      <div class="article-main">
+        <div class="movie-poster-container">
+          <img v-if="posterUrl" :src="posterUrl" :alt="article.movieTitle" class="movie-poster" @error="handleImageError"/>
+          <div v-else class="poster-placeholder">
+            이미지 없음
+          </div>
+        </div>
+        
+        <div class="content-container">
+          <h3 class="movie-title">{{ article.movie_title }}</h3>
+          <p class="review-content">{{ article.content }}</p>
+        </div>
+      </div>
+      
+      
+      <div class="article-footer">
         <p>
-          <span
-            class="like-button"
-            :class="{ liked: article.isLiked }"
-            @click="$emit('toggle-like', article)"
-          >
+          <span class="like-button" :class="{ liked: article.isLiked }" @click="$emit('toggle-like', article)">
             👍 
           </span>
           <strong>{{ article.likes_count || 0 }}</strong> Likes
         </p>
-        <RouterLink 
-          :to="{ name: 'DetailView', params: { id: article.id } }"
-          class="view-details"
-        >
+        <RouterLink :to="{ name: 'DetailView', params: { id: article.id } }" class="view-details">
           리뷰 상세보기
         </RouterLink>
       </div>
     </div>
-    <hr />
+    
   </div>
 </template>
 
@@ -76,114 +68,180 @@ const handleImageError = (event) => {
 
 <style scoped>
 .article-item {
-  margin-bottom: 20px;
   padding: 20px;
-  border: 1px solid #ddd;
+  margin-bottom: 20px;
   border-radius: 8px;
-  background-color: rgb(255, 124, 189);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #F8F9FA;
+  width: 700px;
+  height: 300px;
+  box-sizing: border-box; /* 패딩을 높이/너비에 포함 */
+  color: black;
 }
 
+/* 메인 콘텐츠 영역 */
 .article-content {
+  height: 100%;
   display: flex;
-  gap: 20px;
+  flex-direction: column;
 }
 
-.movie-poster-container {
-  width: 150px;
-  min-width: 150px;
-  height: 225px;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: #f0f0f0;
+/* 헤더 영역 스타일링 */
+.article-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 10px 10px 10px; /* 상우하좌 패딩 */
+  border-bottom: 1px solid #00ba19;;
+  height: 24px; /* 헤더 높이 축소 */
+  font-size: 0.9rem; /* 전체 폰트 크기 축소 */
 }
 
-.movie-poster {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.2s;
+
+.article-header p {
+  margin: 0;
+  font-size: 0.9rem;
 }
 
-.movie-poster:hover {
-  transform: scale(1.05);
-}
-
-.poster-placeholder {
-  width: 100%;
-  height: 100%;
+/* 별점 표시 스타일링 */
+.rating-display {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: #e0e0e0;
-  color: #666;
-}
-
-.article-info {
-  flex: 1;
-}
-
-.movie-title {
-  margin: 0 0 10px 0;
-  font-size: 1.4rem;
-  color: #333;
-}
-
-.review-content {
-  margin: 10px 0;
-  line-height: 1.6;
+  gap: 4px;
 }
 
 .stars {
-  display: inline-flex;
-  gap: 2px;
-}
-
-.star {
-  font-size: 1.2rem;
-  color: #ddd;
+  margin: 0 1px;
 }
 
 .star.filled {
   color: gold;
 }
 
-.rating-display {
-  margin: 10px 0;
+/* 메인 콘텐츠 영역 스타일링 */
+.article-main {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+  padding: 25px 0;
+  min-height: 0; /* 컨텐츠 영역이 넘치지 않도록 설정 */
 }
 
-.rating-text {
-  margin-left: 8px;
-  color: #666;
+.movie-poster-container {
+  width: 100px; /* 포스터 너비 조정 */
+  min-height: 150px; /* 포스터 높이 조정 */
+  max-height: 150px; /* 포스터 최대 높이 제한 */
+  flex-shrink: 0; /* 포스터 크기 고정 */
 }
 
-.like-button {
+.movie-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* 이미지가 잘리지 않고 온전히 표시되도록 */
+  border-radius: 8px;
+}
+
+.poster-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.content-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+
+.movie-title {
   font-size: 1.2rem;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.review-content {
+  margin: 0;
+  line-height: 1.4;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* 푸터 영역 스타일링 */
+.article-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid #00ba19;;
+  height: 30px; /* 푸터 높이 고정 */
+  font-size: 0.9rem; /* 전체 폰트 크기 축소 */
+}
+
+
+.article-footer p {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+/* 좋아요 버튼 스타일링 */
+.like-button {
+  display: inline-flex;
+  align-items: center;
   cursor: pointer;
-  transition: transform 0.2s;
-  margin-right: 5px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+}
+
+.like-button + strong {
+  margin-right: 2px;
+  font-size: 0.9rem;
 }
 
 .like-button:hover {
-  transform: scale(1.1);
+  background-color: #f0f0f0;
 }
 
 .like-button.liked {
-  color: #ff4b4b;
+  color: #ff4444;
 }
 
+/* 좋아요 수 스타일링 */
+.like-button + strong {
+  margin-right: 4px;
+}
+
+/* 상세보기 링크 스타일링 */
+/* 상세보기 링크 스타일링 */
 .view-details {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 8px 15px;
-  background-color: #4CAF50;
-  color: white;
   text-decoration: none;
+  color: #2c3e50;
+  padding: 4px 12px;
+  border: 1px solid #2c3e50;
   border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  font-size: 0.85rem;
 }
 
 .view-details:hover {
-  background-color: #45a049;
+  background-color: #2c3e50;
+  color: white;
+}
+
+/* 구분선 스타일링 */
+hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 20px 0;
 }
 </style>

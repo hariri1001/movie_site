@@ -24,6 +24,7 @@
         >
           <h3>{{ movie.title }}</h3>
           <p>{{ movie.releaseDate }}</p>
+          
         </div>
       </div>
     </div>
@@ -31,33 +32,44 @@
     <!-- 선택된 영화 정보 및 리뷰 작성 폼 -->
     <div v-if="selectedMovie || isEditing" class="review-container">
       <div class="selected-movie-info">
-        <img 
-          :src="`https://image.tmdb.org/t/p/w500${selectedMovie.posterPath}`" 
-          :alt="selectedMovie.title" 
-          class="movie-poster"
-        />
-        <h2>{{ selectedMovie.title }}</h2>
-        <p>개봉일: {{ selectedMovie.releaseDate }}</p>
+        <div class="left">
+          <img 
+            :src="`https://image.tmdb.org/t/p/w500${selectedMovie.posterPath}`" 
+            :alt="selectedMovie.title" 
+            class="movie-poster"
+          />
+        </div>
+        <div class="right">
+          <h2>{{ selectedMovie.title }}</h2>
+          <p>개봉일: {{ selectedMovie.releaseDate }}</p>
+          <p>줄거리: {{ selectedMovie.overview }}</p>
+        </div>
+        
       </div>
+      
+      
+
 
       <form @submit.prevent="submitReview" class="review-form">
         <div class="rating-container">
-          <h3>별점</h3>
-          <div class="stars" @mouseleave="resetHover">
-            <span 
-              v-for="star in 5" 
-              :key="star" 
-              class="star" 
-              @mousemove="updateHover($event, star)" 
-              @click="setRating()"
-              :style="{
-                background: `linear-gradient(to right, gold ${getFillPercentage(star)}%, lightgray ${getFillPercentage(star)}%)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }"
-            >★</span>
+          <div class="rating-header">
+            <h3>별점 : 
+              <span class="stars" @mouseleave="resetHover">
+                <span 
+                  v-for="star in 5" 
+                  :key="star" 
+                  class="star" 
+                  @mousemove="updateHover($event, star)" 
+                  @click="setRating()"
+                  :style="{
+                    background: `linear-gradient(to right, gold ${getFillPercentage(star)}%, lightgray ${getFillPercentage(star)}%)`,
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                  }"
+                >★</span>
+              </span></h3>
+              <p class="rating-text">선택한 별점: {{ rating.toFixed(1) }} / 5</p>
           </div>
-          <p class="rating-text">선택한 별점: {{ rating.toFixed(1) }} / 5</p>
         </div>
 
         <div class="review-content">
@@ -68,6 +80,7 @@
             rows="6"
           ></textarea>
         </div>
+
         <div class="button-group">
         <button type="submit" class="submit-button">
           {{ isEditing ? "리뷰 수정" : "리뷰 등록" }}
@@ -120,7 +133,8 @@ const selectMovie = (movie) => {
     id: movie.id,
     title: movie.title,
     posterPath: movie.posterPath, // poster_path로 수정
-    releaseDate: movie.release_date // releaseDate 추가
+    releaseDate: movie.releaseDate, // releaseDate 추가
+    overview: movie.overview,
   };
   console.log(selectedMovie.value.posterPath);
   console.log('selectedMovie.value:', selectedMovie.value);
@@ -172,8 +186,10 @@ const submitReview = async () => {
   const payload = {
     movieId: selectedMovie.value.id,
     movieTitle: selectedMovie.value.title,
+    movie_poster_path: selectedMovie.value.posterPath,
     content: content.value,
     rating: rating.value.toFixed(1),
+    overview: selectedMovie.value.overview,
   };
 
   try {
@@ -193,7 +209,7 @@ const cancelReview = () => {
   router.push({ name: 'ArticleView' });
 };
 
-// 수정 모드일 경우 기존 데이터 로드
+
 onMounted(async () => {
   const articleId = route.query.id;
   if (articleId) {
@@ -201,10 +217,11 @@ onMounted(async () => {
     await store.getArticleById(articleId);
     const article = store.currentArticle;
     selectedMovie.value = {
-      id: article.movieId,
-      title: article.movieTitle,
-      posterPath: article.posterPath, // posterPath 추가
-      releaseDate: article.releaseDate // releaseDate 추가
+      id: article.movie_id,
+      title: article.movie_title,
+      posterPath: article.movie_poster_path,
+      releaseDate: article.movie_release_date,
+      overview: article.overview,
     };
     content.value = article.content;
     rating.value = parseFloat(article.rating || 0);
@@ -249,26 +266,33 @@ onMounted(async () => {
   background-color: #f89595;
 }
 
-.selected-movie-info {
-  margin-bottom: 20px;
-  padding: 15px;
-  background-color: #aed5fc;
-  border-radius: 4px;
-}
 
-.rating-container {
-  margin: 20px 0;
+/* 영화 정보 컨테이너 조정 */
+.selected-movie-info {
+  display: flex;
+  gap: 30px;  /* 간격 증가 */
+  align-items: flex-start;
+  background-color: #F8F9FA;
+  padding: 25px;
+  border-radius: 8px;
+  color: black;
+  margin-top: 30px;
 }
 
 .stars {
-  display: flex;
-  gap: 10px;
+  display: inline-flex;
+  gap: 5px;
   cursor: pointer;
 }
 
 .star {
-  font-size: 2.5rem;
+  font-size: 1.5rem;
   transition: background 0.2s ease-in-out;
+}
+
+
+.review-content {
+  margin-bottom: 20px;
 }
 
 .review-content textarea {
@@ -277,12 +301,22 @@ onMounted(async () => {
   font-size: 16px;
   border: 1px solid #6e6d6d;
   border-radius: 4px;
+  resize: vertical;
 }
+
+.review-content label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+
 
 .button-group {
   margin-top: 20px;
   display: flex;
   gap: 10px;
+  justify-content: flex-end; /* 오른쪽 정렬 */
 }
 
 .submit-button, .cancel-button {
@@ -309,33 +343,99 @@ onMounted(async () => {
 }
 
 .movie-poster {
-  max-width: 200px;
-  height: auto;
-  border-radius: 4px;
-  margin-right: 20px;
+  width: 150px;
+  height: auto; /* 고정 높이 제거하고 비율에 맞게 자동 조절 */
+  object-fit: contain; /* cover에서 contain으로 변경하여 이미지가 짤리지 않도록 */
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.review-container {
+.rating-header {
   display: flex;
-  gap: 40px;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-.selected-movie-info {
-  flex: 1; /* Take up 1 part of the available space */
-  padding: 15px;
-  background-color: #aed5fc;
-  border-radius: 4px;
+.rating-container {
+  margin-bottom: 20px;
 }
+
+.rating-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.rating-text {
+  margin: 0;
+  font-weight: bold;
+}
+
+
+
+
 
 .review-form {
-  flex: 1; /* Take up 1 part of the available space */
+  width: 100%;
+  margin-top: 30px;
 }
 
-/* Responsive styles */
-@media screen and (max-width: 768px) {
-  .review-container {
-    flex-direction: column;
-  }
+
+
+
+
+/* 오른쪽 영화 정보 스타일 */
+.right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
+
+/* 줄거리 스타일 */
+.overview {
+  margin-top: 10px;
+  line-height: 1.6;
+  max-height: 150px;  /* 줄거리 높이 제한 */
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* 스크롤바 스타일링 */
+.overview::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overview::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.overview::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+/* 줄거리 스타일 수정 */
+.right p {
+  margin: 0;
+  padding: 5px 0;
+}
+
+/* 줄거리 텍스트 제한 */
+.right p:last-child {
+  display: -webkit-box;
+  -webkit-line-clamp: 4; /* 4줄로 제한 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.5;
+  max-height: none; /* 기존 max-height 제거 */
+  padding-right: 10px;
+}
+
 
 </style>

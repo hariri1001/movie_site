@@ -16,7 +16,7 @@
 
 
         <p class="username">{{ store.userProfile?.username }}</p>
-        <p class="username">{{ store.userProfile?.first_name || '이름 없음' }}</p>
+        <!-- <p class="username">{{ store.userProfile?.first_name || '이름 없음' }}</p> -->
         <div class="stats">
           
           <p class="username">{{ store.userProfile?.email }}</p>

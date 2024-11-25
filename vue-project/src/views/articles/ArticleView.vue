@@ -1,9 +1,6 @@
 <template>
   <div>
-    <h1>Articles</h1>
-    <RouterLink :to="{ name: 'CreateView' }">
-      <h2>게시글 생성</h2>
-    </RouterLink>
+    
     <ArticleList />
   </div>
 </template>

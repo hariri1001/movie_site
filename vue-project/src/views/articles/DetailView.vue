@@ -18,7 +18,7 @@
               이미지 없음
             </div>
 
-            <h2>{{ store.currentArticle.movie_title }}</h2>
+            <p>{{ store.currentArticle.movie_title }}</p>
           </div>
 
           <div class="review-main">
@@ -50,7 +50,7 @@
       
 
       <div class="button-container">
-        <button @click="goBackToList" class="back-button">목록으로</button>
+        <button @click="goBackToList" class="back-button">목록</button>
         <template v-if="isAuthor">
           <button @click="editArticle" class="edit-button">수정</button>
           <button @click="deleteArticle" class="delete-button">삭제</button>
@@ -66,7 +66,10 @@
             placeholder="이 리뷰에 대한 의견을 남겨주세요"
             class="comment-input"
           ></textarea>
-          <button @click="submitComment" class="comment-submit-btn">댓글 작성</button>
+          <div class="button-wrapper">
+            <button @click="submitComment" class="comment-submit-btn">댓글 작성</button>
+          </div>
+          
         </div>
 
         <div class="comments-list">
@@ -225,12 +228,6 @@ const handleImageError = (event) => {
   padding: 20px;
 }
 
-/* .movie-info {
-  background-color: #c2f8ce;
-  padding: 20px;
-  border-radius: 8px;
-  margin-bottom: 20px;
-} */
 
 .movie-info {
   display: flex;
@@ -240,7 +237,8 @@ const handleImageError = (event) => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
+  background-color: #F8F9FA;
+  border: 2px solid #00ba19;
 }
 
 .movie-content {
@@ -258,6 +256,8 @@ const handleImageError = (event) => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: black;
+  font-size: 1.5rem;
 }
 
 .rating-display {
@@ -284,10 +284,11 @@ const handleImageError = (event) => {
 }
 
 .review-main {
-  background-color: rgb(255, 148, 148);
+  background-color: #F8F9FA;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  color: black;
 }
 
 .review-text {
@@ -305,33 +306,59 @@ const handleImageError = (event) => {
 }
 
 .button-container {
-  margin: 20px 0;
   display: flex;
-  gap: 10px;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  gap: 8px; /* 버튼 사이 간격 */
+  margin: 20px 0;
 }
 
-.back-button, .edit-button, .delete-button {
+/* 공통 버튼 스타일 */
+.button {
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+/* .back-button, .edit-button, .delete-button {
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.2s;
+} */
+
+.button:hover {
+  opacity: 0.9;
 }
+
 
 .back-button {
   background-color: #4CAF50;
   color: white;
+  width: 80px; /* 모든 버튼 동일 너비 */
+  height: 40px; /* 모든 버튼 동일 높이 */
+  margin-top: 10px;
 }
 
 .edit-button {
   background-color: #2196F3;
   color: white;
+  width: 80px; /* 모든 버튼 동일 너비 */
+  height: 40px; /* 모든 버튼 동일 높이 */
 }
 
 .delete-button {
   background-color: #f44336;
   color: white;
+  width: 80px; /* 모든 버튼 동일 너비 */
+  height: 40px; /* 모든 버튼 동일 높이 */
 }
 
 .comments-section {
@@ -340,15 +367,24 @@ const handleImageError = (event) => {
 
 .comment-form {
   margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  
 }
 
 .comment-input {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  border: 1px solid #ddd;
+  border: 2px solid #00ba19;
   border-radius: 4px;
   resize: vertical;
+}
+
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .comment-submit-btn {
@@ -358,6 +394,13 @@ const handleImageError = (event) => {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  width: 120px; /* 모든 버튼 동일 너비 */
+  height: 40px; /* 모든 버튼 동일 높이 */
+  justify-content: flex-end;
+}
+
+.comment-submit-btn:hover {
+  background-color: #45a049;
 }
 
 .comments-list .comment-item {
@@ -391,6 +434,7 @@ const handleImageError = (event) => {
 
 .movie-poster{
   width: 300px;
+  margin-bottom: 10px;
   
 }
 </style>

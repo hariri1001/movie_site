@@ -2,23 +2,25 @@
  <template>
   <div class="review-list-container">
     <div class="review-header">
-      <h2>영화 리뷰 목록</h2>
-      <div class="sort-controls">
-        <select v-model="sortBy" @change="sortReviews" class="sort-select">
-          <option value="latest">최신순</option>
-          <option value="rating">평점순</option>
-          <option value="likes">좋아요순</option>
-        </select>
+      <h2>커멘트 게시판</h2>
+      <div class="controls-container">
+        <RouterLink :to="{ name: 'CreateView' }" class="create-link">
+          <h6>게시글 생성</h6>
+        </RouterLink>
+        <div class="sort-controls">
+          <select v-model="sortBy" @change="sortReviews" class="sort-select">
+            <option value="latest">최신순</option>
+            <option value="rating">평점순</option>
+            <option value="likes">좋아요순</option>
+          </select>
+        </div>
+
       </div>
+      
     </div>
 
     <div class="reviews-grid">
-      <ArticleListItem 
-        v-for="article in sortedArticles" 
-        :key="article.id" 
-        :article="article"
-        @toggle-like="handleToggleLike"
-      />
+      <ArticleListItem v-for="article in sortedArticles" :key="article.id" :article="article" @toggle-like="handleToggleLike"/>
     </div>
 
     <div v-if="store.articles.length === 0" class="no-reviews">
@@ -74,16 +76,22 @@ onMounted(async () => {
 
 <style scoped>
 .review-list-container {
-  max-width: 900px;
+  max-width: 740px;
   margin: 0 auto;
   padding: 20px;
 }
 
 .review-header {
   display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+/* 버튼과 정렬 컨트롤을 위한 새로운 컨테이너 */
+.controls-container {
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .sort-controls {
@@ -112,6 +120,23 @@ onMounted(async () => {
   padding: 40px;
   background-color: #fcffbd;
   border-radius: 8px;
-  color: #666;
+  color: #999898;
 }
+
+
+.create-link {
+  display: inline-block;
+  padding: 5px 16px;
+  background-color: #00ba19;
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.create-link:hover {
+  background-color: #029916;;
+}
+
 </style>
