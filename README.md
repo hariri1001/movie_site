@@ -41,7 +41,7 @@
 
    - 팀원 및 업무분담
 
-   최재혁
+    최재혁
     - ERD
     - 페이지 레이아웃 설계
     - 아이디어 기획
@@ -65,8 +65,8 @@
     
 
 ### 4. ERD
-![My Image](assets/erd.png)
-
+![My Image](/erd.png)
+<img src="vue-project/assets/erd.png" alt="My Image" width="300"/>
 
 ### 5. API 입력 위치
  - 변수명 API_KEY에 할당
@@ -104,5 +104,5 @@
 ### 7. 후기
    - 팀장(최재혁)
 
-   
+
    - 팀원(이하리)
