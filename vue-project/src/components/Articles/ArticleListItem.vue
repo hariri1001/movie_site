@@ -33,7 +33,7 @@
           <span class="like-button" :class="{ liked: article.isLiked }" @click="$emit('toggle-like', article)">
             👍 
           </span>
-          <strong>{{ article.likes_count || 0 }}</strong> Likes
+          <strong>{{ article.likes_count || 0 }} Likes</strong> 
         </p>
         <RouterLink :to="{ name: 'DetailView', params: { id: article.id } }" class="view-details">
           리뷰 상세보기
@@ -183,10 +183,10 @@ const handleImageError = (event) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 20px;
+  padding-top: 10px;
   /* border-top: 1px solid #00ba19; */
   height: 30px; /* 푸터 높이 고정 */
-  font-size: 0.9rem; /* 전체 폰트 크기 축소 */
+  font-size: 1rem; /* 전체 폰트 크기 축소 */
 }
 
 
@@ -195,7 +195,7 @@ const handleImageError = (event) => {
   align-items: center;
   gap: 4px;
   margin: 0;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 
 /* 좋아요 버튼 스타일링 */
@@ -206,13 +206,14 @@ const handleImageError = (event) => {
   padding: 4px 8px;
   border-radius: 4px;
   transition: transform 0.2s;
-  font-size: 0.9rem;
+  font-size: 1.3rem;
   background-color: transparent;
 }
 
 .like-button + strong {
   margin-right: 2px;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-weight: bold;
 }
 
 .like-button:hover {
@@ -238,7 +239,7 @@ const handleImageError = (event) => {
   /* border: 1px solid #00ba19; */
   border-radius: 8px;
   transition: all 0.2s;
-  font-size: 0.85rem;
+  font-size: 1rem;
 }
 
 .view-details:hover {

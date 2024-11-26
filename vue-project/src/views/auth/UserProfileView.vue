@@ -218,12 +218,12 @@ const profileImageUrl = computed(() => {
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  background: #007bff;
+  background: #71D247;
   color: white;
 }
 
 .follow-button.following {
-  background: #005fc4;
+  background: #71D247;
 }
 
 /* 좋아요한 영화 섹션 */
@@ -291,7 +291,7 @@ const profileImageUrl = computed(() => {
 }
 
 .comment-content button {
-  background: #007bff;
+  background: #71D247;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -300,7 +300,7 @@ const profileImageUrl = computed(() => {
 }
 
 .comment-content button:hover {
-  background: #0056b3;
+  background: 71D247;
 }
 
 .no-movies {
