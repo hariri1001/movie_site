@@ -6,8 +6,11 @@
       <div class="profile-info">
         <!-- 프로필이미지 -->
         <div class="profile-image-section">
-          <img :src="profileUser?.profile_image ? `${store.API_URL}${profileUser.profile_image}` : 
-              '/public/default_profile.png'" alt="프로필 이미지" class="profile-image">
+          <img 
+      :src="profileImageUrl" 
+      :alt="profileUser?.username + '의 프로필 이미지'" 
+      class="profile-image"
+    >
         </div>
 
         <p class="username">{{ profileUser?.username }}</p>
@@ -114,6 +117,7 @@ const loadProfileData = async () => {
     const username = route.params.username;
     // 프로필 정보 로드
     const profileResponse = await store.getUserProfile(username);
+    console.log('프로필 응답:', profileResponse); // 응답 데이터 확인
     profileUser.value = profileResponse;
 
     // 사용자의 게시글 목록 로드
@@ -153,6 +157,21 @@ const goToArticleDetail = (articleId) => {
 onMounted(() => {
   loadProfileData();
 });
+
+
+
+
+const profileImageUrl = computed(() => {
+  if (profileUser.value?.profile_image) {
+    // 전체 URL이 이미 포함된 경우
+    if (profileUser.value.profile_image.startsWith('http')) {
+      return profileUser.value.profile_image;
+    }
+    // 상대 경로인 경우 API_URL과 결합
+    return `${store.API_URL}${profileUser.value.profile_image}`;
+  }
+  return '/public/default_profile.png';
+});
 </script>
 
 <style scoped>
@@ -167,9 +186,10 @@ onMounted(() => {
   gap: 40px;
   margin-bottom: 40px;
   margin-top: 30px;
-  border: 1px solid #00ba19;
+  /* border: 1px solid #00ba19; */
   border-radius: 8px;
   padding: 40px;
+  background-color: #252525;
 }
 
 .profile-info {
@@ -249,7 +269,7 @@ onMounted(() => {
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid #00ba19;
+  /* border: 1px solid #00ba19; */
 }
 
 .comment-content h3 {
@@ -294,7 +314,7 @@ onMounted(() => {
 h2 {
   margin: 0 0 20px 0;
   padding-bottom: 10px;
-  border-bottom: 2px solid #00ba19;
+  border-bottom: 2px solid #d2d3d2;
   color: #F8F9FA;
 }
 

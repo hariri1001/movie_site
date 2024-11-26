@@ -76,7 +76,7 @@ const handleImageError = (event) => {
   height: 300px;
   box-sizing: border-box; /* 패딩을 높이/너비에 포함 */
   color: #F8F9FA;
-  border: 1px solid #00ba19;;
+  /* border: 1px solid #00ba19;; */
 }
 
 /* 메인 콘텐츠 영역 */
@@ -184,7 +184,7 @@ const handleImageError = (event) => {
   justify-content: space-between;
   align-items: center;
   padding-top: 20px;
-  border-top: 1px solid #00ba19;;
+  /* border-top: 1px solid #00ba19; */
   height: 30px; /* 푸터 높이 고정 */
   font-size: 0.9rem; /* 전체 폰트 크기 축소 */
 }
@@ -235,7 +235,7 @@ const handleImageError = (event) => {
   text-decoration: none;
   color: #F8F9FA;
   padding: 4px 12px;
-  border: 1px solid #00ba19;;
+  /* border: 1px solid #00ba19; */
   border-radius: 8px;
   transition: all 0.2s;
   font-size: 0.85rem;

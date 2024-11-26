@@ -1,4 +1,4 @@
-import { ref, computed, watch } from "vue";
+ import { ref, computed, watch } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import { useRouter } from "vue-router";
@@ -210,23 +210,126 @@ const createArticle = async (payload) => {
   }
 
 
-  // **프로필 관련 메서드**
-  const userProfile = ref(null);
- // 프로필 조회(생성)
-  const getProfile = async () => {
-    try {
-      const response = await axios({
-        method: "get",
-        url: `${API_URL}/api/v1/accounts/profile/`,
+// 프로필 이미지 업로드 메서드 추가
+// const updateProfileImage = async (imageFile) => {
+//   try {
+//     const formData = new FormData();
+//     formData.append('image', imageFile);
+
+//     const response = await axios.post(
+//       `${API_URL}/api/v1/accounts/profile/image/`,
+//       formData,
+//       {
+//         headers: {
+//           'Content-Type': 'multipart/form-data',
+//           Authorization: `Token ${token.value}`,
+//         },
+//       }
+//     );
+
+//     console.log('서버 응답 전체:', response.data);
+//     console.log('이미지 경로:', response.data.image || response.data.profile_image);
+
+//     if (response.data) {
+//       // 응답에서 이미지 URL을 확인하고 userProfile 업데이트
+//       const imageUrl = response.data.image || response.data.profile_image;
+//       if (imageUrl) {
+//         console.log('새 이미지 URL:', imageUrl);
+//         userProfile.value = {
+//           ...response.data,
+//           profile_image: imageUrl
+//         };
+//         await getProfile();  // 프로필 정보 새로고침
+//         return true;
+//       }
+//     }
+//     return false;
+//   } catch (error) {
+//     console.error('프로필 이미지 업로드 실패:', error.response?.data);
+//     return false;
+//   }
+// };
+const updateProfileImage = async (imageFile) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    const response = await axios.post(
+      `${API_URL}/api/v1/accounts/profile/image/`,
+      formData,
+      {
         headers: {
+          'Content-Type': 'multipart/form-data',
           Authorization: `Token ${token.value}`,
         },
-      });
-      userProfile.value = response.data; // 사용자 프로필 데이터 저장
-    } catch (error) {
-      console.error("프로필 조회 실패:", error);
+      }
+    );
+
+    if (response.data) {
+      userProfile.value = {
+        ...response.data,
+        profile_image: response.data.profile_image // 서버에서 반환한 URL을 그대로 사용
+      };
+      return true;
     }
-  };
+    return false;
+  } catch (error) {
+    console.error('프로필 이미지 업로드 실패:', error.response?.data);
+    return false;
+  }
+};
+
+
+
+  // **프로필 관련 메서드**
+  const userProfile = ref(null);
+
+
+// const getProfile = async () => {
+//   try {
+//     const response = await axios({
+//       method: "get",
+//       url: `${API_URL}/api/v1/accounts/profile/`,
+//       headers: {
+//         Authorization: `Token ${token.value}`,
+//       },
+//     });
+//     console.log('프로필 응답 데이터:', response.data);
+    
+//     if (response.data) {
+//       // 프로필 이미지 URL 처리
+//       const profileData = {
+//         ...response.data,
+//         profile_image: response.data.profile_image
+//       };
+//       console.log('처리된 프로필 데이터:', profileData);
+//       userProfile.value = profileData;
+//     }
+//   } catch (error) {
+//     console.error("프로필 조회 실패:", error);
+//   }
+// };
+
+const getProfile = async () => {
+  try {
+    const response = await axios({
+      method: "get",
+      url: `${API_URL}/api/v1/accounts/profile/`,
+      headers: {
+        Authorization: `Token ${token.value}`,
+      },
+    });
+    console.log('프로필 응답 데이터:', response.data);
+    
+    if (response.data) {
+      userProfile.value = response.data;
+    }
+  } catch (error) {
+    console.error("프로필 조회 실패:", error);
+  }
+};
+
+
 
   // 프로필 수정
   const updateProfile = async (profileData) => {
@@ -413,6 +516,7 @@ const userReviewStats = computed(() => {
           headers: { Authorization: `Token ${token.value}` },
         }
       );
+      console.log('받은 프로필 데이터:', response.data); // 응답 데이터 확인
       return response.data;
     } catch (error) {
       console.error('프로필 조회 실패:', error);
@@ -650,7 +754,7 @@ const getMovieDetails = async (movieId) => {
     sortedByRating,
     sortedByLatest,
     sortedByLikes,
-    userReviewStats
-
+    userReviewStats,
+    updateProfileImage,
   };
 });

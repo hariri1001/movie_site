@@ -83,7 +83,7 @@
 
         <div class="button-group">
         <button type="submit" class="submit-button">
-          {{ isEditing ? "코멘트 수정" : "코멘트 등록" }}
+          {{ isEditing ? "repost-it" : "post-it" }}
         </button>
         <button type="button" @click="cancelReview" class="cancel-button">
           취소
@@ -234,7 +234,7 @@ onMounted(async () => {
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-  border: 1px solid #00ba19;
+  /* border: 1px solid #00ba19; */
   border-radius: 8px;
   margin-top: 30px;
   background-color: #272727;

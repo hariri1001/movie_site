@@ -5,7 +5,7 @@
       <h2>지금 뜨는 코멘트</h2>
       <div class="controls-container">
         <RouterLink :to="{ name: 'CreateView' }" class="create-link">
-          <h6>코멘트 작성</h6>
+          <h6>post-it</h6>
         </RouterLink>
         <div class="sort-controls">
           <select v-model="sortBy" @change="sortReviews" class="sort-select">
@@ -102,7 +102,7 @@ onMounted(async () => {
 
 .sort-select {
   padding: 8px;
-  border: 1px solid #00ba19;;
+  /* border: 1px solid #00ba19; */
   border-radius: 4px;
   background-color: #1a1a1a;
 }
@@ -130,7 +130,8 @@ onMounted(async () => {
   color: white;
   text-decoration: none;
   border-radius: 4px;
-  font-size: 0.9rem;
+  font-size: 1rem;
+  font-weight: 200;
   transition: background-color 0.2s;
 }
 

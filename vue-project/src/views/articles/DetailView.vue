@@ -242,7 +242,7 @@ const handleImageError = (event) => {
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: #272727;
-  border: 2px solid #00ba19;
+  /* border: 2px solid #00ba19; */
 }
 
 .movie-content {
@@ -266,7 +266,7 @@ const handleImageError = (event) => {
   align-items: center;
   margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #00ba19;
+  /* border-bottom: 1px solid #00ba19; */
 }
 
 .review-author {
@@ -412,7 +412,7 @@ const handleImageError = (event) => {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
-  border: 2px solid #00ba19;
+  /* border: 2px solid #00ba19; */
   border-radius: 8px;
   resize: vertical;
   background-color: #272727;
@@ -445,7 +445,7 @@ const handleImageError = (event) => {
   margin-bottom: 10px;
   background-color: #272727;;
   border-radius: 8px;
-  border: 2px solid #00ba19;;
+  /* border: 2px solid #00ba19; */
 }
 
 .comment-header {

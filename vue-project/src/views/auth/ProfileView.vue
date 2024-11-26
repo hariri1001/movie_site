@@ -8,16 +8,27 @@
       <div class="profile-info">
         <!-- 프로필이미지 업로드 -->
         <div class="profile-image-section">
-          <img :src="store.userProfile?.profile_image ? `${store.API_URL}${store.userProfile.profile_image}` : 
-              '/public/default_profile.png'" alt="프로필 이미지" class="profile-image">
-          <input type="file" @change="handleImageUpload" accept="image/*" ref="fileInput" style="display: none">
-          <button @click="$refs.fileInput.click()" class="img-button">이미지 변경</button>
-        </div>
+  <img 
+    :src="store.userProfile?.profile_image || defaultImage"
+    :key="Date.now()"
+    alt="프로필 이미지" 
+    class="profile-image"
+    @error="handleImageError"
+  />
+  <input 
+    type="file" 
+    @change="handleImageUpload" 
+    accept="image/*" 
+    ref="fileInputRef"
+    style="display: none"
+  >
+  <button @click="triggerFileInput" class="img-button">이미지 변경</button>
+</div>
 
 
 
         <p class="username">{{ store.userProfile?.username }}</p>
-        <!-- <p class="username">{{ store.userProfile?.first_name || '이름 없음' }}</p> -->
+        <p class="username">{{ store.userProfile?.first_name || '이름 없음' }}</p>
         <div class="stats">
           
           <p class="username">{{ store.userProfile?.email }}</p>
@@ -101,12 +112,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useCounterStore } from '@/stores/counter';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import '@/assets/styles/profile.css'
-
+const fileInputRef = ref(null); 
 const store = useCounterStore();
 const isEditing = ref(false);
 const error = ref(null);
@@ -229,32 +240,48 @@ const defaultImage = '/public/default_profile.png'
 // 파일 입력 참조
 const fileInput = ref(null)
 
+// 파일 입력 트리거 함수
+const triggerFileInput = () => {
+  if (fileInputRef.value) {
+    fileInputRef.value.click();
+  }
+};
+
+const handleImageError = (e) => {
+  console.error('이미지 로드 실패. 현재 src:', e.target.src);
+  e.target.src = defaultImage;
+};
+
+
+
+
+const profileImageUrl = computed(() => {
+  return store.userProfile?.profile_image || '/public/default_profile.png';
+});
+
+
+
+
+
 // 이미지 업로드 처리 함수
 const handleImageUpload = async (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-
-  const formData = new FormData()
-  formData.append('image', file)
+  const file = event.target.files[0];
+  if (!file) return;
 
   try {
-    const response = await axios.post(
-      `${store.API_URL}/api/v1/accounts/profile/image/`,
-      formData,
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Token ${store.token}`,
-        },
-      }
-    )
-    console.log('이미지 업로드 성공:', response.data)
-    // 프로필 정보 새로고침
-    await store.getProfile()
+    // store의 updateProfileImage 메서드 사용
+    const success = await store.updateProfileImage(file);
+    
+    if (success) {
+      console.log('이미지 업로드 성공');
+    } else {
+      alert('이미지 업로드에 실패했습니다.');
+    }
   } catch (error) {
-    console.error('이미지 업로드 실패:', error)
+    console.error('이미지 업로드 중 오류 발생:', error);
+    alert('이미지 업로드 중 오류가 발생했습니다.');
   }
-}
+};
 
 
 
@@ -276,7 +303,7 @@ const handleImageUpload = async (event) => {
   gap: 40px;
   margin-bottom: 40px;
   margin-top: 30px;
-  border: 1px solid #00ba19;;
+  /* border: 1px solid #f8faf8;; */
   border-radius: 8px;
   padding: 40px;
   background-color: #272727;
@@ -340,7 +367,7 @@ const handleImageUpload = async (event) => {
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  border: 1px solid #00ba19;;
+  /* border: 1px solid #00ba19; */
   
 }
 

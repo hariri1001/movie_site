@@ -35,43 +35,81 @@ def delete_account(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def profile_view(request):
-    serializer = UserProfileSerializer(request.user)
+    serializer = UserProfileSerializer(request.user, context={'request': request})
     print('프로필 데이터:', serializer.data)  # 데이터 확인용 로그
     return Response(serializer.data)
 
 #프로필 수정
+# @api_view(['PUT'])
+# @permission_classes([IsAuthenticated])
+# def profile_update(request):
+#     user = request.user
+#     print('받은 데이터:', request.data)
+    
+#     # 비밀번호 수정 처리
+#     if 'password' in request.data and request.data['password']:
+#         user.set_password(request.data['password'])
+
+#     serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
+#     print('받은 데이터:', request.data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data)
+#     print('유효성 검사 실패:', serializer.errors)  # 에러 확인
+#     return Response(serializer.errors, status=400)
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def profile_update(request):
     user = request.user
     print('받은 데이터:', request.data)
     
-    # 비밀번호 수정 처리
     if 'password' in request.data and request.data['password']:
         user.set_password(request.data['password'])
 
-    serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
-    print('받은 데이터:', request.data)
+    serializer = UserProfileSerializer(request.user, data=request.data, partial=True, context={'request': request})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    print('유효성 검사 실패:', serializer.errors)  # 에러 확인
+    print('유효성 검사 실패:', serializer.errors)
     return Response(serializer.errors, status=400)
 
 
+
 # 프로필 이미지 업로드
+# @api_view(['POST'])
+# @permission_classes([IsAuthenticated])
+# def profile_image_upload(request):
+#     if 'image' not in request.FILES:
+#         return Response({'error': '이미지가 제공되지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+#     user = request.user
+#     user.profile_image = request.FILES['image']
+#     user.save()
+    
+#     serializer = UserProfileSerializer(user)
+#     return Response(serializer.data)
+
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def profile_image_upload(request):
     if 'image' not in request.FILES:
         return Response({'error': '이미지가 제공되지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
     
-    user = request.user
-    user.profile_image = request.FILES['image']
-    user.save()
-    
-    serializer = UserProfileSerializer(user)
-    return Response(serializer.data)
+    try:
+        user = request.user
+        user.profile_image = request.FILES['image']
+        user.save()
+        
+        serializer = UserProfileSerializer(user, context={'request': request})
+        print('업로드된 이미지 URL:', user.profile_image.url if user.profile_image else None)  # 로그 추가
+        return Response(serializer.data)
+    except Exception as e:
+        print('이미지 업로드 에러:', str(e))  # 에러 로깅
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

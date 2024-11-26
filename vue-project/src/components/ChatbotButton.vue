@@ -68,7 +68,7 @@ const showModal = ref(false)
   right: 6rem;
   width: 3rem;
   height: 3rem;
-  background-color: #4CAF50;
+  background-color: #48cf1f;
   border-radius: 50%;
   border: none;
   display: flex;
@@ -80,7 +80,7 @@ const showModal = ref(false)
 }
 
 .chat-button:hover {
-  background-color: #00ba19;
+  background-color: #5a5a5a;
 }
 
 .chat-button-text {
@@ -101,7 +101,7 @@ const showModal = ref(false)
 }
 
 .modal-header {
-  background-color: #141414;
+  background-color: #000000;
   padding: 1rem 1.5rem;
 }
 
@@ -143,6 +143,6 @@ const showModal = ref(false)
 /* MovieRecommender 컴포넌트 스타일 오버라이드 */
 :deep(.movie-recommender) {
   height: 100%;
-  background-color: #1a1a1a;
+  background-color: #000000;
 }
 </style>

@@ -86,7 +86,7 @@ onMounted(async () => {
 <style scoped>
 
 hr {
-  border: 1px solid #00ba19;;
+  border: 1px solid #cccccc;;
 }
 
 .container {
@@ -105,7 +105,7 @@ hr {
 .latest-title {
   margin-bottom: 20px;
   font-size: 2rem;
-  font-weight: bold;
+  /* font-weight: bold; */
 }
 
 .grid-layout {
@@ -119,13 +119,13 @@ hr {
 .article-item {
   flex: 0 0 auto;
   width: calc(33.333% - 40px);
-  background: rgba(30, 30, 30, 0.95);
+  background: rgba(41, 41, 41, 0.95);
   padding: 15px;
   border-radius: 30px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border: 1px solid #00ba19;;
+  /* border: 1px solid #00ba19;; */
 
 }
 
@@ -171,7 +171,7 @@ hr {
   cursor: pointer;
   padding: 0px 8px;
   border-radius: 4px;
-  transition: transform 0.2s;
+  transition: transform 0.1s;
   font-size: 1rem;
   background-color: transparent;
   width: 50px;

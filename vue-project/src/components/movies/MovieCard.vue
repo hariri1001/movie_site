@@ -157,6 +157,7 @@ onMounted(() => {
   width: 100%;
   overflow: hidden;
   margin-bottom: 30px;
+  margin-top: 20px;
 }
 
 .movie-cards {

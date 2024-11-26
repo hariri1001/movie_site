@@ -296,7 +296,7 @@ export default {
 
 <style scoped>
 .movie-recommender {
-  background-color: #767676;
+  background-color: #030303;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -314,6 +314,7 @@ export default {
   flex: 1;
   text-align: center;
   padding: 1.5rem;
+  background-color: black;
 }
 
 .question-text {
@@ -330,8 +331,8 @@ export default {
   margin: 8px 0;
   font-size: 1.1rem;
   font-weight: 700;
-  color: black;
-  background-color: #00ba19;
+  color: rgb(228, 225, 225);
+  background-color: rgb(39, 39, 39);
   border: none;
   border-radius: 10px;
   text-align: center;
@@ -345,7 +346,7 @@ export default {
 
 /* 추천 결과 섹션 */
 .results-section {
-  background-color: rgb(50, 50, 50);
+  background-color: rgb(3, 3, 3);
   border-radius: 15px;
   padding: 20px;
 }
@@ -372,11 +373,13 @@ export default {
 
 .card-body {
   padding: 1.25rem;
+  background-color: #1f1f1f;
+  color: #dad9d9;
 }
 
 /* 모달 푸터 */
 .modal-footer {
-  background-color: rgb(50, 50, 50) !important;
+  background-color: rgb(0, 0, 0) !important;
   border: none;
   padding: 1rem;
 }
