@@ -32,7 +32,7 @@
               <div class="genre-badge">
                 <span v-for="genre in movieDetail.genres" 
                       :key="genre.id" 
-                      class="badge bg-primary me-2">
+                      class="badge">
                   # {{ genre.name }}
                 </span>
               </div>
@@ -348,13 +348,36 @@ onMounted(() => {
 }
 
 .genre-badge {
-  margin: 1rem 0;
+  /* display: flex; */
+  /* flex-wrap: wrap; */
+  gap: 8px;  /* 뱃지 사이의 간격 */
+  margin: 10px 0;  /* 위아래 여백 */
 }
 
-.genre-badge .badge {
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 15px;  /* 둥근 모서리 */
   font-size: 0.9rem;
-  padding: 0.5rem 1rem;
-  margin-right: 0.5rem;
+  font-weight: 500;
+  color: #ffffff;
+  background-color: #71D247 ;/* 트위터 블루 색상 */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 5px;
+}
+
+.badge:hover {
+  background-color: #09991c;   /* 호버 시 살짝 어두운 색상 */
+  transform: translateY(-1px);  /* 호버 시 살짝 위로 올라가는 효과 */
+}
+
+.me-2 {
+  margin-right: 0.5rem;  /* 기존 me-2 클래스 대체 */
+}
+
+.bg-primary {
+  background-color: #71D247;  /* 기존 bg-primary 클래스 대체 */
 }
 
 .like-button {

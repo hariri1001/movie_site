@@ -26,7 +26,7 @@
             <!-- 스크롤 안내 -->
             <div class="scroll-indicator" @click="scrollToNextSection">
                 <p>Click</p>
-                <div class="arrow"></div>
+                <!-- <div class="arrow"></div> -->
             </div>
         </div>
     </div>
@@ -106,107 +106,96 @@ onMounted(() => {
 
 <style scoped>
 .Movie-trailer {
-    position: relative;
-    width: 100%;
-    height: 100vh; /* 화면 전체 높이 */
-    overflow: hidden;
+  position: relative;
+  width: 100%;
+  height: 100vh; /* 화면 전체 높이 */
+  overflow: hidden;
 }
 
 .Movie-trailer iframe {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 120%; /* 너비를 120%로 확장 */
-    height: 120%; /* 높이를 120%로 확장 */
-    transform: translate(-50%, -50%); /* 중앙 정렬 */
-    pointer-events: none; /* 클릭 방지 */
+  position: absolute;
+  top: -4%; /* 위로 10% 이동 */
+  left: 50%; /* 가운데 기준 */
+  width: 140%; /* 너비를 20% 확장 */
+  height: 114%; /* 높이를 약간 더 확장 */
+  transform: translateX(-50%); /* 수평 중심 맞춤 */
+  pointer-events: none; /* 클릭 방지 */
 }
 
 .overlay {
-    position: absolute;
-    top: 50%;
-    left: 2%;
-    transform: translateY(-50%);
-    width: auto;
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 0;
-    background: none;
+  position: absolute;
+  top: 50%;
+  left: 2%;
+  transform: translateY(-50%);
+  width: auto;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  background: none;
 }
 
 .content {
-    color: white;
-    max-width: 800px;
+  color: white;
+  max-width: 800px;
 }
 
 .movie-title {
-    font-size: 2.5em;
-    font-weight: bold;
-    margin-bottom: 10px;
+  font-size: 2.5em;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .movie-desc {
-    font-size: 1em;
-    margin-bottom: 10px;
+  font-size: 1em;
+  margin-bottom: 10px;
 }
 
 .release-date {
-    font-size: 1em;
-    color: #ccc;
-    margin-bottom: 20px;
+  font-size: 1em;
+  color: #ccc;
+  margin-bottom: 20px;
 }
 
 /* 스크롤 안내 스타일 */
 .scroll-indicator {
-    position: absolute;
-    bottom: 10px; /* 화면 더 아래쪽으로 이동 */
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    color: white;
-    font-size: 2rem; /* 텍스트 크기는 유지 */
-    font-weight: bold;
-    cursor: pointer;
-    animation: pulse 1.5s infinite; /* 클릭 버튼에 맥박 효과 추가 */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* 텍스트 그림자 추가 */
-}
-
-.scroll-indicator .arrow {
-    width: 30px; /* 화살표 크기 유지 */
-    height: 30px;
-    border: solid white;
-    border-width: 0 3px 3px 0;
-    display: inline-block;
-    margin-top: 0px; /* 클릭 버튼과 화살표 간격을 줄임 */
-    transform: rotate(45deg); /* 화살표를 대각선 아래 방향으로 설정 */
-    animation: bounce 1.5s infinite; /* 위아래로 움직이는 애니메이션 */
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5); /* 화살표 테두리 그림자 효과 추가 */
+  position: absolute;
+  bottom: 60px; /* 화면 더 아래쪽으로 이동 */
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  color: #85dd7f;
+  font-size: 3rem; /* 텍스트 크기는 유지 */
+  font-weight: bold;
+  cursor: pointer;
+  animation: pulse 1.5s infinite; /* 클릭 버튼에 맥박 효과 추가 */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* 텍스트 그림자 추가 */
 }
 
 /* 애니메이션 유지 */
 @keyframes bounce {
-    0%, 100% {
-        transform: translateY(0) rotate(45deg);
-    }
-    50% {
-        transform: translateY(10px) rotate(45deg);
-    }
+  0%,
+  100% {
+    transform: translateY(0) rotate(45deg);
+  }
+  50% {
+    transform: translateY(10px) rotate(45deg);
+  }
 }
 
 @keyframes pulse {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    50% {
-        transform: scale(1.1); /* 버튼이 커졌다가 */
-        opacity: 0.8; /* 투명도가 살짝 줄어듦 */
-    }
-    100% {
-        transform: scale(1);
-        opacity: 1;
-    }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1); /* 버튼이 커졌다가 */
+    opacity: 0.8; /* 투명도가 살짝 줄어듦 */
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 </style>

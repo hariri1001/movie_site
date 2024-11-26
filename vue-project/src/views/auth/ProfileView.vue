@@ -63,7 +63,12 @@
               <div class="comment-content">
                 <h3>{{ article.title }}</h3>
                 <p>{{ article.content }}</p>
-                <button @click="goToArticleDetail(article.id)">자세히 보기</button>
+                <div class="button-wrapper">
+                  <button @click="goToArticleDetail(article.id)" class="view-details">자세히 보기</button>
+                </div>
+                
+
+                
               </div>
             </div>
           </div>
@@ -388,18 +393,28 @@ const handleImageUpload = async (event) => {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
+/* 버튼을 감싸는 div 추가 */
+.button-wrapper {
+  display: flex;
+  justify-content: flex-end;  /* 오른쪽 정렬 */
+  width: 100%;
+}
 
-.comment-content button {
-  background: #007bff;
-  color: white;
+.view-details {
+  background: none !important;
   border: none;
-  padding: 8px 15px;
-  border-radius: 4px;
+  text-decoration: none;
+  color: #F8F9FA;
+  padding: 4px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 0.85rem;
   cursor: pointer;
 }
 
-.comment-content button:hover {
-  background: #0056b3;
+.view-details:hover {
+  background-color: #3a3939;
+  color: rgb(182, 182, 182);
 }
 
 .no-movies {
@@ -500,7 +515,7 @@ h2 {
 }
 
 .edit-button {
-  background: #007bff;
+  background: #28a745;
   color: white;
 }
 

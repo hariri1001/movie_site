@@ -16,21 +16,21 @@
                 <!-- ({{ article.rating || "N/A" }} / 5) -->
               </p>
             </div>
-            <hr>
+            
             <div class="article-content">
               <h5>{{ article.title }}</h5>
               <p>{{ truncateContent(article.content) }}</p>
             </div>
-            <hr>
+            
             <div class="article-footer">
               <p>
                 <span class="like-button" :class="{ liked: article.isLiked }" @click="handleLike(article)">
                   👍
                 </span>
-                <strong>{{ article.likes_count || 0 }}</strong> Likes
+                <strong>{{ article.likes_count || 0 }} Likes</strong> 
               </p>
               
-              <RouterLink :to="{ name: 'DetailView', params: { id: article.id } }">
+              <RouterLink :to="{ name: 'DetailView', params: { id: article.id } }" class="view-details">
                 자세히 보기
               </RouterLink>
             </div>
@@ -132,13 +132,21 @@ hr {
 .article-item h5 {
   font-size: 0.9rem;
   font-weight: bold;
-  margin-bottom: 4px;
+  margin-bottom: 0px;
 }
 
 .article-item p {
   font-size: 0.8rem;
   margin: 2px 0;
   line-height: 1.2;
+}
+
+.article-item .article-content h5 {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #aaaaaa;
+  font-size: 0.9rem;
+  font-weight: bold;
 }
 
 .article-info {
@@ -169,18 +177,19 @@ hr {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  padding: 0px 8px;
   border-radius: 4px;
   transition: transform 0.1s;
-  font-size: 1rem;
+  font-size: 1.4rem;
   background-color: transparent;
   width: 50px;
+  margin: 0;
+  padding: 0;
+  gap: 2px; /* 아이콘과 텍스트 사이 간격 조절 */
 }
 
-
 .like-button + strong {
-  margin-right: 2px;
-  font-size: 0.9rem;
+  margin-left: -20px; /* 음수 마진으로 간격 줄이기 */
+  font-size: 1.1rem;
 }
 
 .like-button:hover {
@@ -200,6 +209,8 @@ hr {
   display: flex;
   justify-content: space-between; /* 작성자와 별점 사이에 공간을 배치 */
   align-items: center; /* 수직 중앙 정렬 */
+  border-bottom: 1px solid #aaaaaa;
+  padding-bottom: 10px;
   
 }
 
@@ -229,10 +240,6 @@ strong {
 }
 
 
-.article-content h5{
-  margin-bottom:  10px;
-}
-
 
 .article-footer {
   display: flex;
@@ -258,6 +265,22 @@ strong {
 RouterLink {
   text-decoration: none; /* 기본 링크 스타일 제거 */
   color: #007bff; /* 링크 색상 설정 */
+}
+
+
+.view-details {
+  text-decoration: none;
+  color: #F8F9FA;
+  padding: 4px 12px;
+  /* border: 1px solid #00ba19; */
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-size: 0.85rem;
+}
+
+.view-details:hover {
+  background-color: #1a1a1a;
+  color: rgb(182, 182, 182);
 }
 
 

@@ -380,7 +380,7 @@ const handleImageError = (event) => {
 
 .back-button-container {
   display: flex;
-  margin: 20px 0; /* 위아래 여백 조절 */
+  margin: 0px 0px 20px 0; /* 위아래 여백 조절 */
   justify-content: flex-end;
 }
 
