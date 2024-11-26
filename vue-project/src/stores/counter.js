@@ -656,7 +656,7 @@ const searchMovies = async (query) => {
         language: 'ko-KR'
       }
     });
-
+    console.log(response.data.results)
     searchResults.value = response.data.results.map(movie => ({
       id: movie.id,
       title: movie.title,

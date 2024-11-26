@@ -1,7 +1,7 @@
 
 <template>
   <div class="create-review-container">
-    <h1>{{ isEditing ? "코멘트 수정" : "코멘트 작성" }}</h1>
+    <h1>{{ isEditing ? "repost-it" : "코멘트 작성" }}</h1>
     
     <!-- 영화 검색 섹션 -->
     <div v-if="!selectedMovie && !isEditing" class="search-section">
@@ -182,7 +182,7 @@ const submitReview = async () => {
   }
 
   console.log('선택된 영화:', selectedMovie.value); // 로그 추가
-
+  
   const payload = {
     movieId: selectedMovie.value.id,
     movieTitle: selectedMovie.value.title,
@@ -190,6 +190,7 @@ const submitReview = async () => {
     content: content.value,
     rating: rating.value.toFixed(1),
     overview: selectedMovie.value.overview,
+    movie_release_date: selectedMovie.value.releaseDate, // 수정된 부분
   };
 
   try {
@@ -212,6 +213,7 @@ const cancelReview = () => {
 
 onMounted(async () => {
   const articleId = route.query.id;
+  console.log('articleId:', articleId);
   if (articleId) {
     isEditing.value = true;
     await store.getArticleById(articleId);

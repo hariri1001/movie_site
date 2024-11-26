@@ -112,3 +112,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.profile_image.url)
         return None
 
+
+    # 'first_name' 필드를 to_representation에서 확인
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if instance.profile_image:
+            request = self.context.get('request')
+            if request:
+                data['profile_image'] = request.build_absolute_uri(instance.profile_image.url)
+        
+        # first_name 필드를 명시적으로 포함하도록 처리
+        data['first_name'] = instance.first_name
+        return data

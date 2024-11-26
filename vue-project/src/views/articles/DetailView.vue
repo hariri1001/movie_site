@@ -3,6 +3,9 @@
   <div class="review-detail-container">
     <h1>영화 코멘트</h1>
     <br>
+    <div class="back-button-container">
+      <button @click="goBackToList" class="back-button">목록</button>
+    </div>
     <div v-if="store.currentArticle" class="review-content">
       <div class="movie-info">
         <div class="movie-content">
@@ -56,9 +59,9 @@
       
 
       <div class="button-container">
-        <button @click="goBackToList" class="back-button">목록</button>
+        
         <template v-if="isAuthor">
-          <button @click="editArticle" class="edit-button">수정</button>
+          <button @click="editArticle" class="edit-button">repost-it</button>
           <button @click="deleteArticle" class="delete-button">삭제</button>
         </template>
       </div>
@@ -113,7 +116,7 @@ const newComment = ref('');
 const isAuthor = computed(() => {
   return store.currentArticle && 
          store.userProfile && 
-         store.currentArticle.author === store.userProfile.username;
+         store.currentArticle.author  === store.userProfile.username ;
 });
 
 const formatDate = (dateString) => {
@@ -154,6 +157,11 @@ const deleteArticle = async () => {
     }
   }
 };
+///////
+const goToUserProfile = (username) => {
+  router.push({ name: 'UserProfile', params: { username } });
+};
+
 
 const submitComment = async () => {
   if (!newComment.value.trim()) {
@@ -195,9 +203,6 @@ const fetchComments = async () => {
   }
 };
 
-const goToUserProfile = (username) => {
-  router.push({ name: 'UserProfile', params: { username } });
-};
 
 onMounted(async () => {
   await store.getArticleById(route.params.id);
@@ -373,20 +378,29 @@ const handleImageError = (event) => {
   opacity: 0.9;
 }
 
+.back-button-container {
+  display: flex;
+  margin: 20px 0; /* 위아래 여백 조절 */
+  justify-content: flex-end;
+}
 
 .back-button {
   background-color: #4CAF50;
   color: white;
-  width: 80px; /* 모든 버튼 동일 너비 */
-  height: 40px; /* 모든 버튼 동일 높이 */
-  margin-top: 10px;
+  width: 80px;
+  height: 40px;
+  margin-top: 0; /* 기존 margin-top 제거 */
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
 }
 
 .edit-button {
-  background-color: #2196F3;
+  background-color: #4CAF50;
   color: white;
-  width: 80px; /* 모든 버튼 동일 너비 */
+  width: 95px; /* 모든 버튼 동일 너비 */
   height: 40px; /* 모든 버튼 동일 높이 */
+
 }
 
 .delete-button {
