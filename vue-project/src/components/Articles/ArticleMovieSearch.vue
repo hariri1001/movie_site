@@ -70,46 +70,31 @@
   
   <script setup>
   import { ref } from 'vue';
-  import axios from 'axios';
-  import { useCounterStore } from '@/stores/counter';
+  import { useMovieStore } from '@/stores/movie';
+  import { useAuthStore } from '@/stores/auth';
   
-  const store = useCounterStore();
+  const movieStore = useMovieStore();
+  const authStore = useAuthStore();
+
   const searchQuery = ref('');
-  const searchResults = ref([]);
   const emit = defineEmits(['select-movie']);
-  
+
   const searchMovies = async () => {
     if (searchQuery.value.length < 2) {
-      searchResults.value = [];
+      movieStore.searchResults = [];
       return;
     }
     
     try {
-      const response = await axios.get(
-        `${store.API_URL}/api/v1/movies/search/`,
-        {
-          params: { query: searchQuery.value },
-          headers: { Authorization: `Token ${store.token}` }
-        }
-      );
-      
-      searchResults.value = response.data.map(movie => ({
-        id: movie.id,
-        title: movie.title,
-        release_date: movie.release_date,
-        poster_url: movie.poster_url,
-        posterPath: movie.poster_path 
-        ? `https://image.tmdb.org/t/p/w300${movie.poster_path}` 
-        : null,
-      }));
+      await movieStore.searchMovies(searchQuery.value);
     } catch (error) {
       console.error('영화 검색 실패:', error);
     }
   };
-  
+
   const selectMovie = (movie) => {
     emit('select-movie', movie);
-    searchResults.value = [];
+    movieStore.searchResults = [];
     searchQuery.value = '';
   };
   </script>

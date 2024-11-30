@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import { useCounterStore } from '@/stores/counter'
+import { useAuthStore  } from '@/stores/auth'
 import { ref, computed } from 'vue'
 
 const firstName = ref(null)
@@ -52,7 +52,7 @@ const password2  = ref(null)
 const email  = ref(null)
 const emailDomain  = ref('선택')
 
-const store = useCounterStore()
+const authStore = useAuthStore();
 
 
 const signUp = function () {
@@ -76,7 +76,7 @@ const signUp = function () {
     Email: Email.value,
   };
   console.log('전송할 데이터:', payload);
-  store.signUp(payload);
+  authStore.signUp(payload);
 };
 
 // 전체 이메일 주소 계산
@@ -98,21 +98,6 @@ html, body {
   height: 100%;
   width: 100%;
 }
-
-/* .signup-page {
- 
-  background-image: 
-    linear-gradient(
-      rgba(0, 0, 0, 0.4),
-      rgba(0, 0, 0, 0.4)
-    ),
-    url('@/assets/signupimg.jpeg');
-  background-size: cover;
-  background-position: center; 
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-   
-}*/
 
 .signup-container {
   max-width: 460px;

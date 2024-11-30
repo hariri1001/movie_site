@@ -1,44 +1,30 @@
 <template>
   <div class="profile-container">
     <!-- 상단 프로필 섹션 -->
-     <h1>My Profile</h1>
     <div class="profile-header">
 
       <!-- 왼쪽: 프로필 정보 -->
       <div class="profile-info">
         <!-- 프로필이미지 업로드 -->
         <div class="profile-image-section">
-  <img 
-    :src="store.userProfile?.profile_image || defaultImage"
-    :key="Date.now()"
-    alt="프로필 이미지" 
-    class="profile-image"
-    @error="handleImageError"
-  />
-  <input 
-    type="file" 
-    @change="handleImageUpload" 
-    accept="image/*" 
-    ref="fileInputRef"
-    style="display: none"
-  >
-  <button @click="triggerFileInput" class="img-button">이미지 변경</button>
-</div>
-
-
-
-        <p class="username">{{ store.userProfile?.username }}</p>
-        <p class="username">{{ store.userProfile?.first_name || '이름 없음' }}</p>
-        <div class="stats">
-          
-          <p class="username">{{ store.userProfile?.email }}</p>
-          <p>movies: {{ likedMovies.length }}</p>
-          <p>followers: {{ store.userProfile?.followers_count || 0 }}</p>
-          <p>following: {{ store.userProfile?.followings_count || 0 }}</p>
+          <img :src="profileStore.userProfile?.profile_image || defaultImage" :key="Date.now()"
+            alt="프로필 이미지"  class="profile-image" @error="handleImageError"/>
+          <input type="file" @change="handleImageUpload" accept="image/*"
+           ref="fileInputRef" style="display: none">
+          <button @click="triggerFileInput" class="img-button">이미지 변경</button>
         </div>
-        <button v-if="!isEditing" @click="startEditing" class="edit-button">
-          회원 정보 수정
-        </button>
+
+        <p class="username">{{ profileStore.userProfile?.first_name || '이름 없음' }}</p>
+        <p class="username">{{ profileStore.userProfile?.username }}</p>
+        <p class="username">{{ profileStore.userProfile?.email }}</p>
+        
+        <div class="stats">
+          <p>movies: {{ likedMovies.length }}</p>
+          <p>followers: {{ profileStore.userProfile?.followers_count || 0 }}</p>
+          <p>following: {{ profileStore.userProfile?.followings_count || 0 }}</p>
+        </div>
+
+        <button v-if="!isEditing" @click="startEditing" class="edit-button">회원 정보 수정</button>
         <button @click="deleteAccount" class="delete-button">회원탈퇴</button>
       </div>
 
@@ -66,9 +52,6 @@
                 <div class="button-wrapper">
                   <button @click="goToArticleDetail(article.id)" class="view-details">자세히 보기</button>
                 </div>
-                
-
-                
               </div>
             </div>
           </div>
@@ -117,13 +100,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import { useCounterStore } from '@/stores/counter';
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/auth';
+import { useProfileStore } from '@/stores/profile';
+import { useMovieStore } from '@/stores/movie';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import '@/assets/styles/profile.css'
+
+const authStore = useAuthStore();
+const profileStore = useProfileStore();
+const movieStore = useMovieStore();
+const router = useRouter();
+
 const fileInputRef = ref(null); 
-const store = useCounterStore();
 const isEditing = ref(false);
 const error = ref(null);
 const editForm = ref({
@@ -132,9 +122,9 @@ const editForm = ref({
 });
 const likedMovies = ref([]);
 const userArticles = ref([]); // 내가 작성한 게시글 데이터를 저장
-const router = useRouter();
 
-// Axios 인스턴스 생성
+
+// django로 api요청
 const api = axios.create({
   baseURL: 'http://localhost:8000',
   withCredentials: true,
@@ -144,8 +134,9 @@ const api = axios.create({
 });
 
 // 요청 인터셉터 추가
+// store에서 토큰을 가져와서 헤더에 추가
 api.interceptors.request.use((config) => {
-  const token = store.token;
+  const token = authStore.token;
   if (token) {
     config.headers.Authorization = `Token ${token}`;
   }
@@ -186,9 +177,9 @@ const goToArticleDetail = (articleId) => {
 // 페이지 로드 시 데이터 가져오기
 onMounted(async () => {
   try {
-    await store.getProfile();
+    await profileStore.getProfile();
     
-    console.log('프로필 데이터:', store.userProfile);
+    console.log('프로필 데이터:', profileStore.userProfile);
     await fetchLikedMovies();
     await fetchUserArticles();
   } catch (err) {
@@ -196,11 +187,12 @@ onMounted(async () => {
   }
 });
 
-// 프로필 수정 관련 함수
+
+// ***프로필 수정 관련 함수***
 const startEditing = () => {
   editForm.value = {
-    first_name: store.userProfile?.first_name || '',
-    email: store.userProfile?.email || '',
+    first_name: profileStore.userProfile?.first_name || '',
+    email: profileStore.userProfile?.email || '',
   };
   isEditing.value = true;
 };
@@ -218,7 +210,7 @@ const submitUpdate = async () => {
     alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
     return;
   }
-  const success = await store.updateProfile(editForm.value);
+  const success = await profileStore.updateProfile(editForm.value);
   if (success) {
     isEditing.value = false;
     alert("프로필이 성공적으로 업데이트되었습니다.");
@@ -230,7 +222,7 @@ const submitUpdate = async () => {
 // 계정 삭제
 const deleteAccount = async () => {
   if (!confirm("정말 탈퇴하시겠습니까?")) return;
-  const success = await store.deleteAccount();
+  const success = await profileStore.deleteAccount();
   if (success) {
     router.push({ name: 'LogInView' });
     alert("회원탈퇴가 완료되었습니다.");
@@ -239,11 +231,10 @@ const deleteAccount = async () => {
   }
 };
 
-// 프로필 이미지 상태 관리
-const defaultImage = '/public/default_profile.png'
 
-// 파일 입력 참조
-const fileInput = ref(null)
+// ***프로필 이미지 업로드***
+const defaultImage = '/public/default_profile.png'
+// const fileInput = ref(null)
 
 // 파일 입력 트리거 함수
 const triggerFileInput = () => {
@@ -258,16 +249,6 @@ const handleImageError = (e) => {
 };
 
 
-
-
-const profileImageUrl = computed(() => {
-  return store.userProfile?.profile_image || '/public/default_profile.png';
-});
-
-
-
-
-
 // 이미지 업로드 처리 함수
 const handleImageUpload = async (event) => {
   const file = event.target.files[0];
@@ -275,7 +256,7 @@ const handleImageUpload = async (event) => {
 
   try {
     // store의 updateProfileImage 메서드 사용
-    const success = await store.updateProfileImage(file);
+    const success = await profileStore.updateProfileImage(file);
     
     if (success) {
       console.log('이미지 업로드 성공');
@@ -287,13 +268,9 @@ const handleImageUpload = async (event) => {
     alert('이미지 업로드 중 오류가 발생했습니다.');
   }
 };
-
-
-
-
-
-
 </script>
+
+
 
 <style scoped>
 .profile-container {
@@ -308,12 +285,9 @@ const handleImageUpload = async (event) => {
   gap: 40px;
   margin-bottom: 40px;
   margin-top: 30px;
-  /* border: 1px solid #f8faf8;; */
   border-radius: 8px;
   padding: 40px;
   background-color: #272727;
-
-  
 }
 
 .profile-info {
@@ -351,7 +325,6 @@ const handleImageUpload = async (event) => {
 .movie-poster {
   width: 100%;
   height: 100%;
-  /* height: auto; */
   border-radius: 8px;
   object-fit: cover; /* cover로 변경하여 이미지가 꽉 차도록 */
 }
@@ -372,8 +345,6 @@ const handleImageUpload = async (event) => {
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* border: 1px solid #00ba19; */
-  
 }
 
 .comment-content h3 {
@@ -474,21 +445,12 @@ h2 {
   margin-top: 20px;
   display: flex;
   gap: 10px;
-  border-radius: 8px;
 }
 
 .img-button{
   border-radius: 8px;
 }
 
-/* .save-button, .cancel-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-
-} */
 
 .save-button {
   background: #28a745;

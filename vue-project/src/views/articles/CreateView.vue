@@ -101,14 +101,16 @@
 import { ref, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';  // storeToRefs 추가
 import { useRoute, useRouter } from 'vue-router';
-import { useCounterStore } from '@/stores/counter';
+import { useArticleStore } from '@/stores/article';
+import { useMovieStore } from '@/stores/movie';
 
-const store = useCounterStore();
+const articleStore = useArticleStore();
+const movieStore = useMovieStore();
 const route = useRoute();
 const router = useRouter();
 
 // store에서 필요한 상태들을 가져옴
-const { searchResults, isLoading, error } = storeToRefs(store);
+const { searchResults, isLoading, error } = storeToRefs(movieStore);
 
 const searchQuery = ref('');
 const selectedMovie = ref(null);
@@ -123,7 +125,7 @@ const searchMovies = async () => {
   if (searchQuery.value.length < 2) {
     return;
   }
-  await store.searchMovies(searchQuery.value);
+  await movieStore.searchMovies(searchQuery.value);
 };
 
 
@@ -195,9 +197,9 @@ const submitReview = async () => {
 
   try {
     if (isEditing.value) {
-      await store.updateArticle(route.query.id, payload);
+      await articleStore.updateArticle(route.query.id, payload);
     } else {
-      await store.createArticle(payload);
+      await articleStore.createArticle(payload);
     }
     router.push({ name: 'ArticleView' });
   } catch (error) {
@@ -216,8 +218,8 @@ onMounted(async () => {
   console.log('articleId:', articleId);
   if (articleId) {
     isEditing.value = true;
-    await store.getArticleById(articleId);
-    const article = store.currentArticle;
+    await articleStore.getArticleById(articleId);
+    const article = articleStore.currentArticle;
     selectedMovie.value = {
       id: article.movie_id,
       title: article.movie_title,

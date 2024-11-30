@@ -25,14 +25,13 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useCounterStore } from '@/stores/counter'
+import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
-// import SocialLogin from '@/components/Auth/SocialLogIn.vue'
 
 const username = ref(null)
 const password = ref(null)
 
-const store = useCounterStore()
+const authStore = useAuthStore()
 const router = useRouter()
 
 const logIn = function () {
@@ -40,7 +39,7 @@ const logIn = function () {
     username: username.value,
     password: password.value
   }
-  store.logIn(payload)
+  authStore.logIn(payload)
 }
 
 </script>

@@ -16,13 +16,12 @@ class User(AbstractUser):
 
 
 class LikedMovie(models.Model):
-    # LikedMovie 모델은 User와 Movie 간의 관계를 나타냄
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    movie = models.ForeignKey('movies.Movie', on_delete=models.CASCADE)  # 'movies.Movie'로 문자열 참조
+    movie = models.ForeignKey('movies.Movie', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.user.username} liked {self.movie.title}'  # LikedMovie 인스턴스의 문자열 표현 추가
+        return f'{self.user.username} liked {self.movie.title}'
     
 
 # 영화id와 TMDB의 id 중복 이슈

@@ -34,7 +34,7 @@
             </li>
             
             <!-- 로그인 상태에 따라 다른 메뉴 표시 -->
-            <template v-if="!store.isLogin">
+            <template v-if="!authStore.isLogin">
                 <li class="nav-item">
                     <RouterLink class="nav-link" :to="{ name: 'LogInView' }">로그인</RouterLink>
                 </li>
@@ -65,16 +65,17 @@
 <script setup>
 
 import axios from 'axios'
-import { useCounterStore } from '@/stores/counter'
+import { useAuthStore  } from '@/stores/auth'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 const searchQuery = ref('')
 
 
-const store = useCounterStore()
+const authStore = useAuthStore()
+
 const logOut = function () {
-  store.logOut()
+  authStore.logOut()
 }
 
 

@@ -1,42 +1,9 @@
 <template>
   <div class="container">
-    <!-- 인기 상영작 캐러셀 -->
-    <div class="carousel-container">
-      <h2 class="carousel-title">인기 상영작</h2>
-      <div class="carousel">
-        <div class="movie-cards" :style="{ transform: `translateX(-${popularPosition}px)` }">
-          <div class="movie-card" v-for="(movie, index) in popularMovies" :key="movie.id">
-            <span class="rank-number">{{index + 1}}</span>
-            <RouterLink :to="{ name: 'MovieDetail', params: { movieId: movie.id }}" class="text-decoration-none">
-              <div class="card">
-                <div class="poster-wrapper">
-                  <img :src="`https://image.tmdb.org/t/p/w500${movie.poster_path}`" 
-                      class="card-img-top" 
-                      alt="movie poster">
-                </div>
-              </div>
-            </RouterLink>
-          </div>
-        </div>
-      </div>
-      <button class="carousel-btn prev" @click="movePopular('prev')" :disabled="popularPosition === 0">
-        <div>
-          <i class="fas fa-chevron-left"></i>
-        </div>
-      </button>
-      <button class="carousel-btn next" @click="movePopular('next')" :disabled="isEndOfPopular">
-        <div>
-          <i class="fas fa-chevron-right"></i>
-        </div>
-      </button>
-    </div>
-
-
-
     <!-- 평점 많이 받은 영화 -->
     
     <div class="carousel-container">
-      <h2 class="carousel-title">최고 평점 영화</h2>
+      <h2 class="carousel-title">최고 평점 작품</h2>
       <div class="carousel" ref="carousel">
         <div class="movie-cards" :style="{ transform: `translateX(-${topRatedPosition}px)` }">
           <div class="movie-card" v-for="movie in topRatedMovies" :key="movie.id">
@@ -73,6 +40,7 @@ import axios from 'axios';
 const topRatedMovies = ref([]);
 const popularMovies = ref([]);
 const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
+
 const topRatedPosition = ref(0);
 const popularPosition = ref(0);
 const cardWidth = 250;
@@ -96,13 +64,6 @@ const moveTopRated = (direction) => {
   }
 };
 
-const movePopular = (direction) => {
-  if (direction === 'next' && !isEndOfPopular.value) {
-    popularPosition.value += cardWidth;
-  } else if (direction === 'prev' && popularPosition.value > 0) {
-    popularPosition.value -= cardWidth;
-  }
-};
 
 onMounted(() => {
   // Top Rated Movies API 요청
@@ -122,29 +83,20 @@ onMounted(() => {
     console.error('Top Rated API 요청 오류:', error);
   });
 
-  // Popular Movies API 요청
-  axios.get('https://api.themoviedb.org/3/movie/popular', {
-    headers: {
-      Authorization: `Bearer ${TMDB_KEY}`
-    },
-    params: {
-      language: 'ko-KR',
-      page: '1'
-    }
-  })
-  .then((response) => {
-    popularMovies.value = response.data.results;
-  })
-  .catch((error) => {
-    console.error('Popular API 요청 오류:', error);
-  });
 });
 </script>
 
 <style scoped>
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 0px;
+  
+}
+
 .carousel-container {
   position: relative;
-  padding: 0 70px; /* 버튼 공간을 더 확보 */
+  padding: 0 30px; /* 버튼 공간을 더 확보 */
   margin: 20px 0;
   overflow: hidden;
 
@@ -165,13 +117,18 @@ onMounted(() => {
   transition: transform 0.3s ease;
 }
 
+
 .movie-card {
   flex: 0 0 auto;
-  width: calc(20% - 30px); /* 카드 간격 감소 */
-  margin-right: 30px; /* 카드 간격 */
+  width: 250px; /* 카드 간격 감소 */
+  margin-right: 20px; /* 카드 간격 */
+  margin-bottom: 20px;
   transition: transform 0.3s ease;
   position: relative; /* position 추가 */
+  max-width: none; /* max-width 제한 해제 */
+  aspect-ratio: 2 / 3;
 }
+
 
 .card {
   border: none;
@@ -201,18 +158,6 @@ onMounted(() => {
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
 }
 
-/* 순위 숫자 */
-.rank-number {
-  position: absolute;
-  bottom: -30px; /* 아래쪽으로 더 많이 내려감 */
-  right: 10px; /* 오른쪽에서 10px 왼쪽으로 */
-  font-size: 120px; /* 기존 크기 유지 */
-  font-weight: bold; /* 기존 굵기 유지 */
-  color: rgba(255, 255, 255, 0.8); /* 기존 스타일 유지 */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 기존 그림자 유지 */
-  font-style: italic; /* 기존 이탤릭체 유지 */
-  z-index: 1; /* 카드 이미지 위에 표시 */
-}
 
 .carousel-btn {
   position: absolute;

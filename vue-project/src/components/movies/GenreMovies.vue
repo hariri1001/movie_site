@@ -139,59 +139,57 @@
   font-weight: 500;     /* font-medium */
 }
 
+.genre-title{
+  margin-bottom: 20px;
+}
 
 
-
-
-
-
-  .genre-title{
-    margin-bottom: 20px;
-  }
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 0px;
   
+}
 
-  .container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 60px;
-    
-  }
-
-  .mb-6 {
-    position: relative;
-    padding: 0 60px; /* 캐러셀과 동일한 패딩 */
-    width: 100%;
-    margin: 20px 0; /* 캐러셀과 동일한 마진 */
-  }
 
 
 
 /* 장르별 영화 목록 컨테이너 스타일 */
 .movie-container {
   position: relative;
-  padding: 0 60px;
+  /* padding: 0 60px; */
   margin: 20px 0;
   max-width: 1400px;
   margin: 20px auto;
 }
 
-  
-  .movie-card {
-  flex: 0 0 auto;
-  width: calc(20% - 40px); /* 5개의 카드를 위한 너비 */
-  margin-right: 40px;
-  transition: transform 0.3s ease;
-  position: relative;
-  margin-bottom: 40px;
-  
+
+.movie-card {
+    width: 250px;  /* 원하는 카드 크기 */
+    margin-right: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.3s ease;
+    position: relative;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: #333;
+    max-width: none; /* max-width 제한 해제 */
 }
+
+
+/* 각 행의 5번째 카드마다 마진 제거 */
+.movie-card:nth-child(5n) {
+  margin-right: 0;
+}
+
 
 /* 그리드 레이아웃을 flex로 변경 */
 .grid-layout {
   display: flex;
   flex-wrap: wrap;
   gap: 0; /* gap 제거하고 margin으로 대체 */
-  padding: 20px 0;
+  padding: 20px 35px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -285,7 +283,7 @@
 .mb-6 {
   max-width: 1400px;  /* 캐러셀과 동일한 너비 */
   margin: 0 auto;     /* 중앙 정렬 */
-  padding: 0 60px;    /* 캐러셀과 동일한 패딩 */
+  padding: 0 35px;    /* 캐러셀과 동일한 패딩 */
 }
 
 /* 장르 버튼 스타일 */

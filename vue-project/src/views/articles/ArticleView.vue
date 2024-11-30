@@ -8,13 +8,13 @@
 <script setup>
 import ArticleList from '@/components/Articles/ArticleList.vue';
 import { onMounted } from 'vue';
-import { useCounterStore } from '@/stores/counter';
+import { useArticleStore } from '@/stores/article';
 
-const store = useCounterStore();
+const articleStore = useArticleStore();
 
 
 // 컴포넌트 마운트 시, 라우트 변경 시 게시글 로드
 onMounted (() => {
-  store.getArticles();
+  articleStore.getArticles();
 });
 </script>

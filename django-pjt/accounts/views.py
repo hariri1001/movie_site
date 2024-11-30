@@ -9,8 +9,6 @@ from rest_framework import status
 User = get_user_model()
 
 
-
-
 # 회원가입
 @api_view(['POST'])
 def signup(request):
@@ -58,7 +56,6 @@ def profile_update(request):
 
 
 
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def profile_image_upload(request):
@@ -87,6 +84,7 @@ def user_profile(request, username):
     # UserProfileSerializer 사용
     serializer = UserProfileSerializer(user, context={'request': request})
     return Response(serializer.data)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

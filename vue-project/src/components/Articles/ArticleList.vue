@@ -23,7 +23,7 @@
       <ArticleListItem v-for="article in sortedArticles" :key="article.id" :article="article" @toggle-like="handleToggleLike"/>
     </div>
 
-    <div v-if="store.articles.length === 0" class="no-reviews">
+    <div v-if="articleStore.articles.length === 0" class="no-reviews">
       아직 작성된 리뷰가 없습니다.
     </div>
   </div>
@@ -31,14 +31,14 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useCounterStore } from "@/stores/counter";
+import { useArticleStore } from "@/stores/article";
 import ArticleListItem from "./ArticleListItem.vue";
 
-const store = useCounterStore();
+const articleStore = useArticleStore();
 const sortBy = ref('latest');
 
 const sortedArticles = computed(() => {
-  const articles = [...store.articles];
+  const articles = [...articleStore.articles];
   
   switch (sortBy.value) {
     case 'rating':
@@ -53,8 +53,8 @@ const sortedArticles = computed(() => {
 
 const handleToggleLike = async (article) => {
   try {
-    const { liked, likes_count } = await store.toggleArticleLike(article.id);
-    const targetArticle = store.articles.find((a) => a.id === article.id);
+    const { liked, likes_count } = await articleStore.toggleArticleLike(article.id);
+    const targetArticle = articleStore.articles.find((a) => a.id === article.id);
     if (targetArticle) {
       targetArticle.isLiked = liked;
       targetArticle.likes_count = likes_count;
@@ -70,7 +70,7 @@ const sortReviews = () => {
 };
 
 onMounted(async () => {
-  await store.getArticles();
+  await articleStore.getArticles();
 });
 </script>
 

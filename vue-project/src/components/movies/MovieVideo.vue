@@ -1,43 +1,66 @@
 <template>
-    <div>
-        <div v-if="loading" class="Movie-trailer">
-            <div class="overlay">
-                <div class="content">
-                    <h1 class="movie-title">로딩중...</h1>
-                </div>
-            </div>
-        </div>
-        <div v-else-if="selectedMovie" class="Movie-trailer">
-            <iframe 
-                width="100%" 
-                height="100%" 
-                :src="`https://www.youtube.com/embed/${selectedMovie.videoKey}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${selectedMovie.videoKey}&modestbranding=1&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`"
-                frameborder="0" 
-                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen>
-            </iframe>
-            <div class="overlay">
-                <div class="content">
-                    <h1 class="movie-title">{{ selectedMovie.title }}</h1>
-                    <p class="movie-desc">{{ selectedMovie.overview }}</p>
-                    <p class="release-date">{{ formatDate(selectedMovie.release_date) }} 개봉</p>
-                </div>
-            </div>
-            <!-- 스크롤 안내 -->
-            <div class="scroll-indicator" @click="scrollToNextSection">
-                <p>Click</p>
-                <!-- <div class="arrow"></div> -->
-            </div>
+  <div>
+    <div class="carousel-container">
+      <PopularMoviesCarousel 
+        :popularMovies="popularMovies"
+        :movePopular="movePopular"
+        :isEndOfPopular="isEndOfPopular"
+        :popularPosition="popularPosition" />
+    </div>
+    <div v-if="loading" class="Movie-trailer">
+        <div class="overlay">
         </div>
     </div>
+    <div v-else-if="selectedMovie" class="Movie-trailer">
+      <iframe 
+          width="100%" 
+          height="100%" 
+          :src="`https://www.youtube.com/embed/${selectedMovie.videoKey}?autoplay=1&mute=1&controls=0&rel=0&loop=1&playlist=${selectedMovie.videoKey}&modestbranding=1&showinfo=0&iv_load_policy=3&fs=0&disablekb=1&playsinline=1`"
+          frameborder="0" 
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen>
+      </iframe>
+      <!-- <div class="overlay">
+          <div class="content">
+              <h1 class="movie-title">{{ selectedMovie.title }}</h1>
+              <p class="movie-desc">{{ selectedMovie.overview }}</p>
+              <p class="release-date">{{ formatDate(selectedMovie.release_date) }} 개봉</p>
+          </div>
+      </div> -->
+    </div>
+  </div>
+      
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import PopularMoviesCarousel from '@/components/movies/PopularMoviesCarousel.vue';
 
 const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const selectedMovie = ref(null);
 const loading = ref(false);
+
+const popularMovies = ref([]);
+const popularPosition = ref(0);
+const cardWidth = 250;
+const visibleCards = 5;
+
+const isEndOfPopular = computed(() => {
+  if (!popularMovies.value.length) return true;
+  return popularPosition.value >= (popularMovies.value.length - visibleCards) * cardWidth;
+});
+
+const movePopular = (direction) => {
+  if (direction === 'next' && !isEndOfPopular.value) {
+    popularPosition.value += cardWidth;
+  } else if (direction === 'prev' && popularPosition.value > 0) {
+    popularPosition.value -= cardWidth;
+  }
+};
+
+
+
+
 
 const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -78,12 +101,15 @@ const findMovieWithTrailer = async (movies) => {
 const getRandomMovie = async () => {
     loading.value = true;
     try {
-        const moviesData = await fetchTMDB('/movie/now_playing?language=ko-KR&page=1');
-        const shuffledMovies = [...moviesData.results].sort(() => Math.random() - 0.5);
-        const movieWithTrailer = await findMovieWithTrailer(shuffledMovies);
-        if (movieWithTrailer) {
-            selectedMovie.value = movieWithTrailer;
-        }
+      const moviesData = await fetchTMDB('/movie/now_playing?language=ko-KR&page=1');
+      const shuffledMovies = [...moviesData.results].sort(() => Math.random() - 0.5);
+      const movieWithTrailer = await findMovieWithTrailer(shuffledMovies);
+      if (movieWithTrailer) {
+          selectedMovie.value = movieWithTrailer;
+      }
+      // 인기 상영작 영화 데이터 가져오기
+      const popularMoviesData = await fetchTMDB('/movie/popular?language=ko-KR&page=1');
+      popularMovies.value = popularMoviesData.results;
     } catch (error) {
         console.error('Error fetching movie data:', error);
     } finally {
@@ -91,35 +117,54 @@ const getRandomMovie = async () => {
     }
 };
 
-// 아래로 스크롤 함수
-const scrollToNextSection = () => {
-    const nextSection = document.querySelector('.carousel-container'); // 스크롤할 섹션
-    if (nextSection) {
-        nextSection.scrollIntoView({ behavior: 'smooth' }); // 부드러운 스크롤
-    }
-};
 
 onMounted(() => {
     getRandomMovie();
 });
+
 </script>
 
 <style scoped>
+.carousel-container {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  width: 100%; /* 캐러셀 너비를 80%로 설정 */
+  max-width: 1400px; /* 최대 너비를 1400px로 제한 */
+  height: 70%; /* 캐러셀 높이를 70%로 설정 */
+}
+
+.Movie-trailer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* 어둡게 하는 반투명 검정색 배경 */
+  z-index: 1;
+}
+
+
+
 .Movie-trailer {
   position: relative;
   width: 100%;
   height: 100vh; /* 화면 전체 높이 */
   overflow: hidden;
+  z-index: 0; /* 비디오 영상을 배경으로 배치 */
 }
 
 .Movie-trailer iframe {
-  position: absolute;
-  top: -4%; /* 위로 10% 이동 */
-  left: 50%; /* 가운데 기준 */
-  width: 140%; /* 너비를 20% 확장 */
-  height: 114%; /* 높이를 약간 더 확장 */
-  transform: translateX(-50%); /* 수평 중심 맞춤 */
-  pointer-events: none; /* 클릭 방지 */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%; /* 너비를 120%로 확장 */
+    height: 120%; /* 높이를 120%로 확장 */
+    transform: translate(-50%, -50%); /* 중앙 정렬 */
+    pointer-events: none; /* 클릭 방지 */
 }
 
 .overlay {
@@ -134,11 +179,6 @@ onMounted(() => {
   align-items: flex-start;
   padding: 0;
   background: none;
-}
-
-.content {
-  color: white;
-  max-width: 800px;
 }
 
 .movie-title {
@@ -158,20 +198,6 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-/* 스크롤 안내 스타일 */
-.scroll-indicator {
-  position: absolute;
-  bottom: 60px; /* 화면 더 아래쪽으로 이동 */
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  color: #85dd7f;
-  font-size: 3rem; /* 텍스트 크기는 유지 */
-  font-weight: bold;
-  cursor: pointer;
-  animation: pulse 1.5s infinite; /* 클릭 버튼에 맥박 효과 추가 */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8); /* 텍스트 그림자 추가 */
-}
 
 /* 애니메이션 유지 */
 @keyframes bounce {

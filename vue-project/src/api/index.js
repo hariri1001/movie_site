@@ -1,12 +1,5 @@
-
-
-
-
-
-
-
 import axios from 'axios'
-import { useCounterStore } from '@/stores/counter'
+import { useAuthStore } from '@/stores/auth'
 
 export const api = axios.create({
   baseURL: 'http://127.0.0.1:8000'
@@ -15,9 +8,9 @@ export const api = axios.create({
 // 요청 인터셉터 추가
 api.interceptors.request.use(
   config => {
-    const store = useCounterStore()
-    if (store.token) {
-      config.headers.Authorization = `Token ${store.token}`
+    const authStore = useAuthStore()
+    if (authStore.token) {
+      config.headers.Authorization = `Token ${authStore.token}`
     }
     return config
   },

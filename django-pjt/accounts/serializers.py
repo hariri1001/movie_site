@@ -4,10 +4,9 @@ from django.contrib.auth import get_user_model
 class MyUserSerializer(serializers.ModelSerializer):
     password1 = serializers.CharField(write_only=True)
     password2  = serializers.CharField(write_only=True)
-
     profile_image = serializers.SerializerMethodField()
     
-    # password 필드는 write_only=True로 설정
+    # password1, 2 필드는 write_only=True로 설정
     # → 이는 비밀번호가 응답(response)에는 포함되지 않고, 
     # → 요청(request)때만 사용됨을 의미 (보안을 위해)
     
@@ -22,10 +21,11 @@ class MyUserSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError("비밀번호가 일치하지 않습니다.")
             
             # create_user 메서드 사용
+            # create_user가 자동으로 비밀번호 해싱
             user = get_user_model().objects.create_user(
                 username=validated_data['username'],
                 email=validated_data['email'],
-                password=validated_data['password1'],  # create_user가 자동으로 비밀번호 해싱
+                password=validated_data['password1'],  
                 first_name=validated_data.get('first_name', ''),  # first_name 저장
             )
             
@@ -59,7 +59,7 @@ class MyUpdateUserSerializer(serializers.ModelSerializer):
         # 나머지 필드 업데이트
         return super().update(instance, validated_data)
     
-    def get_profile_image(self, obj):  # 추가
+    def get_profile_image(self, obj):
         if obj.profile_image:
             request = self.context.get('request')
             if request:
@@ -67,16 +67,13 @@ class MyUpdateUserSerializer(serializers.ModelSerializer):
         return None
     
 
-######################################
 User = get_user_model()
-
+# 다른 사용자의 프로필
 class UserProfileSerializer(serializers.ModelSerializer):
     followers_count = serializers.SerializerMethodField()
     followings_count = serializers.SerializerMethodField()
     is_followed = serializers.SerializerMethodField()
-    # profile_image = serializers.ImageField(required=False)  # 이 부분 추가
     profile_image = serializers.SerializerMethodField() 
-
 
     class Meta:
         model = User
@@ -93,17 +90,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.followers.filter(pk=request.user.pk).exists()
         return False
-    ##################################################
-    def to_representation(self, instance):
-        # 이미지 URL 처리를 위한 메서드 추가
-        data = super().to_representation(instance)
-        if instance.profile_image:
-            # 전체 URL 생성
-            request = self.context.get('request')
-            if request:
-                data['profile_image'] = request.build_absolute_uri(instance.profile_image.url)
-        return data
-
 
     def get_profile_image(self, obj):
         if obj.profile_image:

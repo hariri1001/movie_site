@@ -6,7 +6,7 @@
     <div class="back-button-container">
       <button @click="goBackToList" class="back-button">목록</button>
     </div>
-    <div v-if="store.currentArticle" class="review-content">
+    <div v-if="articleStore.currentArticle" class="review-content">
       <div class="movie-info">
         <div class="movie-content">
           <!-- 포스터 이미지 추가 -->
@@ -14,7 +14,7 @@
             <img 
               v-if="posterUrl" 
               :src="posterUrl"
-              :alt="store.currentArticle.movieTitle"
+              :alt="articleStore.currentArticle.movieTitle"
               class="movie-poster"
               @error="handleImageError"
             />
@@ -22,7 +22,7 @@
               이미지 없음
             </div>
 
-            <p>{{ store.currentArticle.movie_title }}</p>
+            <p>{{ articleStore.currentArticle.movie_title }}</p>
           </div>
 
           <div class="review-main">
@@ -30,10 +30,10 @@
               <div class="review-author">
                 <p><strong>작성자 : </strong>
                 <span 
-                  @click="goToUserProfile(store.currentArticle.author)" 
+                  @click="goToUserProfile(articleStore.currentArticle.author)" 
                   class="author-link"
                 >
-                  {{ store.currentArticle.author }}
+                  {{ articleStore.currentArticle.author }}
                 </span></p>
               </div>
 
@@ -43,14 +43,14 @@
                     v-for="star in 5" 
                     :key="star"
                     class="star"
-                    :class="{ filled: star <= Math.ceil(store.currentArticle.rating) }"
+                    :class="{ filled: star <= Math.ceil(articleStore.currentArticle.rating) }"
                   >★</span>
                 </div>
-                <span class="rating-text">{{ store.currentArticle.rating }} / 5</span>
+                <span class="rating-text">{{ articleStore.currentArticle.rating }} / 5</span>
               </div>
             </div>
 
-            <p class="review-text">{{ store.currentArticle.content }}</p>
+            <p class="review-text">{{ articleStore.currentArticle.content }}</p>
             
           </div>
         </div>
@@ -89,7 +89,7 @@
             </div>
             <p class="comment-content">{{ comment.content }}</p>
             <button 
-              v-if="comment.author === store.userProfile?.username" 
+              v-if="comment.author === profileStore.userProfile?.username" 
               @click="deleteComment(comment.id)"
               class="comment-delete-btn"
             >
@@ -104,19 +104,25 @@
 
 <script setup>
 import { onMounted, computed, ref } from 'vue';
-import { useCounterStore } from '@/stores/counter';
+import { useArticleStore } from '@/stores/article';
+import { useProfileStore } from '@/stores/profile';
+import { useCommentStore } from '@/stores/comments';
 import { useRoute, useRouter } from 'vue-router';
 
-const store = useCounterStore();
+const articleStore = useArticleStore();
+const profileStore = useProfileStore();
+const commentStore = useCommentStore();
+
 const route = useRoute();
 const router = useRouter();
+
 const comments = ref([]);
 const newComment = ref('');
 
 const isAuthor = computed(() => {
-  return store.currentArticle && 
-         store.userProfile && 
-         store.currentArticle.author  === store.userProfile.username ;
+  return articleStore.currentArticle && 
+         profileStore.userProfile && 
+         articleStore.currentArticle.author  === profileStore.userProfile.username ;
 });
 
 const formatDate = (dateString) => {
@@ -149,7 +155,7 @@ const deleteArticle = async () => {
 
   if (confirm('정말로 이 코멘트 삭제하시겠습니까?')) {
     try {
-      await store.deleteArticle(route.params.id);
+      await articleStore.deleteArticle(route.params.id);
       alert('커멘트가 삭제되었습니다.');
       goBackToList();
     } catch (error) {
@@ -170,7 +176,7 @@ const submitComment = async () => {
   }
 
   try {
-    await store.createComment({
+    await commentStore.createComment({
       article_id: route.params.id,
       content: newComment.value
     });
@@ -186,7 +192,7 @@ const deleteComment = async (commentId) => {
   if (!confirm('댓글을 삭제하시겠습니까?')) return;
 
   try {
-    await store.deleteComment(commentId);
+    await commentStore.deleteComment(commentId);
     await fetchComments();
   } catch (error) {
     console.error('댓글 삭제 실패:', error);
@@ -196,7 +202,7 @@ const deleteComment = async (commentId) => {
 
 const fetchComments = async () => {
   try {
-    const response = await store.getComments(route.params.id);
+    const response = await commentStore.getComments(route.params.id);
     comments.value = response;
   } catch (error) {
     console.error('댓글 로드 실패:', error);
@@ -205,10 +211,10 @@ const fetchComments = async () => {
 
 
 onMounted(async () => {
-  await store.getArticleById(route.params.id);
-  console.log('현재 게시글 데이터:', store.currentArticle);
-  if (!store.userProfile) {
-    await store.getProfile();
+  await articleStore.getArticleById(route.params.id);
+  console.log('현재 게시글 데이터:', articleStore.currentArticle);
+  if (!profileStore.userProfile) {
+    await profileStore.getProfile();
   }
   await fetchComments();
 });
@@ -216,8 +222,8 @@ onMounted(async () => {
 
 // 포스터 URL 생성을 위한 computed 속성 추가
 const posterUrl = computed(() => {
-  if (store.currentArticle?.movie_id) {
-    return `https://image.tmdb.org/t/p/w500${store.currentArticle.movie_poster_path}`;
+  if (articleStore.currentArticle?.movie_id) {
+    return `https://image.tmdb.org/t/p/w500${articleStore.currentArticle.movie_poster_path}`;
   }
   return null;
 });

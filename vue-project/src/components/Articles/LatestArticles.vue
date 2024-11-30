@@ -44,18 +44,20 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { useCounterStore } from '@/stores/counter'
+import { useArticleStore } from '@/stores/article'
+import { useAuthStore } from '@/stores/auth'
 
-const store = useCounterStore()
+const articleStore = useArticleStore();
+const authStore = useAuthStore();
 const latestArticles = ref([])
-const isLogin = computed(() => store.isLogin)
+const isLogin = computed(() => authStore.isLogin)
 
 const fetchLatestArticles = async () => {
   try {
     console.log('게시글 가져오기 시작')
-    await store.getArticles()
-    console.log('store.articles:', store.articles)
-    latestArticles.value = store.articles.slice(0, 3)
+    await articleStore.getArticles()
+    console.log('articleStore.articles:', articleStore.articles)
+    latestArticles.value = articleStore.articles.slice(0, 3)
     console.log('최신 게시글:', latestArticles.value)
   } catch (error) {
     console.error('최신 게시글을 불러오는데 실패했습니다:', error)
@@ -64,7 +66,7 @@ const fetchLatestArticles = async () => {
 
 const handleLike = async (article) => {
   try {
-    await store.toggleArticleLike(article.id)
+    await articleStore.toggleArticleLike(article.id)
   } catch (error) {
     console.error('좋아요 처리 실패:', error)
   }
@@ -92,14 +94,16 @@ hr {
 .container {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 60px;
+  /* padding: 0 60px; */
+  
 }
 
 .article-section {
   position: relative;
   margin: 20px auto;
   max-width: 1400px;
-  padding: 0 60px;
+  padding: 0 20px;
+  
 }
 
 .latest-title {
@@ -110,7 +114,7 @@ hr {
 
 .grid-layout {
   display: flex;
-  gap: 40px;
+  gap: 20px;
   padding: 20px 0;
   max-width: 1400px;
   margin: 0 auto;
@@ -118,16 +122,18 @@ hr {
 
 .article-item {
   flex: 0 0 auto;
-  width: calc(33.333% - 40px);
+  width: calc(33.333% - 14.3px);
   background: rgba(41, 41, 41, 0.95);
+  height: 200px;
   padding: 15px;
-  border-radius: 30px;
+  border-radius: 8px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   /* border: 1px solid #00ba19;; */
 
 }
+
 
 .article-item h5 {
   font-size: 0.9rem;

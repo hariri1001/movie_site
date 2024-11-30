@@ -68,12 +68,16 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { useCounterStore } from '@/stores/counter';
+import { useAuthStore } from '@/stores/auth';
+import { useProfileStore } from '@/stores/profile';
+import { useMovieStore } from '@/stores/movie';
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
 import '@/assets/styles/profile.css'
 
-const store = useCounterStore();
+const authStore = useAuthStore();
+const profileStore = useProfileStore();
+const movieStore = useMovieStore();
+
 const route = useRoute();
 const router = useRouter();
 
@@ -84,9 +88,9 @@ const error = ref(null);
 
 // 팔로우 버튼 표시 여부
 const showFollowButton = computed(() => {
-  return store.userProfile && 
+  return profileStore.userProfile && 
          profileUser.value && 
-         store.userProfile.username !== profileUser.value.username;
+         profileStore.userProfile.username !== profileUser.value.username;
 });
 
 // 팔로우 상태
@@ -94,56 +98,37 @@ const isFollowing = computed(() => {
   return profileUser.value?.is_followed || false;
 });
 
-// API 설정
-const api = axios.create({
-  baseURL: store.API_URL,
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-api.interceptors.request.use((config) => {
-  const token = store.token;
-  if (token) {
-    config.headers.Authorization = `Token ${token}`;
-  }
-  return config;
-});
-
-// 프로필 데이터 로드
-const loadProfileData = async () => {
-  try {
-    const username = route.params.username;
-    // 프로필 정보 로드
-    const profileResponse = await store.getUserProfile(username);
-    console.log('프로필 응답:', profileResponse); // 응답 데이터 확인
-    profileUser.value = profileResponse;
-
-    // 사용자의 게시글 목록 로드
-    const articlesResponse = await api.get('/api/v1/articles/user/', {
-      params: { username }
-    });
-    userArticles.value = articlesResponse.data;
-
-    // 좋아요한 영화 목록 로드
-    const moviesResponse = await api.get('/movies/liked-movies/');
-    likedMovies.value = moviesResponse.data;
-  } catch (error) {
-    console.error('프로필 데이터 로드 실패:', error);
-  }
-};
-
 // 팔로우/언팔로우 처리
 const handleFollow = async () => {
   try {
-    await store.toggleFollow(profileUser.value.username);
+    await profileStore.toggleFollow(profileUser.value.username);
     // 프로필 정보 새로고침
     await loadProfileData();
   } catch (error) {
     console.error('팔로우 처리 실패:', error);
   }
 };
+
+
+// 프로필 데이터 로드
+const loadProfileData = async () => {
+  try {
+    const username = route.params.username;
+    // 프로필 정보 로드
+    const profileResponse = await profileStore.getUserProfile(username);
+    console.log('프로필 응답:', profileResponse); // 응답 데이터 확인
+    profileUser.value = profileResponse;
+
+    // 다른 사용자가 작성한 게시글 목록 로드
+    userArticles.value = await profileStore.getUserArticles(username);
+    // 다른 사용자가 좋아요한 영화 목록 로드
+    likedMovies.value = await movieStore.getUserLikedMovies();
+  } catch (error) {
+    console.error('프로필 데이터 로드 실패:', error);
+  }
+};
+
+
 
 // 상세보기 이동
 const goToMovieDetail = (movieId) => {
@@ -159,8 +144,6 @@ onMounted(() => {
 });
 
 
-
-
 const profileImageUrl = computed(() => {
   if (profileUser.value?.profile_image) {
     // 전체 URL이 이미 포함된 경우
@@ -168,10 +151,12 @@ const profileImageUrl = computed(() => {
       return profileUser.value.profile_image;
     }
     // 상대 경로인 경우 API_URL과 결합
-    return `${store.API_URL}${profileUser.value.profile_image}`;
+    return `${profileStore.API_URL}${profileUser.value.profile_image}`;
   }
   return '/public/default_profile.png';
 });
+
+
 </script>
 
 <style scoped>
@@ -186,7 +171,6 @@ const profileImageUrl = computed(() => {
   gap: 40px;
   margin-bottom: 40px;
   margin-top: 30px;
-  /* border: 1px solid #00ba19; */
   border-radius: 8px;
   padding: 40px;
   background-color: #252525;
@@ -269,7 +253,6 @@ const profileImageUrl = computed(() => {
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  /* border: 1px solid #00ba19; */
 }
 
 .comment-content h3 {
@@ -341,11 +324,6 @@ h2 {
   flex-direction: column;
   gap: 30px;
 }
-
-.liked-content {
-  margin-bottom: 30px;
-}
-
 
 /* 반응형 디자인 */
 @media (max-width: 1200px) {
