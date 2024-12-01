@@ -298,19 +298,22 @@
 
 /* 개별 장르 버튼 */
 .rounded-full {
-  padding: 8px 14px;  /* 좌우 패딩을 줄임 */
-  border-radius: 20px;
-  font-size: 14px;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+  background: none;
+  border: 1px solid #ead200;
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
   display: inline-flex;
   align-items: center;
-  margin-bottom: 4px;  /* 아래쪽 마진 추가 */
+  transition: all 0.3s ease;
 }
 
 /* 호버 및 선택된 상태 스타일 */
-.bg-gray-800:hover {
-  background-color: rgba(255, 255, 255, 0.2);
+.rounded-full:hover {
+  background-color: #ead200;
+  color: rgb(3, 3, 3);
 }
 
 /* 반응형 스타일 */

@@ -27,7 +27,7 @@
                 <span class="like-button" :class="{ liked: article.isLiked }" @click="handleLike(article)">
                   👍
                 </span>
-                <strong>{{ article.likes_count || 0 }} Likes</strong> 
+                <strong>{{ article.likes_count || 0 }}</strong> 
               </p>
               
               <RouterLink :to="{ name: 'DetailView', params: { id: article.id } }" class="view-details">
@@ -191,6 +191,7 @@ hr {
   margin: 0;
   padding: 0;
   gap: 2px; /* 아이콘과 텍스트 사이 간격 조절 */
+  border: none; /* 테두리 제거 */
 }
 
 .like-button + strong {

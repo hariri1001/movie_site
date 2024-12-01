@@ -92,6 +92,7 @@ onMounted(async () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-top: 30px;
 }
 
 .sort-controls {
@@ -102,8 +103,8 @@ onMounted(async () => {
 
 .sort-select {
   padding: 8px;
-  /* border: 1px solid #00ba19; */
-  border-radius: 4px;
+  border: 1px solid #ead200;
+  border-radius: 8px;
   background-color: #1a1a1a;
 }
 
@@ -126,17 +127,19 @@ onMounted(async () => {
 .create-link {
   display: inline-block;
   padding: 5px 16px;
-  background-color: #00ba19;
+  background: none;
+  border: 1px solid #ead200;
   color: white;
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: 8px;
   font-size: 1rem;
   font-weight: 200;
   transition: background-color 0.2s;
 }
 
 .create-link:hover {
-  background-color: #029916;;
+  background-color: #ead200;
+  color: rgb(3, 3, 3);
 }
 
 </style>

@@ -41,11 +41,11 @@
                 <img :src="movie.posterUrl" 
                      class="card-img-top" 
                      :alt="movie.title"
-                     style="height: 300px; object-fit: cover;"
+                     
                      @error="e => e.target.src = '/default-movie-poster.jpg'">
                 <div class="card-body">
-                  <h5 class="card-title mb-2">{{ movie.title }}</h5>
-                  <p class="card-text small text-muted" v-if="movie.originalTitle">
+                  <h5 class="card-title">{{ movie.title }}</h5>
+                  <p class="card-text" v-if="movie.originalTitle">
                     {{ movie.originalTitle }}
                   </p>
                   <div class="d-flex flex-wrap gap-2 mb-2">
@@ -55,7 +55,7 @@
                       TMDB: {{ movie.tmdbRating.toFixed(1) }}
                     </span>
                   </div>
-                  <p class="card-text small text-muted" v-if="movie.releaseDate || movie.runtime">
+                  <p class="card-text small" v-if="movie.releaseDate || movie.runtime">
                     <span v-if="movie.releaseDate">
                       개봉: {{ new Date(movie.releaseDate).toLocaleDateString('ko-KR') }}
                     </span>
@@ -300,7 +300,7 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 15px;
+
   padding: 20px;
 }
 
@@ -340,7 +340,8 @@ export default {
 }
 
 .option-btn:hover {
-  background-color: #7AB076;
+  background-color: #ead200;
+  color: rgb(3, 3, 3);
   transform: translateY(-2px);
 }
 
@@ -359,23 +360,89 @@ export default {
   margin-bottom: 2rem;
 }
 
+
+
+/* 그리드 레이아웃 수정 */
+.row-cols-1.row-cols-md-2 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  width: 100%;
+  /* margin: 0; */
+}
+
+.col {
+  width: 100%;
+  
+}
+
 /* 카드 스타일링 */
 .card {
+  height: 200px !important;
   border: none;
   border-radius: 15px;
   overflow: hidden;
   transition: transform 0.3s ease;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: #1f1f1f;
 }
 
-.card:hover {
-  transform: translateY(-5px);
+.card-img-top {
+  width: 160px;
+  height: 200px;
+  object-fit: cover; /* contain에서 cover로 변경 */
+  flex-shrink: 0;
+  background-color: #000;
+  border-radius: 0; /* 왼쪽 모서리만 둥글게 처리 */
+  border-top-left-radius: 15px;
+  border-bottom-left-radius: 15px;
+  
 }
 
 .card-body {
-  padding: 1.25rem;
+  padding: 1rem;
   background-color: #1f1f1f;
   color: #dad9d9;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  flex: 1;
 }
+
+.card-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-text{
+  margin: 3px;
+}
+
+
+
+.badge {
+  font-size: 0.8rem;
+}
+
+/* 설명 텍스트 */
+.description {
+  margin-top: 0;
+  font-size: 0.9rem;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* 카드 호버 효과 */
+.card:hover {
+  transform: translateY(-3px);
+}
+
+
+
 
 /* 모달 푸터 */
 .modal-footer {
@@ -386,15 +453,16 @@ export default {
 
 .modal-footer .btn-primary {
   width: 100%;
-  background-color: #00ba19;
-  border: none;
+  background: none;
+  border: 1px solid #ead200;
   padding: 12px;
   font-size: 1.1rem;
   border-radius: 10px;
 }
 
 .modal-footer .btn-primary:hover {
-  background-color: #00ba19;
+  background-color: #ead200;
+  color: rgb(3, 3, 3);
 }
 
 /* 로딩 스피너 */

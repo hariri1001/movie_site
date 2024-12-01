@@ -145,6 +145,7 @@ export default {
   align-items: center;
   min-height: 100vh;
   padding: 20px;
+  margin-top: 0;
 }
 
 .title {
@@ -333,9 +334,9 @@ h3 {
   bottom: 50px;
   padding: 15px 30px;
   font-size: 18px;
-  background-color: #00ba19;
+  background: none;
+  border: 1px solid #ead200;
   color: white;
-  border: none;
   border-radius: 25px;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -344,7 +345,8 @@ h3 {
 }
 
 .reset-button:hover {
-  background-color: #7b1fa2;
+  background-color: #ead200;
+  color: rgb(3, 3, 3);
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }

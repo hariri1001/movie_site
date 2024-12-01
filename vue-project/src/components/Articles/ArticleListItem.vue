@@ -33,7 +33,7 @@
           <span class="like-button" :class="{ liked: article.isLiked }" @click="$emit('toggle-like', article)">
             👍 
           </span>
-          <strong>{{ article.likes_count || 0 }} Likes</strong> 
+          <strong>{{ article.likes_count || 0 }}</strong> 
         </p>
         <RouterLink :to="{ name: 'DetailView', params: { id: article.id } }" class="view-details">
           리뷰 상세보기
@@ -128,25 +128,34 @@ const handleImageError = (event) => {
   display: flex;
   gap: 20px;
   flex: 1;
-  padding: 25px 0;
-  min-height: 0; /* 컨텐츠 영역이 넘치지 않도록 설정 */
+  padding: 15px 10px;
+  align-items: flex-start; /* 세로 정렬 수정 */
 }
 
 .movie-poster-container {
-  width: 100px; /* 포스터 너비 조정 */
-  min-height: 150px; /* 포스터 높이 조정 */
-  max-height: 150px; /* 포스터 최대 높이 제한 */
-  flex-shrink: 0; /* 포스터 크기 고정 */
+  position: relative; /* 포지셔닝 컨텍스트 설정 */
+  width: 135px;
+  height: 180px;
+  flex-shrink: 0;
+  overflow: hidden; /* 넘치는 부분 숨김 */
+  border-radius: 8px; /* 컨테이너에도 radius 적용 */
 }
 
 .movie-poster {
+  position: absolute; /* 절대 위치 설정 */
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  object-fit: contain; /* 이미지가 잘리지 않고 온전히 표시되도록 */
+  object-fit: fill;
   border-radius: 8px;
+  margin-left: 0 !important; /* 기존 마진 제거 */
 }
 
 .poster-placeholder {
+  position: absolute; /* placeholder도 동일하게 위치 설정 */
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background-color: #f0f0f0;
@@ -162,6 +171,7 @@ const handleImageError = (event) => {
   flex-direction: column;
   gap: 8px;
   overflow-y: auto;
+  max-height: 180px; /* 포스터 높이와 맞춤 */
 }
 
 
@@ -203,11 +213,12 @@ const handleImageError = (event) => {
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  padding: 4px 8px;
+  padding: 4px 10px;
   border-radius: 4px;
   transition: transform 0.2s;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   background-color: transparent;
+  border: none; /* 테두리 제거 */
 }
 
 .like-button + strong {
@@ -231,20 +242,19 @@ const handleImageError = (event) => {
 }
 
 /* 상세보기 링크 스타일링 */
-/* 상세보기 링크 스타일링 */
 .view-details {
   text-decoration: none;
   color: #F8F9FA;
   padding: 4px 12px;
-  /* border: 1px solid #00ba19; */
+  border: 1px solid #ead200;
   border-radius: 8px;
   transition: all 0.2s;
   font-size: 1rem;
 }
 
 .view-details:hover {
-  background-color: #1a1a1a;
-  color: rgb(182, 182, 182);
+  background-color: #ead200;
+  color: rgb(0, 0, 0);
 }
 
 /* 구분선 스타일링 */

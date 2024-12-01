@@ -1,7 +1,7 @@
 
 <template>
   <div class="review-detail-container">
-    <h1>영화 코멘트</h1>
+    <!-- <h1>영화 코멘트</h1> -->
     <br>
     <div class="back-button-container">
       <button @click="goBackToList" class="back-button">목록</button>
@@ -87,7 +87,10 @@
               <span class="comment-author">{{ comment.author }}</span>
               <span class="comment-date">{{ formatDate(comment.created_at) }}</span>
             </div>
-            <p class="comment-content">{{ comment.content }}</p>
+            <div>
+              <p class="comment-content">{{ comment.content }}</p>
+            </div>
+            
             <button 
               v-if="comment.author === profileStore.userProfile?.username" 
               @click="deleteComment(comment.id)"
@@ -238,7 +241,7 @@ const handleImageError = (event) => {
 
 <style scoped>
 .review-detail-container {
-  max-width: 800px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 20px;
 }
@@ -249,7 +252,7 @@ const handleImageError = (event) => {
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-  padding: 20px;
+  padding: 25px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-color: #272727;
@@ -258,9 +261,10 @@ const handleImageError = (event) => {
 
 .movie-content {
   display: flex;
-  gap: 20px;
+  gap: 10px;
   width: 100%;
 }
+
 
 .review-main {
   background-color: #1a1a1a;
@@ -287,12 +291,29 @@ const handleImageError = (event) => {
 
 
 .movie-poster-container {
+  position: relative;
   flex: 0 0 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
   color: #F8F9FA;
   font-size: 1.5rem;
+}
+
+.movie-poster {
+  width: 170px;
+  height: 250px; /* 영화 포스터 표준 비율(2:3) */
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 0 !important; /* 기존 마진 제거 */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+
+.movie-poster-container p {
+  margin-top: 15px; /* 원하는 간격만큼 조정 가능 */
+  margin-bottom: 0px;
+  font-size: 1.2rem;
 }
 
 .rating-display {
@@ -305,7 +326,7 @@ const handleImageError = (event) => {
 }
 
 .star {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #ddd;
 }
 
@@ -325,12 +346,13 @@ const handleImageError = (event) => {
 
 .rating-text {
   margin-left: 10px;
-  font-weight: bold;
+  
 }
 
 .review-text {
   line-height: 1.6;
   margin-top: 20px;
+  font-size: 1rem;
 }
 
 .review-author p {
@@ -355,65 +377,75 @@ const handleImageError = (event) => {
   display: flex;
   justify-content: flex-end; /* 오른쪽 정렬 */
   gap: 8px; /* 버튼 사이 간격 */
-  margin: 20px 0;
+  margin: 10px 0;
 }
 
 /* 공통 버튼 스타일 */
 .button {
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.2s;
+ border: 1px solid #ead200;
+ background: none;
+ border-radius: 8px;
+ cursor: pointer;
+ font-size: 0.85rem;
+ color: #ffffff;
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ transition: all 0.2s;
 }
 
-/* .back-button, .edit-button, .delete-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s;
-} */
-
 .button:hover {
-  opacity: 0.9;
+ background-color: #ead200;
+ color: rgb(3, 3, 3);
 }
 
 .back-button-container {
-  display: flex;
-  margin: 0px 0px 20px 0; /* 위아래 여백 조절 */
-  justify-content: flex-end;
+ display: flex;
+ margin: 0px 0px 20px 0;
+ justify-content: flex-end;
 }
 
 .back-button {
-  background-color: #4CAF50;
-  color: white;
-  width: 80px;
-  height: 40px;
-  margin-top: 0; /* 기존 margin-top 제거 */
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
+ background: none;
+ border: 1px solid #ead200;
+ color: #ffffff;
+ width: 80px;
+ height: 40px;
+ border-radius: 8px;
+ cursor: pointer;
+}
+
+.back-button:hover {
+ background-color: #ead200;
+ color: rgb(3, 3, 3);
 }
 
 .edit-button {
-  background-color: #4CAF50;
-  color: white;
-  width: 95px; /* 모든 버튼 동일 너비 */
-  height: 40px; /* 모든 버튼 동일 높이 */
+ background: none;
+ border: 1px solid #ead200;
+ color: #ffffff;
+ width: 95px;
+ height: 40px;
+ border-radius: 8px;
+}
 
+.edit-button:hover {
+ background-color: #ead200;
+ color: rgb(3, 3, 3);
 }
 
 .delete-button {
-  background-color: #f44336;
-  color: white;
-  width: 80px; /* 모든 버튼 동일 너비 */
-  height: 40px; /* 모든 버튼 동일 높이 */
+ background: none;
+ border: 1px solid #ead200;
+ color: #ffffff;
+ width: 80px;
+ height: 40px;
+ border-radius: 8px;
+}
+
+.delete-button:hover {
+ background-color: #ead200;
+ color: rgb(3, 3, 3);
 }
 
 .comments-section {
@@ -445,19 +477,24 @@ const handleImageError = (event) => {
 }
 
 .comment-submit-btn {
-  padding: 8px 16px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 120px; /* 모든 버튼 동일 너비 */
-  height: 40px; /* 모든 버튼 동일 높이 */
-  justify-content: flex-end;
+ background: none;
+ border: 1px solid #ead200;
+ color: #ffffff;
+ padding: 4px 12px;
+ border-radius: 8px;
+ cursor: pointer;
+ font-size: 0.85rem;
+ width: 120px;
+ height: 40px;
+ display: flex;
+ justify-content: center;
+ align-items: center;
 }
 
+
 .comment-submit-btn:hover {
-  background-color: #45a049;
+ background-color: #ead200;
+ color: rgb(3, 3, 3);
 }
 
 .comments-list .comment-item {
@@ -474,6 +511,7 @@ const handleImageError = (event) => {
   margin-bottom: 8px;
   font-size: 0.9em;
   color: #666;
+
 }
 
 .comment-content {
@@ -481,18 +519,19 @@ const handleImageError = (event) => {
 }
 
 .comment-delete-btn {
-  padding: 4px 8px;
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 0.8em;
+ background: none;
+ border: 1px solid #ead200;
+ color: #ffffff;
+ padding: 4px 12px;
+ border-radius: 8px;
+ cursor: pointer;
+ font-size: 0.85rem;
 }
 
-.movie-poster{
-  width: 300px;
-  margin-bottom: 10px;
-  
+.comment-delete-btn:hover {
+ background-color: #ead200;
+ color: rgb(3, 3, 3);
 }
+
+
 </style>

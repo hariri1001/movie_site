@@ -1,7 +1,7 @@
 
 <template>
   <div class="create-review-container">
-    <h1>{{ isEditing ? "repost-it" : "코멘트 작성" }}</h1>
+    <h2>{{ isEditing ? "repost-it" : "코멘트 작성" }}</h2>
     
     <!-- 영화 검색 섹션 -->
     <div v-if="!selectedMovie && !isEditing" class="search-section">
@@ -40,7 +40,7 @@
           />
         </div>
         <div class="right">
-          <h2>{{ selectedMovie.title }}</h2>
+          <h3>{{ selectedMovie.title }}</h3>
           <p>개봉일: {{ selectedMovie.releaseDate }}</p>
           <p>줄거리: {{ selectedMovie.overview }}</p>
         </div>
@@ -235,7 +235,7 @@ onMounted(async () => {
 
 <style scoped>
 .create-review-container {
-  max-width: 800px;
+  max-width: 700px;
   margin: 0 auto;
   padding: 20px;
   /* border: 1px solid #00ba19; */
@@ -285,6 +285,7 @@ onMounted(async () => {
   border-radius: 8px;
   color: #F8F9FA;
   margin-top: 30px;
+  position: relative; /* 추가 */
 }
 
 .stars {
@@ -330,21 +331,24 @@ onMounted(async () => {
 }
 
 .submit-button, .cancel-button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
+ background: none;
+ border: 1px solid #ead200;
+ color: #ffffff;
+ padding: 4px 12px;
+ border-radius: 8px;
+ cursor: pointer;
+ font-size: 0.85rem;
+ min-width: 80px; /* 버튼 최소 너비 설정 */
+ height: 35px; /* 버튼 높이 설정 */
+ display: flex;
+ align-items: center;
+ justify-content: center;
+ transition: all 0.2s;
 }
 
-.submit-button {
-  background-color: #4CAF50;
-  color: white;
-}
-
-.cancel-button {
-  background-color: #f44336;
-  color: white;
+.submit-button:hover, .cancel-button:hover {
+ background-color: #ead200;
+ color: rgb(3, 3, 3);
 }
 
 .rating-text {
@@ -353,11 +357,13 @@ onMounted(async () => {
 }
 
 .movie-poster {
+  position: relative; /* 추가 */
   width: 150px;
-  height: auto; /* 고정 높이 제거하고 비율에 맞게 자동 조절 */
-  object-fit: contain; /* cover에서 contain으로 변경하여 이미지가 짤리지 않도록 */
+  height: 220px;
+  object-fit: cover;
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  margin-left: 0 !important; /* 기존 margin-left 제거 */
 }
 
 .rating-header {
@@ -376,7 +382,7 @@ onMounted(async () => {
   align-items: center;
   gap: 10px;
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.0rem;
 }
 
 .rating-text {
