@@ -1,6 +1,5 @@
 <template>
   <div class="fixed-chat">
-    <!-- 챗봇 버튼 -->
     <button 
       @click="showModal = !showModal"
       class="chat-button"
@@ -8,7 +7,6 @@
       <span class="chat-button-text">💬</span>
     </button>
 
-    <!-- 부트스트랩 모달 -->
     <div 
       class="modal fade" 
       id="chatModal" 
@@ -16,9 +14,8 @@
       :class="{ 'show': showModal }"
       :style="{ display: showModal ? 'block' : 'none' }"
     >
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content" style="background-color: rgb(247, 218, 125);">
-          <!-- 모달 헤더 -->
+      <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content custom-modal">
           <div class="modal-header border-0">
             <div class="header-logo d-flex align-items-center gap-2">
               <div class="logo-icon">
@@ -33,15 +30,13 @@
             ></button>
           </div>
 
-          <!-- 모달 바디 -->
-          <div class="modal-body p-0">
+          <div class="modal-body">
             <MovieRecommender />
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 배경 오버레이 -->
     <div 
       v-if="showModal" 
       class="modal-backdrop fade show"
@@ -90,19 +85,28 @@ const showModal = ref(false)
 
 /* 모달 커스터마이징 */
 .modal-dialog {
-  max-width: 800px;
-  margin: 1.75rem auto;
+  max-width: 600px !important;
+  height: 90vh !important;
+  margin: 1.75rem auto !important;
 }
 
-.modal-content {
-  border-radius: 1.5rem;
-  overflow: hidden;
-  background-color: #141414;
+.custom-modal {
+  border-radius: 1.5rem !important;
+  background-color: #141414 !important;
+  height: 85vh !important;
+  max-height: 85vh !important;
 }
 
 .modal-header {
   background-color: #000000;
   padding: 1rem 1.5rem;
+}
+
+.modal-body {
+  background-color: #1a1a1a;
+  padding: 0 !important;
+  height: calc(100% - 70px) !important; /* 헤더 높이 제외 */
+  overflow-y: auto !important;
 }
 
 .logo-icon {
@@ -118,7 +122,6 @@ const showModal = ref(false)
   margin: 0;
   font-weight: 600;
   color: #F8F9FA;
-
 }
 
 .btn-close {
@@ -130,19 +133,32 @@ const showModal = ref(false)
   opacity: 1;
 }
 
-.modal-body {
-  background-color: #1a1a1a;
-  min-height: 400px;
+/* 스크롤바 스타일링 */
+.modal-body::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* 모달이 표시될 때 스크롤바 방지 */
-:deep(body.modal-open) {
-  overflow: hidden;
+.modal-body::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #ead200;
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #cbb700;
 }
 
 /* MovieRecommender 컴포넌트 스타일 오버라이드 */
 :deep(.movie-recommender) {
   height: 100%;
   background-color: #000000;
+}
+
+/* 모달 오버레이 스타일링 */
+.modal-backdrop {
+  background-color: rgba(0, 0, 0, 0.7) !important;
 }
 </style>

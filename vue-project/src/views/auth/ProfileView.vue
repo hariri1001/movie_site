@@ -87,9 +87,39 @@
     </div>
 
     <!-- 프로필 수정 모달 (기존과 동일) -->
-    <form v-if="isEditing" @submit.prevent="submitUpdate" class="profile-form">
-      <!-- 기존 폼 내용 유지 -->
-    </form>
+    <div v-if="isEditing" class="modal-overlay">
+      <form @submit.prevent="submitUpdate" class="profile-form">
+        <div class="form-group">
+          <label for="editFirstName">이름:</label>
+          <input type="text" id="editFirstName" v-model="editForm.first_name">
+        </div>
+        
+        <div class="form-group">
+          <label for="editEmail">이메일:</label>
+          <input type="email" id="editEmail" v-model="editForm.email">
+        </div>
+
+        <div class="form-group">
+          <label for="currentPassword">현재 비밀번호:</label>
+          <input type="password" id="currentPassword" v-model="editForm.currentPassword">
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">새 비밀번호:</label>
+          <input type="password" id="newPassword" v-model="editForm.newPassword">
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">비밀번호 확인:</label>
+          <input type="password" id="confirmPassword" v-model="editForm.confirmPassword">
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="save-button">저장</button>
+          <button type="button" @click="cancelEditing" class="cancel-button">취소</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -116,6 +146,9 @@ const error = ref(null);
 const editForm = ref({
   first_name: '',
   email: '',
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: ''
 });
 const likedMovies = ref([]);
 const userArticles = ref([]); // 내가 작성한 게시글 데이터를 저장
@@ -190,6 +223,9 @@ const startEditing = () => {
   editForm.value = {
     first_name: profileStore.userProfile?.first_name || '',
     email: profileStore.userProfile?.email || '',
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   };
   isEditing.value = true;
 };
@@ -493,6 +529,66 @@ const handleImageUpload = async (event) => {
   background-color: #ead200;
   color: rgb(3, 3, 3);
 }
+
+/* 모달 스타일 */
+.profile-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #272727;
+  padding: 30px;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  z-index: 1001;
+  color: white;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: white;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background-color: #333;
+  color: white;
+}
+
+.save-button, .cancel-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid #ead200;
+  background-color: transparent;
+  color: white;
+}
+
+.save-button:hover, .cancel-button:hover {
+  background-color: #ead200;
+  color: #1a1a1a;
+}
+
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
 
 
 @media (max-width: 768px) {

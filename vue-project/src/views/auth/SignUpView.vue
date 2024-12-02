@@ -7,25 +7,25 @@
       </div>
       
       <form @submit.prevent="signUp" class="signup-form">
-        <div class="form-group">
+        <div class="form-group1">
           <input type="text" id="firstName" v-model.trim="firstName" placeholder="이름">
         </div>
         
-        <div class="form-group">
+        <div class="form-group1">
           <input type="text" id="username" v-model.trim="username" placeholder="아이디">
         </div>
 
-        <div class="form-group">
+        <div class="form-group1">
           <input type="password" id="password1" v-model.trim="password1" placeholder="패스워드">
         </div>
         
 
-        <div class="form-group">
+        <div class="form-group1">
           <input type="password" id="password2" v-model.trim="password2" placeholder="패스워드 확인">
         </div>
         
 
-        <div class="form-group">
+        <div class="form-group2">
           <div class="email-container">
             <input type="text" id="email" v-model.trim="email" placeholder="이메일" class="email-input">
             <span class="at">@</span>
@@ -140,7 +140,7 @@ html, body {
  gap: 14px;  /* 입력 필드 사이 간격 */
 }
 
-.form-group {
+.form-group1 {
  display: flex;
  flex-direction: column;
  gap: 4px;
@@ -153,9 +153,9 @@ label {
 }
 
 
-input, select {
+.form-group1 input {
  padding: 16px;
- background-color: #060606;
+ background-color: #060606 !important;
  border: 0.5px solid  #373737 !important;
  border-radius: 4px;
  color: white;

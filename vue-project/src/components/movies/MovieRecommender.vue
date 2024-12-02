@@ -44,10 +44,11 @@
                      
                      @error="e => e.target.src = '/default-movie-poster.jpg'">
                 <div class="card-body">
-                  <h5 class="card-title">{{ movie.title }}</h5>
-                  <p class="card-text" v-if="movie.originalTitle">
-                    {{ movie.originalTitle }}
-                  </p>
+                  <h5 class="card-title">{{ movie.title }}
+                    <p class="card-text" v-if="movie.originalTitle">
+                      {{ movie.originalTitle }}
+                    </p>
+                  </h5>
                   <div class="d-flex flex-wrap gap-2 mb-2">
                     <span class="badge bg-primary" v-if="movie.genres">{{ movie.genres }}</span>
                     <span class="badge bg-success">평점: {{ movie.rating }}</span>
@@ -59,9 +60,9 @@
                     <span v-if="movie.releaseDate">
                       개봉: {{ new Date(movie.releaseDate).toLocaleDateString('ko-KR') }}
                     </span>
-                    <span v-if="movie.runtime" class="ms-2">
+                    <!-- <span v-if="movie.runtime" class="ms-2">
                       {{ Math.floor(movie.runtime / 60) }}시간 {{ movie.runtime % 60 }}분
-                    </span>
+                    </span> -->
                   </p>
                   <p class="card-text description" v-if="movie.description">
                     {{ movie.description.length > 50 ? movie.description.slice(0, 50) + '...' : movie.description }}
@@ -300,7 +301,6 @@ export default {
   height: 100%;
   display: flex;
   flex-direction: column;
-
   padding: 20px;
 }
 
@@ -350,6 +350,9 @@ export default {
   background-color: rgb(3, 3, 3);
   border-radius: 15px;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .results-title {
@@ -360,25 +363,23 @@ export default {
   margin-bottom: 2rem;
 }
 
-
-
 /* 그리드 레이아웃 수정 */
 .row-cols-1.row-cols-md-2 {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 1rem;
   width: 100%;
-  /* margin: 0; */
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .col {
   width: 100%;
-  
 }
 
 /* 카드 스타일링 */
 .card {
-  height: 200px !important;
+  height: 220px !important;
   border: none;
   border-radius: 15px;
   overflow: hidden;
@@ -390,15 +391,14 @@ export default {
 }
 
 .card-img-top {
-  width: 160px;
-  height: 200px;
-  object-fit: cover; /* contain에서 cover로 변경 */
+  width: 150px;
+  height: 220px;
+  object-fit: cover;
   flex-shrink: 0;
   background-color: #000;
-  border-radius: 0; /* 왼쪽 모서리만 둥글게 처리 */
+  border-radius: 0;
   border-top-left-radius: 15px;
   border-bottom-left-radius: 15px;
-  
 }
 
 .card-body {
@@ -409,21 +409,28 @@ export default {
   flex-direction: column;
   justify-content: start;
   flex: 1;
+  overflow: visible; /* hidden에서 visible로 변경 */
 }
 
 .card-title {
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
+  white-space: normal; /* nowrap에서 normal로 변경 */
+  overflow: visible; /* hidden에서 visible로 변경 */
+  text-overflow: unset; /* ellipsis 제거 */
+  word-break: keep-all; /* 한글 단어 단위 줄바꿈 */
+  line-height: 1.3;
 }
 
-.card-text{
+.card-text {
   margin: 3px;
 }
 
-
-
 .badge {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+  white-space: nowrap;
+  border: none;
 }
 
 /* 설명 텍스트 */
@@ -441,18 +448,18 @@ export default {
   transform: translateY(-3px);
 }
 
-
-
-
 /* 모달 푸터 */
 .modal-footer {
   background-color: rgb(0, 0, 0) !important;
   border: none;
   padding: 1rem;
+  display: flex;
+  justify-content: center;
 }
 
 .modal-footer .btn-primary {
   width: 100%;
+  max-width: 800px;
   background: none;
   border: 1px solid #ead200;
   padding: 12px;

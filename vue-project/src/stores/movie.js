@@ -122,14 +122,15 @@ export const useMovieStore = defineStore("movies", () => {
   };
 
   // 사용자가 좋아요한 영화 목록
-  const getUserLikedMovies = async () => {
+  const getUserLikedMovies = async (username) => {
     try {
       const response = await axios.get(
-        `${authStore.API_URL}/movies/liked-movies/`,
+        `${authStore.API_URL}/movies/liked-movies/${username}/`,
         {
           headers: { Authorization: `Token ${authStore.token}` },
         }
       );
+      console.log('좋아요한 영화 응답:', response.data);
       return response.data;
     } catch (error) {
       console.error('좋아요한 영화 조회 실패:', error);

@@ -15,6 +15,9 @@ from django.conf import settings
 import requests
 
 
+from rest_framework import status
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 
 # Create your views here.
@@ -64,11 +67,18 @@ def likes(request, movie_id):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def user_liked_movies(request):
-    user = request.user
-    liked_movies = user.like_movies.all()
-    serializer = MovieSerializer(liked_movies, many=True)
-    return Response(serializer.data)
+def user_liked_movies(request, username=None):
+    try:
+        if username:
+            user = get_object_or_404(User, username=username)
+        else:
+            user = request.user
+        
+        liked_movies = user.like_movies.all()
+        serializer = MovieSerializer(liked_movies, many=True)
+        return Response(serializer.data)
+    except User.DoesNotExist:
+        return Response({'error': '사용자를 찾을 수 없습니다.'}, status=status.HTTP_404_NOT_FOUND)
 
 # 검색 기능
 @api_view(['GET'])

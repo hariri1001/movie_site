@@ -106,6 +106,7 @@ onMounted(async () => {
   border: 1px solid #ead200;
   border-radius: 8px;
   background-color: #1a1a1a;
+  color: white;
 }
 
 .reviews-grid {

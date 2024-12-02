@@ -19,6 +19,7 @@ urlpatterns = [
     
     # 영화 좋아요
     path('liked-movies/', views.user_liked_movies, name='user_liked_movies'),
+    path('liked-movies/<str:username>/', views.user_liked_movies, name='user_liked_movies_by_username'),  # 특정 사용자
 
     # 챗봇
     path('api/recommend/', views.recommend_movies, name='recommend_movies'),

@@ -1,65 +1,80 @@
 <template>
   <div class="profile-container">
-    <!-- 상단 프로필 섹션 -->
+    <!-- 프로필 섹션 -->
     <div class="profile-header">
-      <!-- 왼쪽: 프로필 정보 -->
-      <div class="profile-info">
-        <!-- 프로필이미지 -->
-        <div class="profile-image-section">
+      <!-- 왼쪽: 프로필 이미지와 정보 -->
+      <div class="left-section">
+        <div class="profile-image-container">
           <img 
-      :src="profileImageUrl" 
-      :alt="profileUser?.username + '의 프로필 이미지'" 
-      class="profile-image"
-    >
+            :src="profileImageUrl"
+            :alt="profileUser?.username + '의 프로필 이미지'"
+            class="profile-image"
+          />
         </div>
+        <!-- 팔로우 버튼 -->
+        <div class="button-group">
+          <button 
+            v-if="showFollowButton"
+            @click="handleFollow" 
+            class="action-button"
+            :class="{ 'following': isFollowing }"
+          >
+            {{ isFollowing ? '팔로잉' : '팔로우' }}
+          </button>
+        </div>
+      </div>
 
-        <p class="username">{{ profileUser?.username }}</p>
-        
+      <!-- 오른쪽: 사용자 정보 -->
+      <div class="right-section">
+        <div class="user-info">
+          <p>{{ profileUser?.first_name || '이름 없음' }}</p>
+          <p>ID : {{ profileUser?.username }}</p>
+          <p>EMAIL : {{ profileUser?.email }}</p>
+        </div>
         <div class="stats">
-          <p class="username">{{ profileUser?.first_name }}</p>
-          <p class="username">{{ profileUser?.email }}</p>
           <p>movies: {{ likedMovies.length }}</p>
           <p>followers: {{ profileUser?.followers_count || 0 }}</p>
           <p>following: {{ profileUser?.following_count || 0 }}</p>
         </div>
-        
-        <!-- 팔로우 버튼 (본인 프로필이 아닐 때만 표시) -->
-        <button 
-          v-if="showFollowButton"
-          @click="handleFollow" 
-          :class="['follow-button', { 'following': isFollowing }]"
-        >
-          {{ isFollowing ? '팔로잉' : '팔로우' }}
-        </button>
       </div>
+    </div>
 
-      <!-- 오른쪽: 컨텐츠 영역 -->
-      <div class="articles-content">
-        <!-- 좋아요한 영화 섹션 -->
-        <div class="liked-content">
-          <h2>좋아하는 영화</h2>
-          <div v-if="likedMovies.length === 0" class="no-movies">
-              좋아요한 영화가 없습니다.
-          </div>
-          <div v-else class="content-grid">
-            <div v-for="movie in likedMovies" :key="movie.id" class="movie-card" @click="goToMovieDetail(movie.tmdb_id)">
-              <img :src="`https://image.tmdb.org/t/p/w200${movie.poster_path}`" :alt="movie.title" class="movie-poster">
-            </div>
-          </div>
+    <!-- 좋아하는 영화 섹션 -->
+    <div class="content-section">
+      <h3>좋아하는 영화</h3>
+      <div v-if="likedMovies.length === 0" class="no-content">
+        좋아요한 영화가 없습니다.
+      </div>
+      <div v-else class="movie-grid">
+        <div 
+          v-for="movie in likedMovies" 
+          :key="movie.id" 
+          class="movie-card"
+          @click="goToMovieDetail(movie.tmdb_id)"
+        >
+          <img 
+            :src="`https://image.tmdb.org/t/p/w400${movie.poster_path}`" 
+            :alt="movie.title" 
+            class="movie-poster"
+          >
         </div>
+      </div>
+    </div>
 
-        <!-- 작성한 게시글 섹션 -->
-        <div class="comments-section">
-          <h2>작성한 게시글</h2>
-          <div class="comments-grid">
-            <div class="comment-card" v-for="article in userArticles" :key="article.id">
-              <div class="comment-content">
-                <h3>{{ article.title }}</h3>
-                <p>{{ article.content }}</p>
-                <button @click="goToArticleDetail(article.id)">자세히 보기</button>
-              </div>
-            </div>
-          </div>
+    <!-- 작성한 게시글 섹션 -->
+    <div class="content-section">
+      <h3>작성한 코멘트</h3>
+      <div class="article-grid">
+        <div 
+          v-for="article in userArticles" 
+          :key="article.id" 
+          class="article-card"
+        >
+          <h3>{{ article.title }}</h3>
+          <p>{{ article.content }}</p>
+          <button @click="goToArticleDetail(article.id)" class="view-button">
+            자세히 보기
+          </button>
         </div>
       </div>
     </div>
@@ -72,7 +87,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useProfileStore } from '@/stores/profile';
 import { useMovieStore } from '@/stores/movie';
 import { useRoute, useRouter } from 'vue-router';
-import '@/assets/styles/profile.css'
+
 
 const authStore = useAuthStore();
 const profileStore = useProfileStore();
@@ -114,6 +129,8 @@ const handleFollow = async () => {
 const loadProfileData = async () => {
   try {
     const username = route.params.username;
+    await profileStore.getProfile();
+
     // 프로필 정보 로드
     const profileResponse = await profileStore.getUserProfile(username);
     console.log('프로필 응답:', profileResponse); // 응답 데이터 확인
@@ -121,8 +138,14 @@ const loadProfileData = async () => {
 
     // 다른 사용자가 작성한 게시글 목록 로드
     userArticles.value = await profileStore.getUserArticles(username);
-    // 다른 사용자가 좋아요한 영화 목록 로드
-    likedMovies.value = await movieStore.getUserLikedMovies();
+    
+    // 좋아요한 영화 목록 로드 - MovieStore 사용
+    try {
+      likedMovies.value = await movieStore.getUserLikedMovies(username);
+    } catch (error) {
+      console.error('좋아요한 영화 로드 실패:', error);
+      likedMovies.value = [];
+    }
   } catch (error) {
     console.error('프로필 데이터 로드 실패:', error);
   }
@@ -161,195 +184,232 @@ const profileImageUrl = computed(() => {
 
 <style scoped>
 .profile-container {
-  max-width: 1200px;
+  max-width: 700px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 40px 20px;
+  background-color: #1a1a1a;
+  min-height: 100vh;
 }
 
 .profile-header {
   display: flex;
-  gap: 40px;
-  margin-bottom: 40px;
-  margin-top: 30px;
+  gap: 20px;
+  background-color: #272727;
+  padding: 30px;
   border-radius: 8px;
-  padding: 40px;
-  background-color: #252525;
+  margin-bottom: 25px;
 }
 
-.profile-info {
-  flex: 0 0 300px;
+.left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-shrink: 0;
+  margin-left: 20px;
 }
 
-/* 프로필 이미지 관련 스타일 */
-.profile-image-section {
-  margin-bottom: 20px;
-  text-align: center;
+.profile-image-container {
+  width: 150px;
+  height: 150px;
 }
 
 .profile-image {
-  width: 150px;
-  height: 150px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
-  margin-bottom: 10px;
   object-fit: cover;
 }
 
-/* 팔로우 버튼 스타일 수정 */
-.follow-button {
-  width: 100%;
+.button-group {
+  display: flex;
+  gap: 8px;
   margin-top: 10px;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 8px;
+  justify-content: center;
+}
+
+.action-button {
+  padding: 6px 8px;
+  border-radius: 4px;
   cursor: pointer;
-  background: #71D247;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  background-color: transparent;
+  border: 1px solid #ead200;
+  color: #ffffff;
+  width: auto;
+  min-width: 100px;
+  text-align: center;
+}
+
+.action-button:hover {
+  background-color: #ead200;
+  color: #1a1a1a;
+}
+
+.right-section {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-left: 40px;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.user-info p {
+  margin: 0;
   color: white;
+  font-size: 1.0rem;
 }
 
-.follow-button.following {
-  background: #71D247;
+.stats {
+  display: flex;
+  gap: 15px;
+  color: #ccc;
+  margin-bottom: 15px;
 }
 
-/* 좋아요한 영화 섹션 */
-.liked-content {
+.stats p {
+  margin: 0;
+}
+
+/* 콘텐츠 섹션 스타일 */
+.content-section {
+  background-color: #272727;
+  padding: 25px;
+  border-radius: 8px;
   margin-bottom: 30px;
 }
 
-.content-grid {
+.content-section h3 {
+  color: white;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+/* 영화 그리드 */
+.movie-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 140px);
   gap: 15px;
+  margin-top: 20px;
+  justify-content: center;
+  border-radius: 8px;
 }
 
 .movie-card {
+  border-radius: 8px;
+  overflow: hidden;
   cursor: pointer;
   transition: transform 0.2s;
+  background-color: #1a1a1a;
+  width: 140px;
+  height: 210px;
+}
+
+.movie-poster {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-left: 0 !important;
 }
 
 .movie-card:hover {
   transform: scale(1.05);
 }
 
-.movie-poster {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-  object-fit: cover;
-}
-
-/* 게시글 섹션 */
-.comments-section {
-  width: 100%;
-}
-
-.comments-grid {
+/* 게시글 그리드 */
+.article-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 11px;
 }
 
-.comment-card {
-  background: #1a1a1a;
+.article-card {
+  background-color: #333;
+  padding: 12px;
   border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
-.comment-content h3 {
+.article-card h3 {
+  color: white;
   margin: 0 0 10px 0;
-  font-size: 1.2em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 1.15rem;
 }
 
-.comment-content p {
+.article-card p {
+  color: #ccc;
   margin: 0 0 15px 0;
-  font-size: 0.9em;
-  color: #666;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  font-size: 0.9rem;
 }
 
-.comment-content button {
-  background: #71D247;
-  color: white;
-  border: none;
-  padding: 8px 15px;
-  border-radius: 8px;
+.view-button {
+  background: none;
+  border: 1px solid #ead200;
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 4px;
   cursor: pointer;
+  font-size: 0.85rem;
+  margin-left: auto;
+  display: block;
 }
 
-.comment-content button:hover {
-  background: 71D247;
-}
-
-.no-movies {
-  text-align: center;
-  padding: 20px;
-  background: #1a1a1a;
-  border-radius: 8px;
-  color: #F8F9FA;
-}
-
-h2 {
-  margin: 0 0 20px 0;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #d2d3d2;
-  color: #F8F9FA;
-}
-
-/* 통계 스타일 */
-.stats {
-  margin: 20px 0;
-  color: #F8F9FA;
-}
-
-.stats p {
-  margin: 5px 0;
-}
-
-.username {
-  font-size: 1.2em;
-  font-weight: bold;
-  margin: 10px 0;
-  color: #F8F9FA;
-}
-
-.articles-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
+.view-button:hover {
+  background-color: #ead200;
+  color: rgb(3, 3, 3);
 }
 
 /* 반응형 디자인 */
-@media (max-width: 1200px) {
-  .content-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-@media (max-width: 992px) {
-  .content-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 @media (max-width: 768px) {
-  .content-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
   .profile-header {
     flex-direction: column;
+    align-items: center;
   }
-  
-  .profile-info {
-    flex: none;
+
+  .left-section {
+    align-items: center;
+  }
+
+  .button-group {
+    flex-direction: column;
     width: 100%;
   }
+
+  .user-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+  }
+
+  .stats {
+    justify-content: center;
+  }
+
+  .movie-grid {
+    grid-template-columns: repeat(2, 140px);
+  }
+}
+
+.no-content {
+  text-align: center;
+  padding: 20px;
+  color: #ccc;
+  background-color: #333;
+  border-radius: 8px;
 }
 </style>
