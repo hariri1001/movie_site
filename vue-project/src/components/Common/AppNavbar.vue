@@ -2,7 +2,7 @@
     <nav class="navbar navbar-expand-lg" style="background-color: #1a1a1a;" data-bs-theme="dark">
       <div class="container-fluid">
         <RouterLink class="navbar-brand" :to="{ name: 'MainView' }">
-          <img src="/POSTlogo.png" alt="Logo" height="30" class="d-inline-block align-text-top">
+          <img src="@/assets/post-relog.png" alt="Logo" height="30" class="d-inline-block align-text-top">
         </RouterLink>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 

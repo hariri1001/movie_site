@@ -2,7 +2,8 @@
   <div class="signup-page" >
     <div class="signup-container">
       <div class="signup">
-        <h1>회원 가입</h1>
+        <img src="@/assets/post-relog.png" alt="Logo" height="40" class="d-inline-block align-text-top">
+        <h3>회원 가입</h3>
       </div>
       
       <form @submit.prevent="signUp" class="signup-form">
@@ -100,8 +101,8 @@ html, body {
 }
 
 .signup-container {
-  max-width: 460px;
-  margin: 100px auto;
+  max-width: 400px;
+  margin: 70px auto;
   padding: 40px;
   background-color: rgba(0, 0, 0, 0.75); /* 배경색에 투명도 추가 */
   border-radius: 8px;
@@ -110,23 +111,39 @@ html, body {
 
 
 .signup {
- text-align: left;
- color: white;
- margin-bottom: 40px;
- font-size: 28px;
- font-weight: 700;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-bottom: 40px;
+  /* text-align: left 제거 */
+}
+
+.signup img {
+  margin-bottom: 15px;
+  /* 필요한 경우 다음 속성 추가 */
+  display: block;  
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.signup h3 {
+  margin: 0;
+  font-size: 28px;
+  text-align: center; /* 텍스트 중앙 정렬 */
 }
 
 .signup-form {
  display: flex;
  flex-direction: column;
- gap: 24px;  /* 입력 필드 사이 간격 */
+ gap: 14px;  /* 입력 필드 사이 간격 */
 }
 
 .form-group {
  display: flex;
  flex-direction: column;
- gap: 8px;
+ gap: 4px;
 }
 
 label {
@@ -135,10 +152,11 @@ label {
  font-weight: 500;
 }
 
+
 input, select {
  padding: 16px;
- background-color: #333;
- border: 1px solid #008612;
+ background-color: #060606;
+ border: 0.5px solid  #373737 !important;
  border-radius: 4px;
  color: white;
  font-size: 16px;
@@ -146,13 +164,15 @@ input, select {
 }
 
 input::placeholder {
- color: #808080;
+ color: #757474;
 }
 
 input:focus, select:focus {
+ background-color: #282828;
+ background: rgba(255, 255, 255, 0.1);
+ border: 1px solid #fff;
+ box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
  outline: none;
- border-color: #00b318;
- background-color: #404040;
 }
 
 
@@ -164,7 +184,7 @@ input:focus, select:focus {
 }
 
 .email-input {
- width: 40%; /* 이메일 입력창 너비 */
+ width: 50%; /* 이메일 입력창 너비 */
  padding: 10px;
  background: rgba(0, 0, 0, 0.5);
  border: 1px solid #333;
@@ -178,10 +198,10 @@ input:focus, select:focus {
 }
 
 .email-domain {
- width: 60%; /* select 박스 너비 */
- padding: 15px;
+ width: 50%; /* select 박스 너비 */
+ height: 45px;  /* 명시적으로 높이 설정 */
+ padding: 0 16px;  /* 좌우 패딩만 적용 */
  background: rgba(0, 0, 0, 0.5);
- border: 1px solid #333;
  border-radius: 5px;
  color: white;
 }
@@ -198,7 +218,7 @@ input:focus, select:focus {
 .signup-button {
  margin-top: 16px;
  padding: 16px;
- background-color: #008612;
+ background-color:  #ead200;
  color: white;
  border: none;
  border-radius: 4px;
@@ -209,7 +229,7 @@ input:focus, select:focus {
 }
 
 .signup-button:hover {
- background-color: #00b318;
+ background-color:  #ead300ec;
 }
 
 /* 선택 옵션 스타일링 */

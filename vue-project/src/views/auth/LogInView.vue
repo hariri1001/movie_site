@@ -1,7 +1,8 @@
 <template>
   <div class="login-container">
     <div class="login">
-      <h1>로그인</h1>
+      <img src="@/assets/post-relog.png" alt="Logo" height="40" class="d-inline-block align-text-top">
+      <h3>로그인</h3>
     </div>
     <form @submit.prevent="logIn" class="login-form">
       <div class="form-group">
@@ -45,6 +46,15 @@ const logIn = function () {
 </script>
 
 <style>
+.login-container {
+ max-width: 400px;
+ margin: 70px auto;
+ padding: 40px;
+ background-color: rgba(0, 0, 0, 0.75);
+ border-radius: 8px;
+ box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
 
 .input-field {
  width: 100%;
@@ -63,21 +73,19 @@ const logIn = function () {
  outline: none;
 }
 
-.login-container {
- max-width: 460px;
- margin: 100px auto;
- padding: 40px;
- background-color: rgba(0, 0, 0, 0.75);
- border-radius: 8px;
- box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-}
+
 
 .login {
- text-align: left;
- color: white;
- margin-bottom: 40px;
- font-size: 28px;
- font-weight: 800;
+  display: flex;
+  flex-direction: column;  /* 세로 방향으로 배치 */
+  align-items: center;     /* 가운데 정렬 */
+  text-align: center;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.login img {
+  margin-bottom: 15px;    /* 이미지 아래 여백 추가 */
 }
 
 .login-form {
@@ -102,7 +110,6 @@ label {
 input {
  padding: 16px;
  background-color: #333;
- border: 1px solid #008612;
  border-radius: 4px;
  color: white;
  font-size: 16px;
@@ -115,14 +122,14 @@ input::placeholder {
 
 input:focus {
  outline: none;
- border-color: #00ba19;
+ border-color: #ead200;
  background-color: #404040;
 }
 
 .login-button {
  margin-top: 16px;
  padding: 16px;
- background-color: #008612;
+ background-color:  #ead200;
  color: white;
  border: none;
  border-radius: 4px;
@@ -133,7 +140,7 @@ input:focus {
 }
 
 .login-button:hover {
- background-color: #00b318;
+ background-color:  #dcc703eb;
 }
 
 .signup-link {
@@ -143,7 +150,7 @@ input:focus {
 }
 
 .signup-link a {
- color: #00b318;
+ color: #dcc703eb;
  text-decoration: none;
  margin-left: 8px;
 }
